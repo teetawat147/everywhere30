@@ -36,7 +36,7 @@ const useStyles = makeStyles({
 export default function BoxAssessment(props) {
   const classes = useStyles();
   const [assessment, setAssessment] = useState({});
- 
+ //---------------
   useEffect(() => {
     setAssessment(props.data);
   }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
