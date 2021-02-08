@@ -1,7 +1,7 @@
 import axios from "axios";
 import authHeader from "../services/auth-header";
 
-const API_URL = "https://cloud1.r8way.moph.go.th:3099/api/";
+const API_URL=authHeader.API_URL;
 
 const getAll = (params, thisCollection) => {
   return axios.get(API_URL+thisCollection,  {headers: authHeader.getToken(), params : params });

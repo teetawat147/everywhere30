@@ -14,7 +14,10 @@ const getToken=()=> {
   return { Authorization: user.id }; 
 }
 
+const API_URL = "https://cloud1.r8way.moph.go.th:3099/api/";
+
 export default {
   authHeader,
-  getToken
+  getToken,
+  API_URL
 };
