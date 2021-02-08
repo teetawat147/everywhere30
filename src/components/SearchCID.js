@@ -10,10 +10,6 @@ import {
 // import UListTable from "./UniversalListTable";
 
 import UAPI from "../services/UniversalAPI";
-import BoxAssessment from "./BoxAssessment";
-import BoxDiagnosis from "./BoxDiagnosis";
-import BoxTreatment from "./BoxTreatment";
-import BoxServiceInfo from "./BoxServiceInfo";
 
 import {
 InputAdornment,
@@ -153,7 +149,7 @@ export default function App(props) {
   const [patientData, setPatientData] = useState([]);
   const [interventionsData, setInterventionsData] = useState([]);
   const [serviceData, setServiceData] = useState({});
-  const [yearShow, setYearShow] = useState({});
+  const [yearShow, setYearShow] = useState([]);
   const [yearTopic, setYearTopic] = useState([]);
   
   const listTableColumnSet = [
@@ -209,7 +205,7 @@ export default function App(props) {
       if (response.data) {
         if (response.data.length>0) {
           let r=response.data[0];
-          // console.log(r);
+          console.log(r);
           let x=[];
           x['cid']=r['cid'];
           x['pt_name']=r['fname']+' '+r['lname'];
@@ -230,27 +226,9 @@ export default function App(props) {
     }
   }
 
-  const mkYearShow = () => {
-    let yearShowTMP={};
-    let n=0;
-    let lastYear='';
-    interventionsData.forEach(i => {
-      if (typeof i.date != 'undefined') {
-        n++;
-        let x=(parseInt(i.date.substr(0,4))+543).toString();
-        yearShowTMP[(parseInt(i.date.substr(0,4))+543).toString()]='none';
-        if (n===1) {
-          lastYear=(parseInt(i.date.substr(0,4))+543).toString();
-        }
-      }
-    });
-    yearShowTMP[lastYear]='block';
-    setYearShow(yearShowTMP);
-  }
-
-
   const dateServList = () => {
     let yearsData=[];
+
     interventionsData.forEach(i => {
       if (typeof i.date != 'undefined') {
         let x=(parseInt(i.date.substr(0,4))+543).toString();
@@ -270,7 +248,7 @@ export default function App(props) {
       let dateList=[];
       let yearTitle="";
       let i=0;
-      // console.log(y);
+      console.log(y);
       y.forEach(d => {
         i++;
         yearTitle=(parseInt(d.date.substr(0,4))+543).toString();
@@ -290,7 +268,7 @@ export default function App(props) {
   }
 
   const toggleYear = () => {
-    // console.log('toggleYear--');
+    console.log('toggleYear--');
   }
 
   const selectDateServ = (e,d) => {
@@ -315,16 +293,140 @@ export default function App(props) {
       }
     }
 
+console.log(diagnosis);
+
+    let serviceInfoElement=(
+      <>
+        <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>หน่วยบริการ</div>
+            <div className={classes.contentText}>{assessment.hcode}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>วันที่รับบริการ</div>
+            <div className={classes.contentText}>{assessment.date}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>เวลารับบริการ</div>
+            <div className={classes.contentText}>{assessment.vsttime}</div>
+          </div>
+        </div>
+      </>
+    );
+
+    let assessmentElement=(
+      <>
+        {/* <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>วันที่รับบริการ</div>
+            <div className={classes.contentText}>{assessment.date}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>เวลารับบริการ</div>
+            <div className={classes.contentText}>{assessment.vsttime}</div>
+          </div>
+        </div> */}
+
+        <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>น้ำหนัก</div>
+            <div className={classes.contentText}>{assessment.bw}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>ส่วนสูง</div>
+            <div className={classes.contentText}>{assessment.height}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>BMI</div>
+            <div className={classes.contentText}>{assessment.bmi}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>รอบเอว</div>
+            <div className={classes.contentText}>{assessment.waist}</div>
+          </div>
+        </div>
+
+        <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>อุณหภูมิ</div>
+            <div className={classes.contentText}>{assessment.temperature}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>BP</div>
+            <div className={classes.contentText}>{assessment.bps}/{assessment.bpd}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>pulse</div>
+            <div className={classes.contentText}>{assessment.pulse}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>rr</div>
+            <div className={classes.contentText}>{assessment.rr}</div>
+          </div>
+        </div>
+
+        <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>Chief Complain</div>
+            <div className={classes.contentText}>{assessment.cc}</div>
+          </div>
+        </div>
+
+        <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>HPI</div>
+            <div className={classes.contentText}>{assessment.hpi}</div>
+          </div>
+        </div>
+
+        <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>PMH</div>
+            <div className={classes.contentText}>{assessment.pmh}</div>
+          </div>
+        </div>
+
+        <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>Symptom</div>
+            <div className={classes.contentText}>{assessment.symptom}</div>
+          </div>
+        </div>
+      </>
+    );
+
+    let diagnosisElement=[];
+    let diagnosis_n=0;
+    diagnosis.forEach(i => {
+      diagnosis_n++;
+      diagnosisElement.push(
+        <div key={'diagnosis_'+diagnosis_n}>
+          ({i.diagtype}){i.diagtype_name} : {i.icd103} 
+        </div>
+      );
+    });
+
+    let treatmentElement=[];
+    let treatment_n=0;
+    treatment.forEach(i => {
+      treatment_n++;
+      treatmentElement.push(
+        <div key={'treatment_'+treatment_n}>
+          {i.result.icode_name} จำนวน {i.result.qty} ราคา {i.result.sum_price} บาท
+        </div>
+      );
+    });
+    
     return (
       <div>
         <div style={{marginTop: 10, marginBottom: 10}}><b>Service Infomation</b></div>
-        {Object.keys(assessment).length>0&& <BoxServiceInfo data={assessment} />}
+        {Object.keys(assessment).length>0&&serviceInfoElement}
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Assessment</b></div>
-        {Object.keys(assessment).length>0&& <BoxAssessment data={assessment} />}
+        {Object.keys(assessment).length>0&&assessmentElement}
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Diagnosis</b></div>
-        <BoxDiagnosis data={diagnosis} />
+        {diagnosisElement}
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
-        <BoxTreatment data={treatment} />
+        {treatmentElement}
       </div>
     );
   }
@@ -342,10 +444,12 @@ export default function App(props) {
   //   //
   // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    mkYearShow();
-    // console.log('dddddddddddd---');
-  }, [interventionsData]); // eslint-disable-line react-hooks/exhaustive-deps
+  // useEffect(() => {
+  //   console.log('dddddddddddd---');
+  //   // let k = yearShow;
+  //   // k['2563'] = 'none';
+  //   // setYearShow({ ...yearShow, ...k });
+  // }, [yearTopic]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{marginBottom:100}}>

@@ -1,7 +1,6 @@
 import axios from "axios";
-import authHeader from "./auth-header";
 
-const API_URL=authHeader.API_URL;
+const API_URL = "https://cloud1.r8way.moph.go.th:3099/api";
 
 const register = (username, email, password) => {
   return axios.post(API_URL + "signup", {
