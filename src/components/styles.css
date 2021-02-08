@@ -1,0 +1,18 @@
+/* .App {
+  font-family: sans-serif;
+  text-align: center;
+} */
+
+.react-datepicker-wrapper,
+.react-datepicker__input-container,
+.react-datepicker__input-container input {
+    width: 100%;
+}
+
+.react-datepicker__input-container input {
+    padding: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border: solid 1px #c4c4c4;
+    border-radius: 5px;
+}
