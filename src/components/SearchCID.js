@@ -14,6 +14,8 @@ import BoxServiceInfo from "./BoxServiceInfo";
 import BoxAssessment from "./BoxAssessment";
 import BoxDiagnosis from "./BoxDiagnosis";
 import BoxTreatment from "./BoxTreatment";
+import BoxLaboratory from "./BoxLaboratory";
+import BoxRadiology from "./BoxRadiology";
 
 
 
@@ -312,24 +314,34 @@ export default function App(props) {
     let assessment={};
     let diagnosis=[];
     let treatment=[];
+    let laboratory=[];
+    let radiology=[];
     if (serviceData) {
       if (serviceData.activities) {
         assessment=serviceData.activities.assessment[0];
         diagnosis=serviceData.activities.diagnosis;
+        laboratory=serviceData.activities.laboratory;
+        radiology=serviceData.activities.radiology;
         treatment=serviceData.activities.treatment;
       }
     }
 
+console.log(serviceData);
+
     return (
       <div>
         <div style={{marginTop: 10, marginBottom: 10}}><b>Service Infomation</b></div>
-        {Object.keys(assessment).length>0&& <BoxServiceInfo data={assessment} />}
+        {Object.keys(assessment).length>0 && <BoxServiceInfo data={assessment} />}
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Assessment</b></div>
-        {Object.keys(assessment).length>0&& <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
+        {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Diagnosis</b></div>
         <BoxDiagnosis data={diagnosis} />
+        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Laboratory</b></div>
+        <BoxLaboratory data={laboratory} />
+        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Radiology</b></div>
+        <BoxRadiology data={radiology} />
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
-        <BoxTreatment data={treatment} />
+        {/* <BoxTreatment data={treatment} /> */}
       </div>
     );
   }
@@ -351,11 +363,16 @@ export default function App(props) {
   const extractData = () => {
     // console.log(props.interventionsData);
     let extractedData=[];
+    let c=0;
     interventionsData.forEach(i => {
       if (typeof i.activities != 'undefined') {
         if (typeof i.activities.assessment != 'undefined') {
-          // console.log(i.activities.assessment);
-          extractedData.push(i.activities.assessment[0]);
+          c++;
+          if (c<=10) {
+            // console.log(i.activities.assessment);
+            extractedData.push(i.activities.assessment[0]);
+            // extractedData.push({ id: c, bw: i.activities.assessment[0].bw, bps: i.activities.assessment[0].bps });
+          }
         }
       }
     });
