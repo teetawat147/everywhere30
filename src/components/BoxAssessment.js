@@ -3,8 +3,13 @@ import {
   makeStyles
 } from '@material-ui/core/styles';
 
-import ChartDemo from "./ChartDemo";
+import {
+  Button,
+} from '@material-ui/core';
 
+import { MdInsertChart } from 'react-icons/md';
+
+import ChartDemo from "./ChartDemo";
 
 const useStyles = makeStyles({
   table: {
@@ -40,14 +45,35 @@ export default function BoxAssessment(props) {
   const classes = useStyles();
   const [assessment, setAssessment] = useState({});
   const [dataAll, setDataAll] = useState({});
+  const [showGraph, setShowGraph] = useState('none');
  
+  const clickGraphButton = () => {
+    // console.log('xxxxxxxx');
+    let x=showGraph;
+    let y=(x==='none'?'block':'none');
+    setShowGraph(y);
+  }
+
   useEffect(() => {
     setAssessment(props.data);
     setDataAll(props.dataAll);
+    setShowGraph('none');
+    // console.log(props.dataAll);
   }, [props.data, props.dataAll]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
       <>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'row-reverse'}}>
+          <div style={{position: 'absolute', marginTop: -40}}>
+            <Button
+              onClick={clickGraphButton}
+              // style={{ width:30 }}
+              // variant="outlined"
+              color="primary"
+              startIcon={<MdInsertChart size={40} style={{ paddingLeft: 10 }} />}
+            />
+          </div>
+        </div>
         <div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>น้ำหนัก</div>
@@ -114,7 +140,10 @@ export default function BoxAssessment(props) {
           </div>
         </div>
 
-        {/* <ChartDemo /> */}
+        <div style={{display: showGraph}}>
+          <ChartDemo data={dataAll} titleName={'Weight'} argumentField={'date'} valueField={'bw'} lineName={'Weight'} />
+          <ChartDemo data={dataAll} titleName={'Height'} argumentField={'date'} valueField={'height'} lineName={'height'} />
+        </div>
 
       </>
   )

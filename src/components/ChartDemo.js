@@ -78,6 +78,7 @@ const TitleText = withStyles(titleStyles)(({ classes, ...props }) => (
   <Title.Text {...props} className={classes.title} />
 ));
 
+
 class ChartDemo extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -89,43 +90,74 @@ class ChartDemo extends React.PureComponent {
 
   render() {
     const { data: chartData } = this.state;
-    const { classes } = this.props;
+    const { classes, data: xData, titleName, valueField, argumentField, lineName } = this.props;
+
+    // console.log(data);
+    // console.log(xData);
 
     return (
-      <Paper>
-        <Chart
-          data={chartData}
-          className={classes.chart}
-        >
-          <ArgumentAxis tickFormat={format} />
-          <ValueAxis
-            max={50}
-            labelComponent={ValueLabel}
-          />
+      <div style={{padding: 10}}>
 
-          <LineSeries
-            name="TV news"
-            valueField="tvNews"
-            argumentField="year"
-          />
-          <LineSeries
-            name="Church"
-            valueField="church"
-            argumentField="year"
-          />
-          <LineSeries
-            name="Military"
-            valueField="military"
-            argumentField="year"
-          />
-          <Legend position="bottom" rootComponent={Root} itemComponent={Item} labelComponent={Label} />
-          <Title
-            text={`Confidence in Institutions in American society ${'\n'}(Great deal)`}
-            textComponent={TitleText}
-          />
-          <Animation />
-        </Chart>
-      </Paper>
+        {xData.length>0&&
+          <Paper style={{padding: 10}}>
+            <Chart data={xData} className={classes.chart} >
+              <ArgumentAxis tickFormat={format} />
+              <ValueAxis
+                max={50}
+                labelComponent={ValueLabel}
+              />
+
+              <LineSeries
+                name={lineName}
+                valueField={valueField}
+                argumentField={argumentField}
+              />
+
+              {/* <Legend position="bottom" rootComponent={Root} itemComponent={Item} labelComponent={Label} /> */}
+
+              <Title
+                // text={`Confidence in Institutions in American society ${'\n'}(Great deal)`}
+                text={titleName}
+                textComponent={TitleText}
+              />
+              <Animation />
+            </Chart>
+          </Paper>
+        }
+
+        {/* <Paper>
+          <Chart data={chartData} className={classes.chart} >
+            <ArgumentAxis tickFormat={format} />
+            <ValueAxis
+              max={50}
+              labelComponent={ValueLabel}
+            />
+
+            <LineSeries
+              name="TV news"
+              valueField="tvNews"
+              argumentField="year"
+            />
+            <LineSeries
+              name="Church"
+              valueField="church"
+              argumentField="year"
+            />
+            <LineSeries
+              name="Military"
+              valueField="military"
+              argumentField="year"
+            />
+            <Legend position="bottom" rootComponent={Root} itemComponent={Item} labelComponent={Label} />
+            <Title
+              text={`Confidence in Institutions in American society ${'\n'}(Great deal)`}
+              textComponent={TitleText}
+            />
+            <Animation />
+          </Chart>
+        </Paper> */}
+
+      </div>
     );
   }
 }
