@@ -38,11 +38,11 @@ const App = () => {
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
         <Link to={"/"} className="navbar-brand">
-          bezKoder666
+          R8WAY everyWhere30
         </Link>
         <div className="navbar-nav mr-auto">
 
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <Link to={"/universal"} className="nav-link">
               Universal
             </Link>
@@ -58,7 +58,7 @@ const App = () => {
             <Link to={"/home"} className="nav-link">
               Home
             </Link>
-          </li>
+          </li> */}
 
 {/* 
           {showModeratorBoard && (
@@ -77,13 +77,13 @@ const App = () => {
             </li>
           )} */}
 
-          {currentUser && (
+          {/* {currentUser && (
             <li className="nav-item">
               <Link to={"/user"} className="nav-link">
                 User
               </Link>
             </li>
-          )}
+          )} */}
         </div>
 
         {currentUser ? (

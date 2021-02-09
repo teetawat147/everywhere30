@@ -3,6 +3,9 @@ import {
   makeStyles
 } from '@material-ui/core/styles';
 
+import ChartDemo from "./ChartDemo";
+
+
 const useStyles = makeStyles({
   table: {
     minWidth: 700,
@@ -36,10 +39,12 @@ const useStyles = makeStyles({
 export default function BoxAssessment(props) {
   const classes = useStyles();
   const [assessment, setAssessment] = useState({});
- //---------------
+  const [dataAll, setDataAll] = useState({});
+ 
   useEffect(() => {
     setAssessment(props.data);
-  }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
+    setDataAll(props.dataAll);
+  }, [props.data, props.dataAll]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
       <>
@@ -108,6 +113,9 @@ export default function BoxAssessment(props) {
             <div className={classes.contentText}>{assessment.symptom}</div>
           </div>
         </div>
+
+        {/* <ChartDemo /> */}
+
       </>
   )
 }

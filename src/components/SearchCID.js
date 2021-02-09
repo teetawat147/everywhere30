@@ -10,6 +10,12 @@ import {
 // import UListTable from "./UniversalListTable";
 
 import UAPI from "../services/UniversalAPI";
+import BoxServiceInfo from "./BoxServiceInfo";
+import BoxAssessment from "./BoxAssessment";
+import BoxDiagnosis from "./BoxDiagnosis";
+import BoxTreatment from "./BoxTreatment";
+
+
 
 import {
 InputAdornment,
@@ -149,8 +155,8 @@ export default function App(props) {
   const [patientData, setPatientData] = useState([]);
   const [interventionsData, setInterventionsData] = useState([]);
   const [serviceData, setServiceData] = useState({});
-  const [yearShow, setYearShow] = useState([]);
-  const [yearTopic, setYearTopic] = useState([]);
+  const [yearShow, setYearShow] = useState({});
+  const [assessmentListData, setAssessmentListData] = useState([]);
   
   const listTableColumnSet = [
     {
@@ -205,7 +211,7 @@ export default function App(props) {
       if (response.data) {
         if (response.data.length>0) {
           let r=response.data[0];
-          console.log(r);
+          // console.log(r);
           let x=[];
           x['cid']=r['cid'];
           x['pt_name']=r['fname']+' '+r['lname'];
@@ -224,6 +230,24 @@ export default function App(props) {
         }
       }
     }
+  }
+
+  const mkYearShow = () => {
+    let yearShowTemp={};
+    let lastYear='';
+    let n=0;
+    interventionsData.forEach(i => {
+      if (typeof i.date != 'undefined') {
+        n++;
+        let x=(parseInt(i.date.substr(0,4))+543).toString();
+        yearShowTemp[x]='none';
+        if (n===1) {
+          lastYear=x;
+        }
+      }
+    });
+    yearShowTemp[lastYear]='block';
+    setYearShow(yearShowTemp);
   }
 
   const dateServList = () => {
@@ -248,15 +272,15 @@ export default function App(props) {
       let dateList=[];
       let yearTitle="";
       let i=0;
-      console.log(y);
+      // console.log(y);
       y.forEach(d => {
         i++;
         yearTitle=(parseInt(d.date.substr(0,4))+543).toString();
-        dateList.push(<div key={d.date.toString()+'_'+i} className={classes.linkDateServ} onClick={(e,x)=>selectDateServ(e,d.date)}>{thaiXSDate(d.date)}</div>);
+        dateList.push(<div key={d.date.toString()+'_'+i} className={classes.linkDateServ} onClick={(e,x)=>selectDateServ(e,d.date)}>{thaiXSDate(d.date)} {d.hcode}</div>);
       });
       yearList.push(
         <div key={yearTitle}>
-          <div style={{fontWeight:'bold', cursor: 'pointer'}} onClick={toggleYear(yearTitle)}>{yearTitle}</div>
+          <div style={{fontWeight:'bold', cursor: 'pointer'}} onClick={()=>toggleYear(yearTitle)}>{yearTitle}</div>
           <div style={{display: yearShow[yearTitle]}}>
             {dateList}
           </div>
@@ -267,8 +291,11 @@ export default function App(props) {
     return yearList;
   }
 
-  const toggleYear = () => {
-    console.log('toggleYear--');
+  const toggleYear = (x) => {
+    let a=yearShow;
+    let o=a[x];
+    a[x]=(o==='none'?'block':'none');
+    setYearShow({...yearShow,...a}); 
   }
 
   const selectDateServ = (e,d) => {
@@ -293,143 +320,24 @@ export default function App(props) {
       }
     }
 
-console.log(diagnosis);
-
-    let serviceInfoElement=(
-      <>
-        <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>หน่วยบริการ</div>
-            <div className={classes.contentText}>{assessment.hcode}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>วันที่รับบริการ</div>
-            <div className={classes.contentText}>{assessment.date}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>เวลารับบริการ</div>
-            <div className={classes.contentText}>{assessment.vsttime}</div>
-          </div>
-        </div>
-      </>
-    );
-
-    let assessmentElement=(
-      <>
-        {/* <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>วันที่รับบริการ</div>
-            <div className={classes.contentText}>{assessment.date}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>เวลารับบริการ</div>
-            <div className={classes.contentText}>{assessment.vsttime}</div>
-          </div>
-        </div> */}
-
-        <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>น้ำหนัก</div>
-            <div className={classes.contentText}>{assessment.bw}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>ส่วนสูง</div>
-            <div className={classes.contentText}>{assessment.height}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>BMI</div>
-            <div className={classes.contentText}>{assessment.bmi}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>รอบเอว</div>
-            <div className={classes.contentText}>{assessment.waist}</div>
-          </div>
-        </div>
-
-        <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>อุณหภูมิ</div>
-            <div className={classes.contentText}>{assessment.temperature}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>BP</div>
-            <div className={classes.contentText}>{assessment.bps}/{assessment.bpd}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>pulse</div>
-            <div className={classes.contentText}>{assessment.pulse}</div>
-          </div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>rr</div>
-            <div className={classes.contentText}>{assessment.rr}</div>
-          </div>
-        </div>
-
-        <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>Chief Complain</div>
-            <div className={classes.contentText}>{assessment.cc}</div>
-          </div>
-        </div>
-
-        <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>HPI</div>
-            <div className={classes.contentText}>{assessment.hpi}</div>
-          </div>
-        </div>
-
-        <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>PMH</div>
-            <div className={classes.contentText}>{assessment.pmh}</div>
-          </div>
-        </div>
-
-        <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>Symptom</div>
-            <div className={classes.contentText}>{assessment.symptom}</div>
-          </div>
-        </div>
-      </>
-    );
-
-    let diagnosisElement=[];
-    let diagnosis_n=0;
-    diagnosis.forEach(i => {
-      diagnosis_n++;
-      diagnosisElement.push(
-        <div key={'diagnosis_'+diagnosis_n}>
-          ({i.diagtype}){i.diagtype_name} : {i.icd103} 
-        </div>
-      );
-    });
-
-    let treatmentElement=[];
-    let treatment_n=0;
-    treatment.forEach(i => {
-      treatment_n++;
-      treatmentElement.push(
-        <div key={'treatment_'+treatment_n}>
-          {i.result.icode_name} จำนวน {i.result.qty} ราคา {i.result.sum_price} บาท
-        </div>
-      );
-    });
-    
     return (
       <div>
         <div style={{marginTop: 10, marginBottom: 10}}><b>Service Infomation</b></div>
-        {Object.keys(assessment).length>0&&serviceInfoElement}
+        {Object.keys(assessment).length>0&& <BoxServiceInfo data={assessment} />}
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Assessment</b></div>
-        {Object.keys(assessment).length>0&&assessmentElement}
+        {Object.keys(assessment).length>0&& <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Diagnosis</b></div>
-        {diagnosisElement}
+        <BoxDiagnosis data={diagnosis} />
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
-        {treatmentElement}
+        <BoxTreatment data={treatment} />
       </div>
     );
   }
+
+  // import BoxServiceInfo from "../services/BoxServiceInfo";
+  // import BoxAssessment from "../services/BoxAssessment";
+  // import BoxDiagnosis from "../services/BoxDiagnosis";
+  // import BoxTreatment from "../services/BoxTreatment";
 
   const thaiXSDate = (x) => {
     let r=x;
@@ -440,21 +348,34 @@ console.log(diagnosis);
     return r;
   }
 
+  const extractData = () => {
+    // console.log(props.interventionsData);
+    let extractedData=[];
+    interventionsData.forEach(i => {
+      if (typeof i.activities != 'undefined') {
+        if (typeof i.activities.assessment != 'undefined') {
+          // console.log(i.activities.assessment);
+          extractedData.push(i.activities.assessment[0]);
+        }
+      }
+    });
+    // console.log(extractedData);
+    setAssessmentListData(extractedData);
+  }
+
   // useEffect(() => {
   //   //
   // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // useEffect(() => {
-  //   console.log('dddddddddddd---');
-  //   // let k = yearShow;
-  //   // k['2563'] = 'none';
-  //   // setYearShow({ ...yearShow, ...k });
-  // }, [yearTopic]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    mkYearShow();
+    extractData();
+  }, [interventionsData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{marginBottom:100}}>
 
-      <div><h2>ค้นหาด้วยเลขบัตรประจำตัวประชาชน</h2></div>
+      <div><h5>ค้นหาด้วยเลขบัตรประจำตัวประชาชน</h5></div>
       <div style={{ width: '100%' ,display:'flex' ,justifyContent:'space-between' }}>
         <div style={{width:'100%'}}>
           <TextField
@@ -514,7 +435,7 @@ console.log(diagnosis);
       </div>
 
       <div style={{ width: '100%' ,display:'flex' ,justifyContent:'space-between' }}>
-        <div style={{ width:150, border: 'solid 1px red', backgroundColor: '#f9f9f9', padding: 10, borderRadius: 5, border:'solid 1px #dadada'}}>
+        <div style={{ width:200, border: 'solid 1px red', backgroundColor: '#f9f9f9', padding: 10, borderRadius: 5, border:'solid 1px #dadada'}}>
           {dateServList()}
         </div>
         <div style={{ width:'100%', border: 'solid 1px red', padding: 10, borderRadius: 5, border:'solid 1px #dadada', marginLeft: 10 ,whiteSpace: 'normal'}}>
