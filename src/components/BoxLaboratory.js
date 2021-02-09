@@ -55,6 +55,7 @@ export default function BoxLaboratory(props) {
   // }
 
   const mkLaboratoryList = () => {
+    let laboratoryElement=[];
     let labHead=[];
     let labItemGroup=[];
     if (laboratory.length>0) {
@@ -71,19 +72,30 @@ export default function BoxLaboratory(props) {
             labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
           }
         }
-      });
-
-      laboratory.forEach(i => {
-        // console.log(i.form_name);
-        if (typeof i.form_name != 'undefined') {
+        else {
           labHead.push(i);
         }
       });
 
+      // laboratory.forEach(i => {
+      //   // console.log(i.form_name);
+      //   if (typeof i.form_name != 'undefined') {
+      //     labHead.push(i);
+      //   }
+      // });
+
+      labHead.forEach(i => {
+        // i['laboratoryDetail']=labItemGroup[i.lab_order_number];
+        let x=mkLabList(labItemGroup[i.lab_order_number]);
+        laboratoryElement.push(<div key={i.lab_order_number}>{i.form_name}</div>);
+      });
+      // console.log(labHead);
     }
-    console.log(labItemGroup);
-    console.log(labHead);
-    // return laboratoryElement;
+    return laboratoryElement;
+  }
+
+  const mkLabList = (x) => {
+    console.log(x);
   }
 
   useEffect(() => {
