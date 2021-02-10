@@ -375,7 +375,7 @@ export default function App(props) {
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Laboratory</b></div>
         <BoxLaboratory data={laboratory} />
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Radiology</b></div>
-        {/* <BoxRadiology data={radiology} /> */}
+        <BoxRadiology data={radiology} />
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
         <BoxTreatment data={treatment} />
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Refer Out</b></div>
