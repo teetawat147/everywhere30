@@ -37,23 +37,6 @@ export default function BoxLaboratory(props) {
   const classes = useStyles();
   const [laboratory, setLaboratory] = useState({});
 
-  // const mkLaboratoryList = () => {
-  //   let laboratoryElement=[];
-  //   let laboratory_n=0;
-  //   if (laboratory.length>0) {
-  //     laboratory.forEach(i => {
-  //       console.log(i);
-  //       laboratory_n++;
-  //       laboratoryElement.push(
-  //         <div key={'laboratory_'+laboratory_n}>
-  //           {/* {i.result.icode_name} จำนวน {i.result.qty} ราคา {i.result.sum_price} บาท */}
-  //         </div>
-  //       );
-  //     });
-  //   }
-  //   return laboratoryElement;
-  // }
-
   const mkLaboratoryList = () => {
     let laboratoryElement=[];
     let labHead=[];
@@ -61,10 +44,8 @@ export default function BoxLaboratory(props) {
     if (laboratory.length>0) {
 
       laboratory.forEach(i => {
-        // console.log(i.form_name);
         if (typeof i.form_name === 'undefined') {
           if (typeof labItemGroup[i.lab_order_number] === 'undefined') {
-            // labHead.push(i);
             labItemGroup[i.lab_order_number]=[];
             labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
           }
@@ -77,25 +58,61 @@ export default function BoxLaboratory(props) {
         }
       });
 
-      // laboratory.forEach(i => {
-      //   // console.log(i.form_name);
-      //   if (typeof i.form_name != 'undefined') {
-      //     labHead.push(i);
-      //   }
-      // });
-
       labHead.forEach(i => {
-        // i['laboratoryDetail']=labItemGroup[i.lab_order_number];
-        let x=mkLabList(labItemGroup[i.lab_order_number]);
-        laboratoryElement.push(<div key={i.lab_order_number}>{i.form_name}</div>);
+        laboratoryElement.push(
+          <div key={i.lab_order_number} style={{marginBottom: 20}}>
+            <div style={{backgroundColor: '#e2e2e2', borderRadius: 10, paddingLeft: 30}}><b>{i.form_name}</b></div>
+            <div>
+              {mkLabDetail(labItemGroup[i.lab_order_number])}
+            </div>
+          </div>
+        );
       });
-      // console.log(labHead);
     }
     return laboratoryElement;
   }
 
-  const mkLabList = (x) => {
-    console.log(x);
+  const mkLabDetail = (x) => {
+    let elem=[];
+    let n=0;
+    x[0].forEach(i => {
+      n++;
+      // console.log(i);
+      elem.push(
+        <tr key={i.lab_order_number+'_'+i.lab_items_code+'_'+n}>
+          <td style={{width:30}}>{n}</td>
+          <td style={{width:'auto'}}>{i.lab_items_name_ref}</td>
+          <td style={{width:'15%'}}>{i.lab_items_normal_value_ref}</td>
+          <td style={{width:'15%'}}>{i.lab_order_result}</td>
+          <td style={{width:'15%'}}>{i.lab_items_unit}</td>
+        </tr>
+      );
+    });
+
+    return (
+      <div>
+        <div>
+          <table style={{width: '100%'}}>
+            <thead>
+              <tr>
+                <td style={{width:30}}><br /></td>
+                <td style={{width:'auto'}}>ชื่อแลป</td>
+                <td style={{width:'15%'}}>ค่าปกติ</td>
+                <td style={{width:'15%'}}>ผล</td>
+                <td style={{width:'15%'}}>หน่วย</td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+          <table style={{width: '100%'}}>
+            <tbody>
+              {elem}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
   }
 
   useEffect(() => {

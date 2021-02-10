@@ -16,7 +16,7 @@ import BoxDiagnosis from "./BoxDiagnosis";
 import BoxTreatment from "./BoxTreatment";
 import BoxLaboratory from "./BoxLaboratory";
 import BoxRadiology from "./BoxRadiology";
-
+import BoxReferout from "./BoxReferout";
 
 
 import {
@@ -55,7 +55,7 @@ const useStyles = makeStyles({
   linkDateServ: {
     cursor: 'pointer',
     '&:hover': {
-      background: "#E5E5E5",
+      background: "#cdf1ff",
     },
   },
 });
@@ -65,91 +65,91 @@ export default function App(props) {
   /// validation --- รับได้เฉพาะ ตัวเลข / สตริง
   /// แยกส่วน api ออกไป โยนข้อมูล จาก api เข้ามาใน app ทีนี้จะเป็น nested หรือไม่ก็เป็นไร เพราะมาจะมาเป็น json 
   /// ไปเอา table จาก material ui มาใช้นะ / ดูแล้วจะสะดวกกว่า 
-  const collection = {
-    person_test: {
-      collection_name: 'person_tests',
-      title: 'ตาราง person_test',
-      order_by: 'hn desc',
-      create_document: true,
-      update_document: true,
-      delete_document: true,
-      primary_key: 'id',
-      query_string: '',
-      rows_per_page: 10, // 10 20 30 40 50 60 70 80 90 100
-      search_field:['cid','fname','lname'],
-      fields: {
-        cid: { show: true, title: 'CID', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdFavorite', validation: 'number', value_length_type: 'fix', value_length_count: 13, value_length_min: null, value_length_max: null },
-        hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdFavorite', validation: 'number', value_length_min: null, value_length_max: null },
-        fname: { show: true, title: 'ชื่อ', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdDateRange', validation: 'string', value_length_type: 'range', value_length_count: null, value_length_min: 3, value_length_max: 5 },
-        lname: { show: true, title: 'สกุล', data_type: 'string', format: null, input_type: 'textbox' },
-        sex: { show: true, title: 'เพศ', data_type: 'string', format: null, input_type: 'select', input_select_source_type: 'json', input_select_source_name: 'sex', input_select_source_json: [{ sex_id: 1, sex_name: 'ชาย' }, { sex_id: 2, sex_name: 'หญิง' }], input_select_source_key: 'sex_id', input_select_source_value: 'sex_name' },
-        birthday: { show: true, title: 'วันเกิด', data_type: 'date', format: 'thai_short', input_type: 'datepicker' },
-        chwpart: { show: true, title: 'จังหวัด', data_type: 'string', format: null, input_type: 'select', input_select_source_type: 'db', input_select_source_name: 'cchangwats', input_select_source_key: 'changwatcode', input_select_source_value: 'changwatname' },
-        hcode: { show: true, title: 'HCODE', data_type: 'string', format: null, input_type: 'autocomplete', input_select_source_type: 'db', input_select_source_name: 'hospitals', input_select_source_key: 'hos_id', input_select_source_value: 'hos_name' },
-        death: { show: true, title: 'เสียชีวิต', data_type: 'string', format: null, input_type: 'radio', input_select_source_type: 'json', input_select_source_name: 'death', input_select_source_json: [{ id: 'Y', name: 'เสียชีวิตแล้ว' }, { id: 'N', name: 'ยังมีชีวิตอยู่' }], input_select_source_key: 'id', input_select_source_value: 'name' },
-      }
-    },
-    clinicmember: {
-      collection_name: 'clinicmembers',
-      title: 'ตาราง Clinicmember',
-      order_by: 'hn desc',
-      create_document: true,
-      update_document: true,
-      delete_document: true,
-      primary_key: 'id',
-      fields: {
-        hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox' },
-        hcode: { show: true, title: 'HCODE', data_type: 'string', format: null, input_type: 'textbox' },
-        clinic: { show: true, title: 'คลินิก', data_type: 'string', format: null, input_type: 'textbox' },
-        begin_year: { show: true, title: 'ปีที่เริ่มป่วย', data_type: 'string', format: null, input_type: 'textbox' },
-      }
-    },
-    patient: {
-      collection_name: 'patient',
-      title: 'ตาราง Patient',
-      order_by: 'hn desc',
-      create_document: true,
-      update_document: true,
-      delete_document: true,
-      primary_key: 'hos_guid',
-      fields: {
-        hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox' },
-        pname: { show: true, title: 'คำนำหน้าชื่อ', data_type: 'string', format: null, input_type: 'textbox' },
-        fname: { show: true, title: 'ชื่อ', data_type: 'string', format: null, input_type: 'textbox' },
-        lname: { show: true, title: 'สกุล', data_type: 'integer', format: null, input_type: 'textbox' },
-        birthday: { show: true, title: 'วันเกิด', data_type: 'integer', format: null, input_type: 'textbox' }
-      }
-    },
-    ovst: {
-      collection_name: 'ovst',
-      title: 'ตาราง Ovst',
-      order_by: 'vstdate desc',
-      create_document: true,
-      update_document: false,
-      delete_document: true,
-      primary_key: 'hos_guid',
-      fields: {
-        hn: { show: true, title: 'HN', data_type: 'string', format: null },
-        vn: { show: true, title: 'VN', data_type: 'string', format: null },
-        vstdate: { show: true, title: 'วันรับบริการ', data_type: 'string', format: null },
-        vsttime: { show: true, title: 'เวลารับบริการ', data_type: 'string', format: null },
-        pttype: { show: true, title: 'รหัสสิทธิ', data_type: 'integer', format: null },
-      }
-    },
-    opitemrece: {
-      collection_name: 'opitemrece',
-      title: 'ตาราง Opitemrece',
-      order_by: 'hn desc, vstdate desc',
-      create_document: true,
-      update_document: false,
-      delete_document: false,
-      primary_key: 'hos_guid',
-      fields: {
-        icode: { show: true, title: 'icode', data_type: 'string', format: null },
-        qty: { show: false, title: 'จำนวน', data_type: 'string', format: null },
-      }
-    }
-  };
+  // const collection = {
+  //   person_test: {
+  //     collection_name: 'person_tests',
+  //     title: 'ตาราง person_test',
+  //     order_by: 'hn desc',
+  //     create_document: true,
+  //     update_document: true,
+  //     delete_document: true,
+  //     primary_key: 'id',
+  //     query_string: '',
+  //     rows_per_page: 10, // 10 20 30 40 50 60 70 80 90 100
+  //     search_field:['cid','fname','lname'],
+  //     fields: {
+  //       cid: { show: true, title: 'CID', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdFavorite', validation: 'number', value_length_type: 'fix', value_length_count: 13, value_length_min: null, value_length_max: null },
+  //       hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdFavorite', validation: 'number', value_length_min: null, value_length_max: null },
+  //       fname: { show: true, title: 'ชื่อ', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdDateRange', validation: 'string', value_length_type: 'range', value_length_count: null, value_length_min: 3, value_length_max: 5 },
+  //       lname: { show: true, title: 'สกุล', data_type: 'string', format: null, input_type: 'textbox' },
+  //       sex: { show: true, title: 'เพศ', data_type: 'string', format: null, input_type: 'select', input_select_source_type: 'json', input_select_source_name: 'sex', input_select_source_json: [{ sex_id: 1, sex_name: 'ชาย' }, { sex_id: 2, sex_name: 'หญิง' }], input_select_source_key: 'sex_id', input_select_source_value: 'sex_name' },
+  //       birthday: { show: true, title: 'วันเกิด', data_type: 'date', format: 'thai_short', input_type: 'datepicker' },
+  //       chwpart: { show: true, title: 'จังหวัด', data_type: 'string', format: null, input_type: 'select', input_select_source_type: 'db', input_select_source_name: 'cchangwats', input_select_source_key: 'changwatcode', input_select_source_value: 'changwatname' },
+  //       hcode: { show: true, title: 'HCODE', data_type: 'string', format: null, input_type: 'autocomplete', input_select_source_type: 'db', input_select_source_name: 'hospitals', input_select_source_key: 'hos_id', input_select_source_value: 'hos_name' },
+  //       death: { show: true, title: 'เสียชีวิต', data_type: 'string', format: null, input_type: 'radio', input_select_source_type: 'json', input_select_source_name: 'death', input_select_source_json: [{ id: 'Y', name: 'เสียชีวิตแล้ว' }, { id: 'N', name: 'ยังมีชีวิตอยู่' }], input_select_source_key: 'id', input_select_source_value: 'name' },
+  //     }
+  //   },
+  //   clinicmember: {
+  //     collection_name: 'clinicmembers',
+  //     title: 'ตาราง Clinicmember',
+  //     order_by: 'hn desc',
+  //     create_document: true,
+  //     update_document: true,
+  //     delete_document: true,
+  //     primary_key: 'id',
+  //     fields: {
+  //       hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox' },
+  //       hcode: { show: true, title: 'HCODE', data_type: 'string', format: null, input_type: 'textbox' },
+  //       clinic: { show: true, title: 'คลินิก', data_type: 'string', format: null, input_type: 'textbox' },
+  //       begin_year: { show: true, title: 'ปีที่เริ่มป่วย', data_type: 'string', format: null, input_type: 'textbox' },
+  //     }
+  //   },
+  //   patient: {
+  //     collection_name: 'patient',
+  //     title: 'ตาราง Patient',
+  //     order_by: 'hn desc',
+  //     create_document: true,
+  //     update_document: true,
+  //     delete_document: true,
+  //     primary_key: 'hos_guid',
+  //     fields: {
+  //       hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox' },
+  //       pname: { show: true, title: 'คำนำหน้าชื่อ', data_type: 'string', format: null, input_type: 'textbox' },
+  //       fname: { show: true, title: 'ชื่อ', data_type: 'string', format: null, input_type: 'textbox' },
+  //       lname: { show: true, title: 'สกุล', data_type: 'integer', format: null, input_type: 'textbox' },
+  //       birthday: { show: true, title: 'วันเกิด', data_type: 'integer', format: null, input_type: 'textbox' }
+  //     }
+  //   },
+  //   ovst: {
+  //     collection_name: 'ovst',
+  //     title: 'ตาราง Ovst',
+  //     order_by: 'vstdate desc',
+  //     create_document: true,
+  //     update_document: false,
+  //     delete_document: true,
+  //     primary_key: 'hos_guid',
+  //     fields: {
+  //       hn: { show: true, title: 'HN', data_type: 'string', format: null },
+  //       vn: { show: true, title: 'VN', data_type: 'string', format: null },
+  //       vstdate: { show: true, title: 'วันรับบริการ', data_type: 'string', format: null },
+  //       vsttime: { show: true, title: 'เวลารับบริการ', data_type: 'string', format: null },
+  //       pttype: { show: true, title: 'รหัสสิทธิ', data_type: 'integer', format: null },
+  //     }
+  //   },
+  //   opitemrece: {
+  //     collection_name: 'opitemrece',
+  //     title: 'ตาราง Opitemrece',
+  //     order_by: 'hn desc, vstdate desc',
+  //     create_document: true,
+  //     update_document: false,
+  //     delete_document: false,
+  //     primary_key: 'hos_guid',
+  //     fields: {
+  //       icode: { show: true, title: 'icode', data_type: 'string', format: null },
+  //       qty: { show: false, title: 'จำนวน', data_type: 'string', format: null },
+  //     }
+  //   }
+  // };
 
   const classes = useStyles();
   const [searchCID, setSearchCID] = useState(null);
@@ -159,17 +159,18 @@ export default function App(props) {
   const [serviceData, setServiceData] = useState({});
   const [yearShow, setYearShow] = useState({});
   const [assessmentListData, setAssessmentListData] = useState([]);
+  const [hcodeData, setHcodeData] = useState({});
   
-  const listTableColumnSet = [
-    {
-      title: 'ชื่อสกุล',
-      fields: ['fname', 'lname']
-    },
-    {
-      title: 'เพศ',
-      fields: ['sex']
-    }
-  ];
+  // const listTableColumnSet = [
+  //   {
+  //     title: 'ชื่อสกุล',
+  //     fields: ['fname', 'lname']
+  //   },
+  //   {
+  //     title: 'เพศ',
+  //     fields: ['sex']
+  //   }
+  // ];
 
   const onchangeSearchText = (e) => {
     let v=e.target.value;
@@ -204,23 +205,33 @@ export default function App(props) {
     setServiceData({});
     let xParams = {
       filter: {
-        include:"interventions",
         where: {cid:searchCID},
+        include: {
+          relation: "interventions",
+          scope: {
+            include: {
+              relation: "hospital",
+            }
+          }
+        }
       }
     };
+    
     let response = await UAPI.getAll(xParams, 'people');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length>0) {
+          console.log(response.data);
           let r=response.data[0];
           // console.log(r);
           let x=[];
           x['cid']=r['cid'];
           x['pt_name']=r['fname']+' '+r['lname'];
           x['birthday']=r['birthday'];
-          x['age']=0;
+          x['age']=calcAge(r['birthday']);
           x['bloodgrp']=r['bloodgrp'];
           x['address_info']='';
+          x['drugallergy']=(r['drugallergy']!=''?r['drugallergy']:'ไม่พบข้อมูลการแพ้ยา');
           setPatientData(x);
           let interventions=r.interventions;
           if (typeof interventions != 'undefined') {
@@ -254,16 +265,15 @@ export default function App(props) {
 
   const dateServList = () => {
     let yearsData=[];
-
     interventionsData.forEach(i => {
       if (typeof i.date != 'undefined') {
         let x=(parseInt(i.date.substr(0,4))+543).toString();
         if (typeof yearsData[x] === 'undefined') {
           yearsData[x]=[];
-          yearsData[x].push({date:i.date,hcode:i.hcode});
+          yearsData[x].push({date:i.date,hcode:i.hcode,hos_name:i.hospital.hos_name});
         }
         else {
-          yearsData[x].push({date:i.date,hcode:i.hcode});
+          yearsData[x].push({date:i.date,hcode:i.hcode,hos_name:i.hospital.hos_name});
         }
       }
     });
@@ -273,16 +283,30 @@ export default function App(props) {
     yearsData.forEach(y => {
       let dateList=[];
       let yearTitle="";
+      let dateCount=y.length;
       let i=0;
-      // console.log(y);
       y.forEach(d => {
         i++;
         yearTitle=(parseInt(d.date.substr(0,4))+543).toString();
-        dateList.push(<div key={d.date.toString()+'_'+i} className={classes.linkDateServ} onClick={(e,x)=>selectDateServ(e,d.date)}>{thaiXSDate(d.date)} {d.hcode}</div>);
+        dateList.push(
+          <div 
+            key={d.date.toString()+'_'+i} 
+            className={classes.linkDateServ} 
+            onClick={(e,x)=>selectDateServ(e,d.date)} 
+            style={{ width: '100%', height: 25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2, borderRadius: 10, paddingLeft: 5 }}
+          >
+            {thaiXSDate(d.date)} {d.hos_name}
+          </div>
+        );
       });
       yearList.push(
         <div key={yearTitle}>
-          <div style={{fontWeight:'bold', cursor: 'pointer'}} onClick={()=>toggleYear(yearTitle)}>{yearTitle}</div>
+          <div 
+            style={{fontWeight:'bold', cursor: 'pointer', backgroundColor: '#e2e2e2', borderRadius: 10, marginTop: 5, paddingLeft: 10}} 
+            onClick={()=>toggleYear(yearTitle)}
+          >
+            พ.ศ. {yearTitle} ({dateCount})
+          </div>
           <div style={{display: yearShow[yearTitle]}}>
             {dateList}
           </div>
@@ -311,27 +335,39 @@ export default function App(props) {
   }
 
   const serviceDataBlock = () => {
+    let serviceInfo={};
     let assessment={};
     let diagnosis=[];
     let treatment=[];
     let laboratory=[];
     let radiology=[];
-    if (serviceData) {
+    let referout=[];
+    if (Object.keys(serviceData).length>0) {
       if (serviceData.activities) {
-        assessment=serviceData.activities.assessment[0];
+        // console.log(serviceData.activities.assessment);
+        if (typeof serviceData.activities.assessment != 'undefined') {
+          assessment=serviceData.activities.assessment[0];
+        }
         diagnosis=serviceData.activities.diagnosis;
         laboratory=serviceData.activities.laboratory;
         radiology=serviceData.activities.radiology;
         treatment=serviceData.activities.treatment;
+        if (typeof serviceData.activities.referout != 'undefined') {
+          referout=serviceData.activities.referout[0];
+        }
       }
+      serviceInfo['date']=serviceData['date'];
+      serviceInfo['vsttime']=serviceData['vsttime'];
+      serviceInfo['hcode']=serviceData['hcode'];
+      serviceInfo['hos_name']=serviceData['hospital']['hos_name'];
+      console.log(serviceData);
+      console.log(referout);
     }
-
-console.log(serviceData);
 
     return (
       <div>
-        <div style={{marginTop: 10, marginBottom: 10}}><b>Service Infomation</b></div>
-        {Object.keys(assessment).length>0 && <BoxServiceInfo data={assessment} />}
+        <div style={{marginTop: 10, marginBottom: 10}}><b>Service Information</b></div>
+        {Object.keys(assessment).length>0 && <BoxServiceInfo data={serviceInfo} />}
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Assessment</b></div>
         {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Diagnosis</b></div>
@@ -342,14 +378,12 @@ console.log(serviceData);
         {/* <BoxRadiology data={radiology} /> */}
         <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
         <BoxTreatment data={treatment} />
+        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Refer Out</b></div>
+        {Object.keys(referout).length>0 && <BoxReferout data={referout} />}
+        {/* <BoxReferout data={referout} /> */}
       </div>
     );
   }
-
-  // import BoxServiceInfo from "../services/BoxServiceInfo";
-  // import BoxAssessment from "../services/BoxAssessment";
-  // import BoxDiagnosis from "../services/BoxDiagnosis";
-  // import BoxTreatment from "../services/BoxTreatment";
 
   const thaiXSDate = (x) => {
     let r=x;
@@ -361,7 +395,8 @@ console.log(serviceData);
   }
 
   const extractData = () => {
-    // console.log(props.interventionsData);
+    let hcodeDataTemp=[];
+    let hcodeText="";
     let extractedData=[];
     let c=0;
     interventionsData.forEach(i => {
@@ -369,20 +404,54 @@ console.log(serviceData);
         if (typeof i.activities.assessment != 'undefined') {
           c++;
           if (c<=10) {
-            // console.log(i.activities.assessment);
             extractedData.push(i.activities.assessment[0]);
-            // extractedData.push({ id: c, bw: i.activities.assessment[0].bw, bps: i.activities.assessment[0].bps });
           }
         }
       }
+
+      if (typeof i.date != 'undefined') {
+        if (hcodeText.indexOf(i.hcode)<0) {
+          hcodeText=hcodeText+"|"+i.hcode;
+          hcodeDataTemp.push({hcode: i.hcode, hos_name:i.hospital.hos_name});
+        }
+      }
     });
-    // console.log(extractedData);
     setAssessmentListData(extractedData);
+    setHcodeData(hcodeDataTemp);
   }
 
-  // useEffect(() => {
-  //   //
-  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const hcodeList = () => {
+    if (hcodeData.length>0) {
+      let hcodeElement=[];
+      // console.log(hcodeData);
+      hcodeData.forEach(i => {
+        // console.log(i);
+        hcodeElement.push(<option key={i.hcode} value={i.hcode}>{i.hcode} {i.hos_name}</option>);
+      });
+      return (
+        <select style={{width: '100%'}}>
+          <option value={'all'}>
+            ทั้งหมด
+          </option>
+          {hcodeElement}
+        </select>
+      );
+    }
+    else {
+      return null;
+    }
+  }
+
+  const calcAge = (x) => {
+    var today = new Date();
+    var birthDate = new Date(x);
+    var age = today.getFullYear() - birthDate.getFullYear();
+    var m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+  }
 
   useEffect(() => {
     mkYearShow();
@@ -449,10 +518,16 @@ console.log(serviceData);
             <div className={classes.contentTitle}>ที่อยู่</div><div className={classes.contentText}>{patientData['address_info']}</div>
           </div>
         </div>
+        <div style={{display:'flex', flexDirection:'flex-start'}}>
+          <div>
+            <div className={classes.contentTitle}>ประวัติแพ้ยา</div><div className={classes.contentText}>{patientData['drugallergy']}</div>
+          </div>
+        </div>
       </div>
-
+      
       <div style={{ width: '100%' ,display:'flex' ,justifyContent:'space-between' }}>
-        <div style={{ width:200, border: 'solid 1px red', backgroundColor: '#f9f9f9', padding: 10, borderRadius: 5, border:'solid 1px #dadada'}}>
+        <div style={{ width:210, border: 'solid 1px red', backgroundColor: '#f9f9f9', padding: 10, borderRadius: 5, border:'solid 1px #dadada'}}>
+          {hcodeList()}
           {dateServList()}
         </div>
         <div style={{ width:'100%', border: 'solid 1px red', padding: 10, borderRadius: 5, border:'solid 1px #dadada', marginLeft: 10 ,whiteSpace: 'normal'}}>

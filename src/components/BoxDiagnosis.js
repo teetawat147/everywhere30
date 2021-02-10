@@ -45,7 +45,8 @@ export default function BoxDiagnosis(props) {
         diagnosis_n++;
         diagnosisElement.push(
           <div key={'diagnosis_'+diagnosis_n}>
-            ({i.diagtype}){i.diagtype_name} : {i.icd103} 
+            {/* ({i.diagtype}){i.diagtype_name} : {i.icd103}  */}
+            ({i.diagtype}){i.diagtype_name} : {i.icd10_name} 
           </div>
         );
       });
