@@ -37,25 +37,26 @@ export default function BoxRadiology(props) {
   const classes = useStyles();
   const [radiology, setRadiology] = useState({});
 
-  // const mkRadiologyList = () => {
-  //   let radiologyElement=[];
-  //   let radiology_n=0;
-  //   if (radiology.length>0) {
-  //     radiology.forEach(i => {
-  //       radiology_n++;
-  //       radiologyElement.push(
-  //         <div key={'radiology_'+radiology_n}>
-  //           {i.result.icode_name} จำนวน {i.result.qty} ราคา {i.result.sum_price} บาท
-  //         </div>
-  //       );
-  //     });
-  //   }
-  //   return radiologyElement;
-  // }
+  const mkRadiologyList = () => {
+    let radiologyElement=[];
+    let radiology_n=0;
+    if (radiology.length>0) {
+      radiology.forEach(i => {
+        radiology_n++;
+        radiologyElement.push(
+          <div key={'radiology_'+radiology_n}>
+            Xray List {radiology_n} : {i.xray_list}
+          </div>
+        );
+      });
+    }
+    return radiologyElement;
+  }
 
   useEffect(() => {
     if (props.data) {
       if (props.data.length>0) {
+        console.log(props.data);
         setRadiology(props.data);
       }
     }
@@ -63,7 +64,7 @@ export default function BoxRadiology(props) {
 
   return (
       <>
-        {/* {mkRadiologyList()} */}
+        {mkRadiologyList()}
       </>
   )
 }
