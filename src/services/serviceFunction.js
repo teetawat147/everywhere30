@@ -180,7 +180,17 @@ const calcAge = (dateBirth) => {
   return ageString;
 };
 
-export default {
+const thaiXSDate = (x) => {
+  let r=x;
+  if (typeof x != 'undefined') {
+    let z=r.toString().split('-');
+    r=z[2]+'/'+z[1]+'/'+(parseInt(z[0])+543).toString();
+  }
+  return r;
+}
+
+export {
   dateThaiShort,
-  calcAge
+  calcAge,
+  thaiXSDate
 };

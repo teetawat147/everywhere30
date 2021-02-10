@@ -12,6 +12,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import UListTable from "./UniversalListTable";
 
 import UAPI from "../services/UniversalAPI";
+import { calcAge, thaiXSDate } from "../services/serviceFunction";
 import BoxServiceInfo from "./BoxServiceInfo";
 import BoxAssessment from "./BoxAssessment";
 import BoxDiagnosis from "./BoxDiagnosis";
@@ -379,15 +380,6 @@ export default function App(props) {
     }
   }
 
-  const thaiXSDate = (x) => {
-    let r=x;
-    if (typeof x != 'undefined') {
-      let z=r.toString().split('-');
-      r=z[2]+'/'+z[1]+'/'+(parseInt(z[0])+543).toString();
-    }
-    return r;
-  }
-
   const extractData = () => {
     let hcodeDataTemp=[];
     let hcodeText="";
@@ -434,17 +426,6 @@ export default function App(props) {
     else {
       return null;
     }
-  }
-
-  const calcAge = (x) => {
-    var today = new Date();
-    var birthDate = new Date(x);
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
   }
 
   const clickChangeView = () => {
@@ -505,7 +486,7 @@ export default function App(props) {
             <div className={classes.contentTitle}>วันเกิด</div><div className={classes.contentText}>{patientData['birthday']}</div>
           </div>
           <div style={{width:150}}>
-            <div className={classes.contentTitle}>อายุ</div><div className={classes.contentText}>{patientData['age']} ปี</div>
+            <div className={classes.contentTitle}>อายุ</div><div className={classes.contentText}>{patientData['age']}</div>
           </div>
           <div style={{width:'auto'}}>
             <div className={classes.contentTitle}>หมู่เลือด</div>
