@@ -5,6 +5,8 @@ import {
 } from '@material-ui/core/styles';
 // npm install use-mediaquery --save
 
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+
 // import UDataTable from "./UniversalDataTable";
 // import UCard from "./UniversalCard";
 // import UListTable from "./UniversalListTable";
