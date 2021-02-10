@@ -1,4 +1,5 @@
 import { getYear, getMonth, getDate } from "date-fns";
+
 const dateThaiShort = (d) => {
   let r = d;
   // console.log(d);
@@ -107,15 +108,14 @@ const thaiMonth = (m, z) => {
   return r;
 };
 
-const calcAge = (d) => {
-  // const dateString = this.dob.value;
+const calcAge = (dateBirth) => {
   const now = new Date();
 
   const yearNow = now.getFullYear();
   const monthNow = now.getMonth();
   const dateNow = now.getDate();
 
-  const dob = new Date(d);
+  const dob = new Date(dateBirth);
 
   const yearDob = dob.getFullYear();
   const monthDob = dob.getMonth();
