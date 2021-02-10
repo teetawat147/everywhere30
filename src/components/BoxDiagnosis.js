@@ -45,8 +45,8 @@ export default function BoxDiagnosis(props) {
         diagnosis_n++;
         diagnosisElement.push(
           <div key={'diagnosis_'+diagnosis_n}>
-            {/* ({i.diagtype}){i.diagtype_name} : {i.icd103}  */}
-            ({i.diagtype}){i.diagtype_name} : {i.icd10_name} 
+            {/* {({i.diagtype}){i.diagtype_name} : {i.icd10}} */}
+            ({i.diagtype}){i.diagtype_name} : {i.icd10} {i.result.icd10} {i.icd10_name} 
           </div>
         );
       });
@@ -57,6 +57,7 @@ export default function BoxDiagnosis(props) {
   useEffect(() => {
     if (props.data) {
       if (props.data.length>0) {
+        // console.log(props.data);
         setDiagnosis(props.data);
       }
     }
