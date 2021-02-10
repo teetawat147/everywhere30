@@ -64,7 +64,7 @@ export default function BoxAssessment(props) {
   return (
       <>
         <div style={{ width: '100%', display: 'flex', flexDirection: 'row-reverse'}}>
-          <div style={{position: 'absolute', marginTop: -40}}>
+          <div style={{position: 'absolute', marginTop: -20}}>
             <Button
               onClick={clickGraphButton}
               // style={{ width:30 }}

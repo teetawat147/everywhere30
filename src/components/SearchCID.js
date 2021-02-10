@@ -18,17 +18,21 @@ import BoxLaboratory from "./BoxLaboratory";
 import BoxRadiology from "./BoxRadiology";
 import BoxReferout from "./BoxReferout";
 
-
 import {
-InputAdornment,
-OutlinedInput,
-Button,
-TextField,
+  // InputAdornment,
+  // OutlinedInput,
+  Button,
+  TextField,
+  // AppBar,
+  Tabs,
+  Tab,
+  Paper,
+  Box
 } from '@material-ui/core';
 
-import { MdSearch } from 'react-icons/md';
-import { ToggleOn } from '@material-ui/icons';
+import PropTypes from 'prop-types';
 
+import { MdSearch, MdSwapHoriz, MdSwapVert } from 'react-icons/md';
 
 const useStyles = makeStyles({
   table: {
@@ -60,97 +64,38 @@ const useStyles = makeStyles({
   },
 });
 
-export default function App(props) {
-  /// icon 
-  /// validation --- รับได้เฉพาะ ตัวเลข / สตริง
-  /// แยกส่วน api ออกไป โยนข้อมูล จาก api เข้ามาใน app ทีนี้จะเป็น nested หรือไม่ก็เป็นไร เพราะมาจะมาเป็น json 
-  /// ไปเอา table จาก material ui มาใช้นะ / ดูแล้วจะสะดวกกว่า 
-  // const collection = {
-  //   person_test: {
-  //     collection_name: 'person_tests',
-  //     title: 'ตาราง person_test',
-  //     order_by: 'hn desc',
-  //     create_document: true,
-  //     update_document: true,
-  //     delete_document: true,
-  //     primary_key: 'id',
-  //     query_string: '',
-  //     rows_per_page: 10, // 10 20 30 40 50 60 70 80 90 100
-  //     search_field:['cid','fname','lname'],
-  //     fields: {
-  //       cid: { show: true, title: 'CID', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdFavorite', validation: 'number', value_length_type: 'fix', value_length_count: 13, value_length_min: null, value_length_max: null },
-  //       hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdFavorite', validation: 'number', value_length_min: null, value_length_max: null },
-  //       fname: { show: true, title: 'ชื่อ', data_type: 'string', format: null, input_type: 'textbox', icon: 'MdDateRange', validation: 'string', value_length_type: 'range', value_length_count: null, value_length_min: 3, value_length_max: 5 },
-  //       lname: { show: true, title: 'สกุล', data_type: 'string', format: null, input_type: 'textbox' },
-  //       sex: { show: true, title: 'เพศ', data_type: 'string', format: null, input_type: 'select', input_select_source_type: 'json', input_select_source_name: 'sex', input_select_source_json: [{ sex_id: 1, sex_name: 'ชาย' }, { sex_id: 2, sex_name: 'หญิง' }], input_select_source_key: 'sex_id', input_select_source_value: 'sex_name' },
-  //       birthday: { show: true, title: 'วันเกิด', data_type: 'date', format: 'thai_short', input_type: 'datepicker' },
-  //       chwpart: { show: true, title: 'จังหวัด', data_type: 'string', format: null, input_type: 'select', input_select_source_type: 'db', input_select_source_name: 'cchangwats', input_select_source_key: 'changwatcode', input_select_source_value: 'changwatname' },
-  //       hcode: { show: true, title: 'HCODE', data_type: 'string', format: null, input_type: 'autocomplete', input_select_source_type: 'db', input_select_source_name: 'hospitals', input_select_source_key: 'hos_id', input_select_source_value: 'hos_name' },
-  //       death: { show: true, title: 'เสียชีวิต', data_type: 'string', format: null, input_type: 'radio', input_select_source_type: 'json', input_select_source_name: 'death', input_select_source_json: [{ id: 'Y', name: 'เสียชีวิตแล้ว' }, { id: 'N', name: 'ยังมีชีวิตอยู่' }], input_select_source_key: 'id', input_select_source_value: 'name' },
-  //     }
-  //   },
-  //   clinicmember: {
-  //     collection_name: 'clinicmembers',
-  //     title: 'ตาราง Clinicmember',
-  //     order_by: 'hn desc',
-  //     create_document: true,
-  //     update_document: true,
-  //     delete_document: true,
-  //     primary_key: 'id',
-  //     fields: {
-  //       hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox' },
-  //       hcode: { show: true, title: 'HCODE', data_type: 'string', format: null, input_type: 'textbox' },
-  //       clinic: { show: true, title: 'คลินิก', data_type: 'string', format: null, input_type: 'textbox' },
-  //       begin_year: { show: true, title: 'ปีที่เริ่มป่วย', data_type: 'string', format: null, input_type: 'textbox' },
-  //     }
-  //   },
-  //   patient: {
-  //     collection_name: 'patient',
-  //     title: 'ตาราง Patient',
-  //     order_by: 'hn desc',
-  //     create_document: true,
-  //     update_document: true,
-  //     delete_document: true,
-  //     primary_key: 'hos_guid',
-  //     fields: {
-  //       hn: { show: true, title: 'HN', data_type: 'string', format: null, input_type: 'textbox' },
-  //       pname: { show: true, title: 'คำนำหน้าชื่อ', data_type: 'string', format: null, input_type: 'textbox' },
-  //       fname: { show: true, title: 'ชื่อ', data_type: 'string', format: null, input_type: 'textbox' },
-  //       lname: { show: true, title: 'สกุล', data_type: 'integer', format: null, input_type: 'textbox' },
-  //       birthday: { show: true, title: 'วันเกิด', data_type: 'integer', format: null, input_type: 'textbox' }
-  //     }
-  //   },
-  //   ovst: {
-  //     collection_name: 'ovst',
-  //     title: 'ตาราง Ovst',
-  //     order_by: 'vstdate desc',
-  //     create_document: true,
-  //     update_document: false,
-  //     delete_document: true,
-  //     primary_key: 'hos_guid',
-  //     fields: {
-  //       hn: { show: true, title: 'HN', data_type: 'string', format: null },
-  //       vn: { show: true, title: 'VN', data_type: 'string', format: null },
-  //       vstdate: { show: true, title: 'วันรับบริการ', data_type: 'string', format: null },
-  //       vsttime: { show: true, title: 'เวลารับบริการ', data_type: 'string', format: null },
-  //       pttype: { show: true, title: 'รหัสสิทธิ', data_type: 'integer', format: null },
-  //     }
-  //   },
-  //   opitemrece: {
-  //     collection_name: 'opitemrece',
-  //     title: 'ตาราง Opitemrece',
-  //     order_by: 'hn desc, vstdate desc',
-  //     create_document: true,
-  //     update_document: false,
-  //     delete_document: false,
-  //     primary_key: 'hos_guid',
-  //     fields: {
-  //       icode: { show: true, title: 'icode', data_type: 'string', format: null },
-  //       qty: { show: false, title: 'จำนวน', data_type: 'string', format: null },
-  //     }
-  //   }
-  // };
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      // style={{ backgroundColor: '#f2f2f2', padding: '0px', margin: '0px', border: 'solid 1px #1890ff' }}
+      style={{ padding: 10, margin: 0, border: 'none' }}
+      {...other}
+    >
+      {value === index && (
+        <Box
+          // p={3}
+          style={{ padding: '5px' }}
+        >
+          {/* <Typography>{children}</Typography> */}
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
 
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+export default function App(props) {
   const classes = useStyles();
   const [searchCID, setSearchCID] = useState(null);
   const [cidHelperText, setCidHelperText] = useState(null);
@@ -160,17 +105,8 @@ export default function App(props) {
   const [yearShow, setYearShow] = useState({});
   const [assessmentListData, setAssessmentListData] = useState([]);
   const [hcodeData, setHcodeData] = useState({});
-  
-  // const listTableColumnSet = [
-  //   {
-  //     title: 'ชื่อสกุล',
-  //     fields: ['fname', 'lname']
-  //   },
-  //   {
-  //     title: 'เพศ',
-  //     fields: ['sex']
-  //   }
-  // ];
+  const [currentView, setCurrentView] = useState('summary');
+  const [tabValue, setTabValue] = useState(0);
 
   const onchangeSearchText = (e) => {
     let v=e.target.value;
@@ -231,7 +167,7 @@ export default function App(props) {
           x['age']=calcAge(r['birthday']);
           x['bloodgrp']=r['bloodgrp'];
           x['address_info']='';
-          x['drugallergy']=(r['drugallergy']!=''?r['drugallergy']:'ไม่พบข้อมูลการแพ้ยา');
+          x['drugallergy']=(r['drugallergy']!==''?r['drugallergy']:'ไม่พบข้อมูลการแพ้ยา');
           setPatientData(x);
           let interventions=r.interventions;
           if (typeof interventions != 'undefined') {
@@ -334,7 +270,12 @@ export default function App(props) {
     setServiceData(x);
   }
 
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
   const serviceDataBlock = () => {
+// console.log(currentView);
     let serviceInfo={};
     let assessment={};
     let diagnosis=[];
@@ -360,29 +301,80 @@ export default function App(props) {
       serviceInfo['vsttime']=serviceData['vsttime'];
       serviceInfo['hcode']=serviceData['hcode'];
       serviceInfo['hos_name']=serviceData['hospital']['hos_name'];
-      console.log(serviceData);
-      console.log(referout);
+      // console.log(serviceData);
+      // console.log(referout);
     }
 
-    return (
-      <div>
-        <div style={{marginTop: 10, marginBottom: 10}}><b>Service Information</b></div>
-        {Object.keys(assessment).length>0 && <BoxServiceInfo data={serviceInfo} />}
-        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Assessment</b></div>
-        {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
-        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Diagnosis</b></div>
-        <BoxDiagnosis data={diagnosis} />
-        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Laboratory</b></div>
-        <BoxLaboratory data={laboratory} />
-        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Radiology</b></div>
-        <BoxRadiology data={radiology} />
-        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
-        <BoxTreatment data={treatment} />
-        <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Refer Out</b></div>
-        {Object.keys(referout).length>0 && <BoxReferout data={referout} />}
-        {/* <BoxReferout data={referout} /> */}
-      </div>
-    );
+    if (currentView==='tab') {
+      return (
+        <div style={{ width: 900}}>
+          <Paper square>
+            <Tabs
+              value={tabValue}
+              indicatorColor="primary"
+              textColor="primary"
+              onChange={handleTabChange}
+
+              variant="scrollable"
+              scrollButtons="on"
+              aria-label="scrollable force tabs example"
+            >
+              <Tab label="Service Information" />
+              <Tab label="Assessment" />
+              <Tab label="Diagnosis" />
+              <Tab label="Laboratory" />
+              <Tab label="Radiology" />
+              <Tab label="Treatment" />
+              <Tab label="Refer Out" />
+            </Tabs>
+          </Paper>
+          <div>
+            <TabPanel value={tabValue} index={0}>
+              {Object.keys(assessment).length>0 && <BoxServiceInfo data={serviceInfo} />}
+            </TabPanel>
+            <TabPanel value={tabValue} index={1}>
+              {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
+            </TabPanel>
+            <TabPanel value={tabValue} index={2}>
+              <BoxDiagnosis data={diagnosis} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={3}>
+              <BoxLaboratory data={laboratory} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={4}>
+              <BoxRadiology data={radiology} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={5}>
+              <BoxTreatment data={treatment} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={6}>
+              {Object.keys(referout).length>0 && <BoxReferout data={referout} />}
+            </TabPanel>
+          </div>
+        </div>
+      );
+    }
+    else {
+      return (
+        <div>
+          <div style={{marginTop: 10, marginBottom: 10}}><b>Service Information</b></div>
+          {Object.keys(assessment).length>0 && <BoxServiceInfo data={serviceInfo} />}
+          <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Assessment</b></div>
+          {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
+          <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Diagnosis</b></div>
+          <BoxDiagnosis data={diagnosis} />
+          <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Laboratory</b></div>
+          <BoxLaboratory data={laboratory} />
+          <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Radiology</b></div>
+          <BoxRadiology data={radiology} />
+          <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
+          <BoxTreatment data={treatment} />
+          <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Refer Out</b></div>
+          {Object.keys(referout).length>0 && <BoxReferout data={referout} />}
+          {/* <BoxReferout data={referout} /> */}
+        </div>
+      );
+    }
   }
 
   const thaiXSDate = (x) => {
@@ -451,6 +443,13 @@ export default function App(props) {
         age--;
     }
     return age;
+  }
+
+  const clickChangeView = () => {
+    // console.log('clickChangeView------', currentView);
+    let x=currentView;
+    let v=(x==='summary'?'tab':'summary');
+    setCurrentView(v);
   }
 
   useEffect(() => {
@@ -526,12 +525,26 @@ export default function App(props) {
       </div>
       
       <div style={{ width: '100%' ,display:'flex' ,justifyContent:'space-between' }}>
-        <div style={{ width:210, border: 'solid 1px red', backgroundColor: '#f9f9f9', padding: 10, borderRadius: 5, border:'solid 1px #dadada'}}>
+        <div style={{ width:210, backgroundColor: '#f9f9f9', padding: 10, borderRadius: 5, border:'solid 1px #dadada'}}>
           {hcodeList()}
           {dateServList()}
         </div>
-        <div style={{ width:'100%', border: 'solid 1px red', padding: 10, borderRadius: 5, border:'solid 1px #dadada', marginLeft: 10 ,whiteSpace: 'normal'}}>
-          {serviceDataBlock()}
+        <div style={{ width:'100%', padding: 10, borderRadius: 5, border:'solid 1px #dadada', marginLeft: 10 ,whiteSpace: 'normal'}}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'row-reverse', marginTop: -10, marginBottom: -10 }}>
+            {/* <div style={{position: 'absolute', marginTop: -10}}> */}
+            <div>
+              <Button
+                onClick={clickChangeView}
+                // style={{ width:30 }}
+                // variant="outlined"
+                color="primary"
+                startIcon={<MdSwapHoriz size={40} style={{ paddingLeft: 10 }} />}
+              />
+            </div>
+          </div>
+          <div style={{ marginTop: 0 }}>
+            {serviceDataBlock()}
+          </div>
         </div>
       </div>
       
