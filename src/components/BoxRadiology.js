@@ -45,7 +45,7 @@ export default function BoxRadiology(props) {
         radiology_n++;
         radiologyElement.push(
           <div key={'radiology_'+radiology_n}>
-            Xray List {radiology_n} : {i.xray_list}
+            รายการที่ {radiology_n} : {i.xray_list}
           </div>
         );
       });
@@ -56,7 +56,7 @@ export default function BoxRadiology(props) {
   useEffect(() => {
     if (props.data) {
       if (props.data.length>0) {
-        console.log(props.data);
+        // console.log(props.data);
         setRadiology(props.data);
       }
     }
