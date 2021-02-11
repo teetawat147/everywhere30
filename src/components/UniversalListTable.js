@@ -3,10 +3,10 @@
 // npm install @material-ui/lab --save
 
 import React, { useState, useEffect } from 'react';
-import { 
-  // withStyles, 
-  makeStyles 
-} from '@material-ui/core/styles';
+// import { 
+// withStyles, 
+// makeStyles 
+// } from '@material-ui/core/styles';
 // import * as ICONS from '@material-ui/icons';
 import * as ICONS from 'react-icons/md';
 
@@ -157,6 +157,7 @@ export default function UniversalDataTable(props) {
   //   return r;
   // }
 
+  // eslint-disable-next-line
   const thaiMonth = (m, z) => {
     let x = parseInt(m);
     let r = m;
@@ -320,6 +321,7 @@ export default function UniversalDataTable(props) {
 
     let fields = props.structure.fields;
     let x = [];
+    // eslint-disable-next-line
     for (const [k, v] of Object.entries(fields)) {
       if (v.input_select_source_type === 'db') {
         if (typeof v.input_select_source_name != 'undefined') {
@@ -362,6 +364,7 @@ export default function UniversalDataTable(props) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
+    // eslint-disable-next-line
     <>
 
       <table cellPadding={0} cellPadding={0}>
@@ -385,7 +388,7 @@ export default function UniversalDataTable(props) {
         <DialogTitle id="alert-dialog-title">ผลแลป xxxxxx</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" component={'div'}>
-            <table style={{width:'100%'}}>
+            <table style={{ width: '100%' }}>
               <thead>
                 <tr>
                   <td>แลป</td>
@@ -393,18 +396,18 @@ export default function UniversalDataTable(props) {
                 </tr>
               </thead>
               <tbody>
-              <tr>
-                <td>LAB1</td><td>11</td>
+                <tr>
+                  <td>LAB1</td><td>11</td>
                 </tr>
                 <tr>
-                <td>LAB2</td><td>22</td>
+                  <td>LAB2</td><td>22</td>
                 </tr>
                 <tr>
-                <td>LAB3</td><td>33</td>
+                  <td>LAB3</td><td>33</td>
                 </tr>
                 <tr>
-                <td>LAB4</td><td>44</td>
-              </tr>
+                  <td>LAB4</td><td>44</td>
+                </tr>
               </tbody>
             </table>
           </DialogContentText>

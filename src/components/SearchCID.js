@@ -30,7 +30,8 @@ import {
   Tabs,
   Tab,
   Paper,
-  Box
+  Box,
+  Tooltip 
 } from '@material-ui/core';
 
 import PropTypes from 'prop-types';
@@ -160,7 +161,7 @@ export default function App(props) {
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length>0) {
-          console.log(response.data);
+          // console.log(response.data);
           let r=response.data[0];
           // console.log(r);
           let x=[];
@@ -203,57 +204,76 @@ export default function App(props) {
   }
 
   const dateServList = () => {
-    let yearsData=[];
-    interventionsData.forEach(i => {
-      if (typeof i.date != 'undefined') {
-        let x=(parseInt(i.date.substr(0,4))+543).toString();
-        if (typeof yearsData[x] === 'undefined') {
-          yearsData[x]=[];
-          yearsData[x].push({date:i.date,hcode:i.hcode,hos_name:i.hospital.hos_name});
+    if (interventionsData.length>0) {
+      let yearsData=[];
+      interventionsData.forEach(i => {
+        if (typeof i.date != 'undefined') {
+        // if (typeof i.hcode != 'undefined' && typeof i.vn != 'undefined') {
+          // if (i.date==='2018-03-30') {
+          //   console.log(i);
+          // }
+          let x=(parseInt(i.date.substr(0,4))+543).toString();
+          // let x=i.hcode+'_'+i.vn;
+          if (typeof yearsData[x] === 'undefined') {
+            // console.log('ไม่มี-------',x);
+            yearsData[x]=[];
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:i.date,hcode:i.hcode,hos_name:i.hospital.hos_name});
+          }
+          else {
+            // console.log('มี-------',x);
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:i.date,hcode:i.hcode,hos_name:i.hospital.hos_name});
+          }
         }
-        else {
-          yearsData[x].push({date:i.date,hcode:i.hcode,hos_name:i.hospital.hos_name});
-        }
-      }
-    });
+      });
 
-    let yearList=[];
-    yearsData.reverse();
-    yearsData.forEach(y => {
-      let dateList=[];
-      let yearTitle="";
-      let dateCount=y.length;
-      let i=0;
-      y.forEach(d => {
-        i++;
-        yearTitle=(parseInt(d.date.substr(0,4))+543).toString();
-        dateList.push(
-          <div 
-            key={d.date.toString()+'_'+i} 
-            className={classes.linkDateServ} 
-            onClick={(e,x)=>selectDateServ(e,d.date)} 
-            style={{ width: '100%', height: 25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2, borderRadius: 10, paddingLeft: 5 }}
-          >
-            {thaiXSDate(d.date)} {d.hos_name}
+// console.log(yearsData);
+
+      let yearList=[];
+      yearsData.reverse();
+      yearsData.forEach(y => {
+        let dateList=[];
+        let yearTitle="";
+        let dateCount=y.length;
+        let i=0;
+        // console.log(y);
+        y.forEach(d => {
+          // console.log(d);
+          i++;
+          yearTitle=(parseInt(d.date.substr(0,4))+543).toString();
+          // if (yearTitle==='2561') {
+          //   console.log(d);
+          // }
+          dateList.push(
+            <Tooltip title={<span style={{fontSize: 16}}>{d.hos_name} ({d.hcode})</span>} arrow={true} placement="right" key={d.date.toString()+'_'+i} >
+              <div 
+                className={classes.linkDateServ} 
+                onClick={(e,x)=>selectDateServ(e,d.date)} 
+                style={{ width: '100%', height: 25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2, borderRadius: 10, paddingLeft: 5 }}
+              >
+                {thaiXSDate(d.date)} {d.hos_name}
+              </div>
+            </Tooltip>
+          );
+        });
+        yearList.push(
+          <div key={yearTitle}>
+            <div 
+              style={{fontWeight:'bold', cursor: 'pointer', backgroundColor: '#e2e2e2', borderRadius: 10, marginTop: 5, paddingLeft: 10}} 
+              onClick={()=>toggleYear(yearTitle)}
+            >
+              พ.ศ. {yearTitle} ({dateCount})
+            </div>
+            <div style={{display: yearShow[yearTitle]}}>
+              {dateList}
+            </div>
           </div>
         );
       });
-      yearList.push(
-        <div key={yearTitle}>
-          <div 
-            style={{fontWeight:'bold', cursor: 'pointer', backgroundColor: '#e2e2e2', borderRadius: 10, marginTop: 5, paddingLeft: 10}} 
-            onClick={()=>toggleYear(yearTitle)}
-          >
-            พ.ศ. {yearTitle} ({dateCount})
-          </div>
-          <div style={{display: yearShow[yearTitle]}}>
-            {dateList}
-          </div>
-        </div>
-      );
-    });
-
-    return yearList;
+      return yearList;
+    }
+    else {
+      return null;
+    }
   }
 
   const toggleYear = (x) => {
@@ -304,7 +324,7 @@ export default function App(props) {
       serviceInfo['vsttime']=serviceData['vsttime'];
       serviceInfo['hcode']=serviceData['hcode'];
       serviceInfo['hos_name']=serviceData['hospital']['hos_name'];
-      // console.log(serviceData);
+      console.log(serviceData);
       // console.log(referout);
     }
 
@@ -415,7 +435,7 @@ export default function App(props) {
         hcodeElement.push(<option key={i.hcode} value={i.hcode}>{i.hcode} {i.hos_name}</option>);
       });
       return (
-        <select style={{width: '100%'}}>
+        <select style={{width: '100%'}} onChange={changeHCode}>
           <option value={'all'}>
             ทั้งหมด
           </option>
@@ -426,6 +446,10 @@ export default function App(props) {
     else {
       return null;
     }
+  }
+
+  const changeHCode = (e) => {
+    console.log('changeHCode------------',e.target.value);
   }
 
   const clickChangeView = () => {
@@ -483,7 +507,7 @@ export default function App(props) {
             <div className={classes.contentTitle}>ชื่อ-สกุล</div><div className={classes.contentText}>{patientData['pt_name']}</div>
           </div>
           <div style={{width:200}}>
-            <div className={classes.contentTitle}>วันเกิด</div><div className={classes.contentText}>{patientData['birthday']}</div>
+            <div className={classes.contentTitle}>วันเกิด</div><div className={classes.contentText}>{thaiXSDate(patientData['birthday'])}</div>
           </div>
           <div style={{width:150}}>
             <div className={classes.contentTitle}>อายุ</div><div className={classes.contentText}>{patientData['age']}</div>
@@ -508,7 +532,7 @@ export default function App(props) {
       </div>
       
       <div style={{ width: '100%' ,display:'flex' ,justifyContent:'space-between' }}>
-        <div style={{ width:210, backgroundColor: '#f9f9f9', padding: 10, borderRadius: 5, border:'solid 1px #dadada'}}>
+        <div style={{ width:250, backgroundColor: '#f9f9f9', padding: 10, borderRadius: 5, border:'solid 1px #dadada'}}>
           {hcodeList()}
           {dateServList()}
         </div>

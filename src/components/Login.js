@@ -2,9 +2,12 @@ import React, { useState, useRef } from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
-
-import AuthService from "../services/auth.service";
-import UAPI from "../services/UniversalAPI";
+import { login } from "../services/auth.service";
+// import UAPI from "../services/UniversalAPI";
+import { LINE } from "../services/auth-header";
+import { LineLogin } from 'reactjs-line-login';
+import 'reactjs-line-login/dist/index.css';
+import { useHistory } from "react-router-dom";
 
 const required = (value) => {
   if (!value) {
@@ -15,15 +18,16 @@ const required = (value) => {
     );
   }
 };
-
 const Login = (props) => {
+  const redirect = useHistory();
   const form = useRef();
   const checkBtn = useRef();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  // const [payload, setPayload] = useState(null);
+  // const [idToken, setIdToken] = useState(null);
 
   const onChangeEmail = (e) => {
     const email = e.target.value;
@@ -35,33 +39,24 @@ const Login = (props) => {
     setPassword(password);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e, res) => {
     e.preventDefault();
-
     setMessage("");
     setLoading(true);
-
     form.current.validateAll();
-
     if (checkBtn.current.context._errors.length === 0) {
-      AuthService.login(email, password).then(
-        () => {
-          props.history.push("/profile");
-          window.location.reload();
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
+      try {
+        let loginData = await login({ email: email, password: password });
+        if (loginData.isAuthError) {
+          setMessage(loginData.err);
+        } else {
           setLoading(false);
-          setMessage(resMessage);
+          props.changeLoginStatus(true);
+          redirect.push("/");
         }
-      );
-
+      } catch (err) {
+        setLoading(false);
+      }
     } else {
       setLoading(false);
     }
@@ -88,7 +83,6 @@ const Login = (props) => {
               validations={[required]}
             />
           </div>
-
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <Input
@@ -100,24 +94,32 @@ const Login = (props) => {
               validations={[required]}
             />
           </div>
-
           <div className="form-group">
             <button className="btn btn-primary btn-block" disabled={loading}>
               {loading && (
                 <span className="spinner-border spinner-border-sm"></span>
               )}
-              <span>Login</span>
+              <span>เข้าสู่ระบบ</span>
             </button>
           </div>
-
+          <div className="form-group">
+            <LineLogin
+              clientID={LINE.client_id}
+              clientSecret={LINE.client_secret}
+              redirectURI={LINE.redirect_uri}
+              state={LINE.state}
+              scope='profile openid email'
+            // setPayload={setPayload}
+            // setIdToken={setIdToken}
+            />
+          </div>
           {message && (
             <div className="form-group">
-              <div className="alert alert-danger" role="alert">
-                {message}
-              </div>
+              <div className="alert alert-danger" role="alert">{message}</div>
             </div>
           )}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
+
         </Form>
       </div>
     </div>

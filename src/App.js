@@ -1,136 +1,89 @@
 import React, { useState, useEffect } from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import {
+  Route,
+  useHistory,
+  Link,
+  Switch
+} from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-
-import AuthService from "./services/auth.service";
-
+import { getCurrentUser, logout } from "./services/auth.service";
 import Login from "./components/Login";
+import LineLogin from "./components/LineLoginCallback";
 import Register from "./components/Register";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
-import BoardUser from "./components/BoardUser";
-import BoardModerator from "./components/BoardModerator";
-import BoardAdmin from "./components/BoardAdmin";
-import Universal from "./components/Universal";
+// import BoardUser from "./components/BoardUser";
+// import BoardModerator from "./components/BoardModerator";
+// import BoardAdmin from "./components/BoardAdmin";
+// import Universal from "./components/Universal";
 import SearchCID from "./components/SearchCID";
 
 const App = () => {
-  // const [showModeratorBoard, setShowModeratorBoard] = useState(false);
-  // const [showAdminBoard, setShowAdminBoard] = useState(false);
-  const [currentUser, setCurrentUser] = useState(undefined);
+  const redirect = useHistory();
+  const [currentUser, setCurrentUser] = useState(getCurrentUser());
+  const [logined, setLogined] = useState(false);
+  const [userFullname, setUserFullname] = useState('');
 
   useEffect(() => {
-    const user = AuthService.getCurrentUser();
-
-    if (user) {
-      setCurrentUser(user);
-      // setShowModeratorBoard(user.roles.includes("ROLE_MODERATOR"));
-      // setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
+    if (currentUser !== null) {
+      if (currentUser.user.fullname !== null && typeof currentUser.user.fullname !== 'undefined') {
+        setUserFullname(currentUser.user.fullname);
+      }
+      setLogined(true);
+    } else {
+      setLogined(false);
+      setCurrentUser(getCurrentUser());
     }
-  }, []);
-
-  const logOut = () => {
-    AuthService.logout();
+  }, [currentUser]);
+  const changeLoginStatus = (status) => {
+    setLogined(status);
+    setCurrentUser(getCurrentUser());
+    if (status === false) {
+      redirect.push("/login");
+    }
+  }
+  const logOut = (e) => {
+    e.preventDefault();
+    logout(changeLoginStatus);
   };
 
   return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
-        <Link to={"/"} className="navbar-brand">
-          R8WAY everyWhere30
-        </Link>
-        <div className="navbar-nav mr-auto">
-
-          {/* <li className="nav-item">
-            <Link to={"/universal"} className="nav-link">
-              Universal
-            </Link>
-          </li>
-
-          <li className="nav-item">
-            <Link to={"/Profile"} className="nav-link">
-              Profile
-            </Link>
-          </li>
-
-          <li className="nav-item">
-            <Link to={"/home"} className="nav-link">
-              Home
-            </Link>
-          </li> */}
-
-{/* 
-          {showModeratorBoard && (
-            <li className="nav-item">
-              <Link to={"/mod"} className="nav-link">
-                Moderator Board
-              </Link>
-            </li>
-          )}
-
-          {showAdminBoard && (
-            <li className="nav-item">
-              <Link to={"/admin"} className="nav-link">
-                Admin Board
-              </Link>
-            </li>
-          )} */}
-
-          {/* {currentUser && (
-            <li className="nav-item">
-              <Link to={"/user"} className="nav-link">
-                User
-              </Link>
-            </li>
-          )} */}
-        </div>
-
-        {currentUser ? (
+        <Link to={"/"} className="navbar-brand">R8WAY everyWhere30</Link>
+        {(logined) ? (
           <div className="navbar-nav ml-auto">
             <li className="nav-item">
-              <Link to={"/profile"} className="nav-link">
-                {currentUser.username}
-              </Link>
+              <Link to={"/profile"} className="nav-link">{userFullname}</Link>
             </li>
             <li className="nav-item">
-              <a href="/login" className="nav-link" onClick={logOut}>
-                LogOut
-              </a>
+              <a href="/logout" className="nav-link" onClick={logOut}>ออกจากระบบ</a>
             </li>
           </div>
         ) : (
-          <div className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link to={"/login"} className="nav-link">
-                Login
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to={"/register"} className="nav-link">
-                Sign Up
-              </Link>
-            </li>
-          </div>
-        )}
+            <div className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link to={"/login"} className="nav-link">เข้าสู่ระบบ</Link>
+              </li>
+              <li className="nav-item">
+                <Link to={"/register"} className="nav-link">ลงทะเบียน</Link>
+              </li>
+            </div>
+          )}
       </nav>
-
       <div className="container mt-3">
+        {/* component={Login} */}
         <Switch>
-          {/* <Route exact path={["/", "/home"]} component={Home} /> */}
           <Route exact path="/" component={SearchCID} />
           <Route path="/home" component={Home} />
-          <Route path="/login" component={Login} />
+          <Route path="/login" render={() => <Login changeLoginStatus={changeLoginStatus} />} />
           <Route path="/register" component={Register} />
           <Route path="/profile" component={Profile} />
-          <Route path="/user" component={BoardUser} />
-          <Route path="/mod" component={BoardModerator} />
-          <Route path="/admin" component={BoardAdmin} />
-          <Route path="/universal" component={Universal} />
+          <Route path="/linelogin" render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
         </Switch>
       </div>
-    </div>
+    </div >
   );
 };
 

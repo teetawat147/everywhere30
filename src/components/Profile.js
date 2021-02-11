@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from "react";
-import AuthService from "../services/auth.service";
-
+import * as AuthService from "../services/auth.service";
 const Profile = () => {
   const currentUser = AuthService.getCurrentUser();
   const [authorizes, setAuthorizes] = useState([]);
-  // console.log(currentUser);
-  useEffect(() => {
-    if (currentUser) {
-      retrieveAuthorizes();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     retrieveAuthorizes();
+  //   }
+  // }, []);
 
-  const retrieveAuthorizes = () => {
-    // setAuthorizes(localStorage.getItem("auth"));
-    AuthService.getAuthorize(currentUser)
-      .then(response => {
-        localStorage.setItem("auth", JSON.stringify(response.data));
-        // setAuthorizes(response.data);
-        setAuthorizes(JSON.parse(localStorage.getItem("auth")));
-        // console.log(response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  };
+  // const retrieveAuthorizes = () => {
+  //   // setAuthorizes(localStorage.getItem("auth"));
+  //   AuthService.getAuthorize(currentUser)
+  //     .then(response => {
+  //       localStorage.setItem("auth", JSON.stringify(response.data));
+  //       // setAuthorizes(response.data);
+  //       setAuthorizes(JSON.parse(localStorage.getItem("auth")));
+  //       // console.log(response.data);
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //     });
+  // };
 
   return (
     <div className="container">
