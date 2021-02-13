@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { calcAge, thaiXSDate } from "../services/serviceFunction";
 import {
   makeStyles
 } from '@material-ui/core/styles';
@@ -50,7 +51,7 @@ export default function BoxServiceInfo(props) {
       </div>
       <div className={classes.contentGroup}>
         <div className={classes.contentTitle}>วันที่รับบริการ</div>
-        <div className={classes.contentText}>{serviceInfo.date}</div>
+        <div className={classes.contentText}>{thaiXSDate(serviceInfo.date)}</div>
       </div>
       <div className={classes.contentGroup}>
         <div className={classes.contentTitle}>เวลารับบริการ</div>
