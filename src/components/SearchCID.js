@@ -247,7 +247,7 @@ export default function App(props) {
             <Tooltip title={<span style={{fontSize: 16}}>{d.hos_name} ({d.hcode})</span>} arrow={true} placement="right" key={d.date.toString()+'_'+i} >
               <div 
                 className={classes.linkDateServ} 
-                onClick={(e,x)=>selectDateServ(e,d.date)} 
+                onClick={(e)=>selectDateServ(e,d.date,d.hcode,d.vn)} 
                 style={{ width: '100%', height: 25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2, borderRadius: 10, paddingLeft: 5 }}
               >
                 {thaiXSDate(d.date)} {d.hos_name}
@@ -283,10 +283,11 @@ export default function App(props) {
     setYearShow({...yearShow,...a}); 
   }
 
-  const selectDateServ = (e,d) => {
+  const selectDateServ = (e,d,hcode,vn) => {
     let x={};
     interventionsData.forEach(i => {
-      if (i.date===d) {
+      // if (i.date===d) {
+      if (i.hcode===hcode && i.vn===vn) {
         x=i;
       }
     });
@@ -324,7 +325,7 @@ export default function App(props) {
       serviceInfo['vsttime']=serviceData['vsttime'];
       serviceInfo['hcode']=serviceData['hcode'];
       serviceInfo['hos_name']=serviceData['hospital']['hos_name'];
-      console.log(serviceData);
+      // console.log(serviceData);
       // console.log(referout);
     }
 
@@ -450,6 +451,7 @@ export default function App(props) {
 
   const changeHCode = (e) => {
     console.log('changeHCode------------',e.target.value);
+    // interventionsData
   }
 
   const clickChangeView = () => {
