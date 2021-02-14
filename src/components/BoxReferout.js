@@ -39,8 +39,7 @@ export default function BoxReferout(props) {
 
   useEffect(() => {
     if (props.data) {
-      if (props.data.length>0) {
-        console.log(props.data);
+      if (Object.keys(props.data).length>0) {
         setReferout(props.data);
       }
     }
@@ -57,22 +56,18 @@ export default function BoxReferout(props) {
           </div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>โรงพยาบาลปลายทาง</div>
-            <div className={classes.contentText}>{referout.refer_hospcode}</div>
+            <div className={classes.contentText}>({referout.refer_hospcode}) {referout.refer_hospital_name}</div>
           </div>
         </div>
 
         <div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>pttype</div>
-            <div className={classes.contentText}>{referout.pttype}</div>
+            <div className={classes.contentText}>{referout.pttype} {referout.pttype_name}</div>
           </div>
         </div>
 
         <div>
-          <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>pdx</div>
-            <div className={classes.contentText}>{referout.pdx}</div>
-          </div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>pre_diagnosis</div>
             <div className={classes.contentText}>{referout.pre_diagnosis}</div>
@@ -81,16 +76,22 @@ export default function BoxReferout(props) {
 
         <div>
           <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>referout_emergency_type_id</div>
-            <div className={classes.contentText}>{referout.referout_emergency_type_id}</div>
+            <div className={classes.contentTitle}>pdx</div>
+            <div className={classes.contentText}>{referout.pdx} {referout.icd_name}</div>
           </div>
+        </div>
+
+        <div>
           <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>referout_type_id</div>
-            <div className={classes.contentText}>{referout.referout_type_id}</div>
+            <div className={classes.contentTitle}>refer_type</div>
+            <div className={classes.contentText}>{referout.refer_type_name}</div>
           </div>
+        </div>
+
+        <div>
           <div className={classes.contentGroup}>
-            <div className={classes.contentTitle}>rfrcs</div>
-            <div className={classes.contentText}>{referout.rfrcs}</div>
+            <div className={classes.contentTitle}>refer_cause</div>
+            <div className={classes.contentText}>{referout.refer_cause_name}</div>
           </div>
         </div>
 

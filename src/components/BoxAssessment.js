@@ -65,13 +65,13 @@ export default function BoxAssessment(props) {
       <>
         <div style={{ width: '100%', display: 'flex', flexDirection: 'row-reverse'}}>
           <div style={{position: 'absolute', marginTop: -20}}>
-            <Button
+            {/* <Button
               onClick={clickGraphButton}
               // style={{ width:30 }}
               // variant="outlined"
               color="primary"
               startIcon={<MdInsertChart size={40} style={{ paddingLeft: 10 }} />}
-            />
+            /> */}
           </div>
         </div>
         <div>
@@ -140,10 +140,10 @@ export default function BoxAssessment(props) {
           </div>
         </div>
 
-        <div style={{display: showGraph}}>
+        {/* <div style={{display: showGraph}}>
           <ChartDemo data={dataAll} titleName={'Weight'} argumentField={'date'} valueField={'bw'} lineName={'Weight'} />
           <ChartDemo data={dataAll} titleName={'Height'} argumentField={'date'} valueField={'height'} lineName={'height'} />
-        </div>
+        </div> */}
 
       </>
   )

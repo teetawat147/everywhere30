@@ -37,26 +37,65 @@ export default function BoxRadiology(props) {
   const classes = useStyles();
   const [radiology, setRadiology] = useState({});
 
+  // const mkRadiologyList = () => {
+  //   let radiologyElement=[];
+  //   let radiology_n=0;
+  //   if (radiology.length>0) {
+  //     radiology.forEach(i => {
+  //       radiology_n++;
+  //       radiologyElement.push(
+  //         <div key={'radiology_'+radiology_n}>
+  //           รายการที่ {radiology_n} : {i.xray_list}
+  //         </div>
+  //       );
+  //     });
+  //   }
+  //   return radiologyElement;
+  // }
+
+
   const mkRadiologyList = () => {
-    let radiologyElement=[];
-    let radiology_n=0;
+    let elem=[];
     if (radiology.length>0) {
+      let n=0;
       radiology.forEach(i => {
-        radiology_n++;
-        radiologyElement.push(
-          <div key={'radiology_'+radiology_n}>
-            รายการที่ {radiology_n} : {i.xray_list}
-          </div>
+        n++;
+        // console.log(i);
+        elem.push(
+          <tr key={'treatment_'+n}>
+            <td style={{width:30}}>{n}</td>
+            <td style={{width:'auto'}}>{i.xray_list}</td>
+          </tr>
         );
       });
     }
-    return radiologyElement;
+
+    return (
+      <div>
+        <div>
+          <table style={{width: '100%'}}>
+            <thead>
+              <tr>
+                <td style={{width:30}}><br /></td>
+                <td style={{width:'auto'}}>รายการ</td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+          <table style={{width: '100%'}}>
+            <tbody>
+              {elem}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
   }
 
   useEffect(() => {
     if (props.data) {
       if (props.data.length>0) {
-        // console.log(props.data);
         setRadiology(props.data);
       }
     }

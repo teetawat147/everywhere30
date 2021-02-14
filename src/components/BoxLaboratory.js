@@ -42,21 +42,37 @@ export default function BoxLaboratory(props) {
     let labHead=[];
     let labItemGroup=[];
     if (laboratory.length>0) {
-
       laboratory.forEach(i => {
-        if (typeof i.form_name === 'undefined') {
-          if (typeof labItemGroup[i.lab_order_number] === 'undefined') {
+        // if (typeof i.form_name === 'undefined') {
+        //   if (typeof labItemGroup[i.lab_order_number] === 'undefined') {
+        //     labItemGroup[i.lab_order_number]=[];
+        //     labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
+        //   }
+        //   else {
+        //     labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
+        //   }
+        // }
+        // else {
+        //   labHead.push(i);
+        // }
+        if (typeof i.form_name !== 'undefined') {
+          labHead.push(i);
+        }
+        if (typeof labItemGroup[i.lab_order_number] === 'undefined') {
+          if (typeof i.laboratoryDetail !== 'undefined') {
             labItemGroup[i.lab_order_number]=[];
-            labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
-          }
-          else {
             labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
           }
         }
         else {
-          labHead.push(i);
+          if (typeof i.laboratoryDetail !== 'undefined') {
+            labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
+          }
         }
       });
+
+// console.log(labHead);
+// console.log(labItemGroup);
 
       labHead.forEach(i => {
         laboratoryElement.push(
@@ -75,6 +91,7 @@ export default function BoxLaboratory(props) {
   const mkLabDetail = (x) => {
     let elem=[];
     let n=0;
+  // console.log(x);
     x[0].forEach(i => {
       n++;
       // console.log(i);

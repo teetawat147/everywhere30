@@ -31,7 +31,14 @@ import {
   Tab,
   Paper,
   Box,
-  Tooltip 
+  Tooltip, 
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Slide,
 } from '@material-ui/core';
 
 import PropTypes from 'prop-types';
@@ -68,6 +75,10 @@ const useStyles = makeStyles({
   },
 });
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -99,18 +110,20 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-export default function App(props) {
+export default function SearchCID(props) {
   const classes = useStyles();
   const [searchCID, setSearchCID] = useState(null);
   const [cidHelperText, setCidHelperText] = useState(null);
   const [patientData, setPatientData] = useState([]);
-  const [interventionsData, setInterventionsData] = useState([]);
+  const [interventionData, setinterventionData] = useState([]);
   const [serviceData, setServiceData] = useState({});
   const [yearShow, setYearShow] = useState({});
   const [assessmentListData, setAssessmentListData] = useState([]);
   const [hcodeData, setHcodeData] = useState({});
   const [currentView, setCurrentView] = useState('summary');
   const [tabValue, setTabValue] = useState(0);
+  const [serviceInfoData, setServiceInfoData] = useState({});
+  const [openDialog, setOpenDialog] = useState(false);
 
   const onchangeSearchText = (e) => {
     let v=e.target.value;
@@ -134,20 +147,26 @@ export default function App(props) {
 
   const handleClickSearch = async () => {
     if (searchCID) {
+      setPatientData([]);
+      setinterventionData([]);
+      setServiceData({});
+      setYearShow({});
+      setAssessmentListData([]);
+      setHcodeData({});
+      setServiceInfoData({});
       getPersonInfo();
     }
-
   }
 
   const getPersonInfo = async () => {
     setPatientData([]);
-    setInterventionsData([]);
+    setinterventionData([]);
     setServiceData({});
     let xParams = {
       filter: {
         where: {cid:searchCID},
         include: {
-          relation: "interventions",
+          relation: "intervention",
           scope: {
             include: {
               relation: "hospital",
@@ -173,13 +192,16 @@ export default function App(props) {
           x['address_info']='';
           x['drugallergy']=(r['drugallergy']!==''?r['drugallergy']:'ไม่พบข้อมูลการแพ้ยา');
           setPatientData(x);
-          let interventions=r.interventions;
-          if (typeof interventions != 'undefined') {
-            if (interventions.length>0) {
-              interventions.reverse();
-              setInterventionsData(interventions);   
+          let intervention=r.intervention;
+          if (typeof intervention != 'undefined') {
+            if (intervention.length>0) {
+              intervention.reverse();
+              setinterventionData(intervention);   
             }
           }
+        }
+        else {
+          setOpenDialog(true);
         }
       }
     }
@@ -189,7 +211,7 @@ export default function App(props) {
     let yearShowTemp={};
     let lastYear='';
     let n=0;
-    interventionsData.forEach(i => {
+    interventionData.forEach(i => {
       if (typeof i.date != 'undefined') {
         n++;
         let x=(parseInt(i.date.substr(0,4))+543).toString();
@@ -204,24 +226,31 @@ export default function App(props) {
   }
 
   const dateServList = () => {
-    if (interventionsData.length>0) {
+    if (interventionData.length>0) {
       let yearsData=[];
-      interventionsData.forEach(i => {
-        if (typeof i.date != 'undefined') {
+      interventionData.forEach(i => {
+        let service_date = i.date;
+        if (typeof service_date === 'undefined') {
+          service_date = i.vstdate;
+        }
+        if (typeof service_date === 'undefined') {
+          service_date = i.dchdate;
+        }
+        if (typeof service_date != 'undefined') {
         // if (typeof i.hcode != 'undefined' && typeof i.vn != 'undefined') {
           // if (i.date==='2018-03-30') {
           //   console.log(i);
           // }
-          let x=(parseInt(i.date.substr(0,4))+543).toString();
+          let x=(parseInt(service_date.substr(0,4))+543).toString();
           // let x=i.hcode+'_'+i.vn;
           if (typeof yearsData[x] === 'undefined') {
             // console.log('ไม่มี-------',x);
             yearsData[x]=[];
-            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:i.date,hcode:i.hcode,hos_name:i.hospital.hos_name});
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:service_date,hcode:i.hcode,hos_name:i.hospital.hos_name});
           }
           else {
             // console.log('มี-------',x);
-            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:i.date,hcode:i.hcode,hos_name:i.hospital.hos_name});
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:service_date,hcode:i.hcode,hos_name:i.hospital.hos_name});
           }
         }
       });
@@ -285,7 +314,7 @@ export default function App(props) {
 
   const selectDateServ = (e,d,hcode,vn) => {
     let x={};
-    interventionsData.forEach(i => {
+    interventionData.forEach(i => {
       // if (i.date===d) {
       if (i.hcode===hcode && i.vn===vn) {
         x=i;
@@ -300,39 +329,56 @@ export default function App(props) {
 
   const serviceDataBlock = () => {
 // console.log(currentView);
-    let serviceInfo={};
     let assessment={};
     let diagnosis=[];
     let treatment=[];
     let laboratory=[];
     let radiology=[];
     let referout=[];
+    let type_io='OPD';
+    let an='';
     if (Object.keys(serviceData).length>0) {
+      if (typeof serviceData.an !== 'undefined') {
+        // if (serviceData.an !== null && serviceData.an !== '') {
+          type_io='IPD';
+          an=serviceData.an;
+        // }
+      }
       if (serviceData.activities) {
         // console.log(serviceData.activities.assessment);
-        if (typeof serviceData.activities.assessment != 'undefined') {
-          assessment=serviceData.activities.assessment[0];
+        if (typeof serviceData.activities.assessment !== 'undefined') {
+          if (typeof serviceData.activities.assessment !== null && serviceData.activities.assessment.length>0) {
+            assessment=serviceData.activities.assessment[0];
+          }
         }
-        diagnosis=serviceData.activities.diagnosis;
-        laboratory=serviceData.activities.laboratory;
-        radiology=serviceData.activities.radiology;
-        treatment=serviceData.activities.treatment;
-        if (typeof serviceData.activities.referout != 'undefined') {
-          referout=serviceData.activities.referout[0];
+        if (typeof serviceData.activities.diagnosis !== 'undefined' && typeof serviceData.activities.diagnosis !== null) {
+          diagnosis=serviceData.activities.diagnosis;
+        }
+        if (typeof serviceData.activities.laboratory !== 'undefined' && typeof serviceData.activities.laboratory !== null) {
+          laboratory=serviceData.activities.laboratory;
+        }
+        if (typeof serviceData.activities.radiology !== 'undefined' && typeof serviceData.activities.radiology !== null) {
+          radiology=serviceData.activities.radiology;
+        }
+        if (typeof serviceData.activities.treatment !== 'undefined' && typeof serviceData.activities.treatment !== null) {
+          treatment=serviceData.activities.treatment;
+        }
+        if (typeof serviceData.activities.referout !== 'undefined') {
+          if (typeof serviceData.activities.referout !== null && serviceData.activities.referout.length>0) {
+            referout=serviceData.activities.referout[0];
+          }
         }
       }
-      serviceInfo['date']=serviceData['date'];
-      serviceInfo['vsttime']=serviceData['vsttime'];
-      serviceInfo['hcode']=serviceData['hcode'];
-      serviceInfo['hos_name']=serviceData['hospital']['hos_name'];
       // console.log(serviceData);
-      // console.log(referout);
+      // console.log(serviceData.activities.referout);
+      // console.log(assessment);
     }
 
     if (currentView==='tab') {
       return (
         <div style={{ width: 900}}>
-          <Paper square>
+          {/* <Paper square> */}
+          <div style={{ border: 'solid 1px #A0A0A0', borderRadius: 5, backgroundColor: '#F8F8F8' }}>
             <Tabs
               value={tabValue}
               indicatorColor="primary"
@@ -343,7 +389,7 @@ export default function App(props) {
               scrollButtons="on"
               aria-label="scrollable force tabs example"
             >
-              <Tab label="Service Information" />
+              {/* <Tab label="Service Information" /> */}
               <Tab label="Assessment" />
               <Tab label="Diagnosis" />
               <Tab label="Laboratory" />
@@ -351,27 +397,25 @@ export default function App(props) {
               <Tab label="Treatment" />
               <Tab label="Refer Out" />
             </Tabs>
-          </Paper>
+          {/* </Paper> */}
+          </div>
           <div>
             <TabPanel value={tabValue} index={0}>
-              {Object.keys(assessment).length>0 && <BoxServiceInfo data={serviceInfo} />}
-            </TabPanel>
-            <TabPanel value={tabValue} index={1}>
               {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
             </TabPanel>
+            <TabPanel value={tabValue} index={1}>
+              {diagnosis.length>0 && <BoxDiagnosis data={diagnosis} /> }
+            </TabPanel>
             <TabPanel value={tabValue} index={2}>
-              <BoxDiagnosis data={diagnosis} />
+              {laboratory.length>0 && <BoxLaboratory data={laboratory} /> }
             </TabPanel>
             <TabPanel value={tabValue} index={3}>
-              <BoxLaboratory data={laboratory} />
+              {radiology.length>0 && <BoxRadiology data={radiology} /> }
             </TabPanel>
             <TabPanel value={tabValue} index={4}>
-              <BoxRadiology data={radiology} />
+              {treatment.length>0 && <BoxTreatment data={treatment} type_io={type_io} /> }
             </TabPanel>
             <TabPanel value={tabValue} index={5}>
-              <BoxTreatment data={treatment} />
-            </TabPanel>
-            <TabPanel value={tabValue} index={6}>
               {Object.keys(referout).length>0 && <BoxReferout data={referout} />}
             </TabPanel>
           </div>
@@ -381,21 +425,23 @@ export default function App(props) {
     else {
       return (
         <div>
-          <div style={{marginTop: 10, marginBottom: 10}}><b>Service Information</b></div>
-          {Object.keys(assessment).length>0 && <BoxServiceInfo data={serviceInfo} />}
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Assessment</b></div>
           {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
+
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Diagnosis</b></div>
-          <BoxDiagnosis data={diagnosis} />
+          {diagnosis.length>0 && <BoxDiagnosis data={diagnosis} /> }
+
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Laboratory</b></div>
-          <BoxLaboratory data={laboratory} />
+          {laboratory.length>0 && <BoxLaboratory data={laboratory} /> }
+
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Radiology</b></div>
-          <BoxRadiology data={radiology} />
+          {radiology.length>0 && <BoxRadiology data={radiology} /> }
+
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
-          <BoxTreatment data={treatment} />
+          {treatment.length>0 && <BoxTreatment data={treatment} type_io={type_io} /> }
+
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Refer Out</b></div>
           {Object.keys(referout).length>0 && <BoxReferout data={referout} />}
-          {/* <BoxReferout data={referout} /> */}
         </div>
       );
     }
@@ -406,7 +452,7 @@ export default function App(props) {
     let hcodeText="";
     let extractedData=[];
     let c=0;
-    interventionsData.forEach(i => {
+    interventionData.forEach(i => {
       if (typeof i.activities != 'undefined') {
         if (typeof i.activities.assessment != 'undefined') {
           c++;
@@ -425,6 +471,32 @@ export default function App(props) {
     });
     setAssessmentListData(extractedData);
     setHcodeData(hcodeDataTemp);
+  }
+
+  const extractServiceInfo = () => {
+    if (Object.keys(serviceData).length>0) {
+      // console.log(serviceData);
+      let service_date=serviceData.date;
+      if (typeof service_date === 'undefined') {
+        service_date = serviceData.vstdate;
+      }
+      if (typeof service_date === 'undefined') {
+        service_date = serviceData.dchdate;
+      }
+      let serviceInfo={};
+      // serviceInfo['date']=serviceData['date'];
+      serviceInfo['date']=service_date;
+      serviceInfo['vsttime']=serviceData['vsttime'];
+      serviceInfo['hcode']=serviceData['hcode'];
+      if (typeof serviceData['hospital'] !== 'undefined') {
+        serviceInfo['hos_name']=serviceData['hospital']['hos_name'];
+      }
+      else {
+        serviceInfo['hos_name']='';
+      }
+      // serviceInfo['hos_name']='';
+      setServiceInfoData(serviceInfo);
+    }
   }
 
   const hcodeList = () => {
@@ -451,7 +523,7 @@ export default function App(props) {
 
   const changeHCode = (e) => {
     console.log('changeHCode------------',e.target.value);
-    // interventionsData
+    // interventionData
   }
 
   const clickChangeView = () => {
@@ -461,10 +533,23 @@ export default function App(props) {
     setCurrentView(v);
   }
 
+  const handleClickOpenDialog = () => {
+    setOpenDialog(true);
+  };
+  
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   useEffect(() => {
     mkYearShow();
     extractData();
-  }, [interventionsData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [interventionData]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    extractServiceInfo();
+  }, [serviceData]); // eslint-disable-line react-hooks/exhaustive-deps
+  
 
   return (
     <div style={{marginBottom:100}}>
@@ -539,16 +624,32 @@ export default function App(props) {
           {dateServList()}
         </div>
         <div style={{ width:'100%', padding: 10, borderRadius: 5, border:'solid 1px #dadada', marginLeft: 10 ,whiteSpace: 'normal'}}>
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'row-reverse', marginTop: -10, marginBottom: -10 }}>
+          <div style={{ width: '100%', marginTop: -10, marginBottom: -10 }}>
             {/* <div style={{position: 'absolute', marginTop: -10}}> */}
-            <div>
-              <Button
-                onClick={clickChangeView}
-                // style={{ width:30 }}
-                // variant="outlined"
-                color="primary"
-                startIcon={<MdSwapHoriz size={40} style={{ paddingLeft: 10 }} />}
-              />
+            <div style={{display:'flex', flexDirection:'row-reverse', justifyContent: 'space-between'}}>
+              <div>
+                {currentView!=='tab'?(
+                  <Button
+                    onClick={clickChangeView}
+                    // style={{ width:30 }}
+                    // variant="outlined"
+                    color="primary"
+                    startIcon={<MdSwapHoriz size={40} style={{ paddingLeft: 10 }} />}
+                  />
+                ):(
+                  <Button
+                    onClick={clickChangeView}
+                    // style={{ width:30 }}
+                    // variant="outlined"
+                    color="primary"
+                    startIcon={<MdSwapVert size={40} style={{ paddingLeft: 10 }} />}
+                  />
+                )}
+              </div>
+              <div style={{ marginTop: 5, marginBottom: 20 }}>
+                <Typography variant="h6" style={{ marginBottom: 5 }}>Service Information</Typography>
+                {Object.keys(serviceInfoData).length>0 && <BoxServiceInfo data={serviceInfoData} />}
+              </div>
             </div>
           </div>
           <div style={{ marginTop: 0 }}>
@@ -556,21 +657,27 @@ export default function App(props) {
           </div>
         </div>
       </div>
-      
-      {/* <UDataTable structure={collection.person_test} />
 
-      <div><h2>Universal List Table</h2></div>
-      <UListTable
-        structure={collection.person_test}
-        column_set={listTableColumnSet}
-        sub_report={true}
-        document_id="5fbcb0a3dbf45ef148b119c2"
-      />
-
-      <div><h2>Universal Card</h2></div>
-      <div style={{width:250}}>
-        <UCard structure={collection.person_test} display_style="block" document_id="5fbcb0a3dbf45ef148b119c2" />
-      </div> */}
+      <Dialog
+        TransitionComponent={Transition}
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+      >
+        <DialogTitle id="alert-dialog-title">ผลการค้นหา</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ไม่พบข้อมูลของ CID นี้
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary" variant={'contained'} autoFocus>
+            ปิด
+          </Button>
+        </DialogActions>
+      </Dialog>
 
     </div>
   )

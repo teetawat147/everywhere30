@@ -39,6 +39,7 @@ export default function BoxServiceInfo(props) {
   const [serviceInfo, setServiceInfo] = useState({});
  
   useEffect(() => {
+    // console.log(props.data);
     setServiceInfo(props.data);
   }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -57,6 +58,12 @@ export default function BoxServiceInfo(props) {
         <div className={classes.contentTitle}>เวลารับบริการ</div>
         <div className={classes.contentText}>{serviceInfo.vsttime}</div>
       </div>
+      {typeof serviceInfo.an !== 'undefined' && (
+        <div className={classes.contentGroup}>
+          <div className={classes.contentTitle}>AN</div>
+          <div className={classes.contentText}>{serviceInfo.an}</div>
+        </div>
+      )}
     </div>
   </>
   )

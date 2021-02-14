@@ -38,27 +38,69 @@ export default function BoxDiagnosis(props) {
   const [diagnosis, setDiagnosis] = useState({});
 
   const mkDiagnosisList = () => {
-    let diagnosisElement=[];
-    let diagnosis_n=0;
+    let elem=[];
     if (diagnosis.length>0) {
+      let n=0;
       diagnosis.forEach(i => {
-        diagnosis_n++;
-        diagnosisElement.push(
-          <div key={'diagnosis_'+diagnosis_n}>
-            {/* {({i.diagtype}){i.diagtype_name} : {i.icd10}} */}
-            ({i.diagtype}){i.diagtype_name} : {i.icd10} {i.result.icd10} {i.icd10_name} 
-          </div>
-        );
+        n++;
+        if (typeof i.icd10 !== 'undefined') {
+          elem.push(
+            <tr key={'treatment_'+n}>
+              <td style={{width:30}}>{n}</td>
+              <td style={{width:180}}>{i.diagtype_name}</td>
+              <td style={{width:60}}>{i.icd10}</td>
+              <td style={{width:'auto'}}>{i.icd10_name}</td>
+            </tr>
+          );
+        }
       });
     }
-    return diagnosisElement;
+
+    return (
+      <div>
+        <div>
+          <table style={{width: '100%'}}>
+            <thead>
+              <tr>
+                <td style={{width:30}}><br /></td>
+                <td style={{width:180}}>ประเภท</td>
+                <td style={{width:60}}>ICD10</td>
+                <td style={{width:'auto'}}>วินิจฉัย</td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+          <table style={{width: '100%'}}>
+            <tbody>
+              {elem}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
   }
 
   useEffect(() => {
     if (props.data) {
       if (props.data.length>0) {
-        // console.log(props.data);
-        setDiagnosis(props.data);
+        let a=props.data;
+        let x = [];
+        a.map(i=>{
+          let diag_code=i.icd10;
+          if (typeof diag_code === 'undefined') {
+            diag_code=i.icd103;
+          }
+          if (typeof diag_code === 'undefined') {
+            diag_code='';
+          }
+          // console.log(i);
+          if (('ABCDEFGHIJKLMNOPQRSTUVWXYZ').indexOf(diag_code.substr(0,1).toUpperCase())>-1) {
+            x.push(i);
+          }
+        });
+        x.sort((a, b) => (a.diagtype > b.diagtype) ? 1 : -1);
+        setDiagnosis(x);
       }
     }
   }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
