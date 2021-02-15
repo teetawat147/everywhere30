@@ -18,7 +18,6 @@ import Profile from "./components/Profile";
 // import BoardAdmin from "./components/BoardAdmin";
 // import Universal from "./components/Universal";
 import SearchCID from "./components/SearchCID";
-
 const App = () => {
   const redirect = useHistory();
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
@@ -73,16 +72,15 @@ const App = () => {
           )}
       </nav>
       <div className="container mt-3">
-        {/* component={Login} */}
-        <Switch>
+        <Switch basename={'/everwhere30'}>
           {(logined) && (
-            <Route exact path="/" component={SearchCID} />
+            <Route exact path='/' component={SearchCID} />
           )}
-          <Route path="/home" component={Home} />
-          <Route path="/register" component={Register} />
-          <Route path="/profile" component={Profile} />
-          <Route path="/login" render={() => <Login changeLoginStatus={changeLoginStatus} />} />
-          <Route path="/linelogin" render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
+          <Route path='/home' component={Home} />
+          <Route path='/register' component={Register} />
+          <Route path='/profile' component={Profile} />
+          <Route path='/login' render={() => <Login changeLoginStatus={changeLoginStatus} />} />
+          <Route path='/linelogin' render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
         </Switch>
       </div>
     </div >
