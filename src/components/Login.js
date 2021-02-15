@@ -58,16 +58,21 @@ const Login = (props) => {
       try {
         let loginData = await login({ email: email, password: password });
         if (loginData.isAuthError) {
-          setMessage(loginData.err);
-        } else {
           setLoading(false);
+          setMessage(loginData.err);
           props.changeLoginStatus(true);
           redirect.push("/");
+        } else {
+          setLoading(false);
+          alert("เข้าสู่ระบบไม่สำเร็จ เนื่องจาก\nชื่อผู้ใช้หรือรหัสผ่านผิด\nหรือคุณยังไม่ได้รับการอนุมัติใช้งาน");
+          // redirect.push("/login");
         }
       } catch (err) {
+        alert("เข้าสู่ระบบไม่สำเร็จ");
         setLoading(false);
       }
     } else {
+      alert("เข้าสู่ระบบไม่สำเร็จ");
       setLoading(false);
     }
   };
