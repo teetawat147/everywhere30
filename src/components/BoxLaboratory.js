@@ -99,9 +99,9 @@ export default function BoxLaboratory(props) {
         <tr key={i.lab_order_number+'_'+i.lab_items_code+'_'+n}>
           <td style={{width:30}}>{n}</td>
           <td style={{width:'auto'}}>{i.lab_items_name_ref}</td>
-          <td style={{width:'15%'}}>{i.lab_items_normal_value_ref}</td>
           <td style={{width:'15%'}}>{i.lab_order_result}</td>
           <td style={{width:'15%'}}>{i.lab_items_unit}</td>
+          <td style={{width:'15%'}}>{i.lab_items_normal_value_ref}</td>
         </tr>
       );
     });
@@ -114,9 +114,9 @@ export default function BoxLaboratory(props) {
               <tr>
                 <td style={{width:30}}><br /></td>
                 <td style={{width:'auto'}}>ชื่อแลป</td>
-                <td style={{width:'15%'}}>ค่าปกติ</td>
                 <td style={{width:'15%'}}>ผล</td>
                 <td style={{width:'15%'}}>หน่วย</td>
+                <td style={{width:'15%'}}>ค่าปกติ</td>
               </tr>
             </thead>
           </table>
