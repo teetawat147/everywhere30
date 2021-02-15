@@ -8,7 +8,16 @@ import { LINE } from "../services/auth-header";
 import { LineLogin } from 'reactjs-line-login';
 import 'reactjs-line-login/dist/index.css';
 import { useHistory } from "react-router-dom";
-
+import { makeStyles } from '@material-ui/core';
+const useStyles = makeStyles(theme => ({
+  root: {
+    '& ._RU-K2': {
+      margin: '0',
+      width:'100%',
+      backgroundSize: 'contain'
+    }
+  }
+}));
 const required = (value) => {
   if (!value) {
     return (
@@ -19,6 +28,7 @@ const required = (value) => {
   }
 };
 const Login = (props) => {
+  const classes = useStyles();
   const redirect = useHistory();
   const form = useRef();
   const checkBtn = useRef();
@@ -71,7 +81,7 @@ const Login = (props) => {
           className="profile-img-card"
         />
 
-        <Form onSubmit={handleLogin} ref={form}>
+        <Form className={classes.root} onSubmit={handleLogin} ref={form}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <Input
