@@ -68,11 +68,10 @@ const Login = (props) => {
           // redirect.push("/login");
         }
       } catch (err) {
-        alert("เข้าสู่ระบบไม่สำเร็จ");
+        console.log("เข้าสู่ระบบไม่สำเร็จ",err);
         setLoading(false);
       }
     } else {
-      alert("เข้าสู่ระบบไม่สำเร็จ");
       setLoading(false);
     }
   };

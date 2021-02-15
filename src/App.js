@@ -75,11 +75,13 @@ const App = () => {
       <div className="container mt-3">
         {/* component={Login} */}
         <Switch>
-          <Route exact path="/" component={SearchCID} />
+          {(logined) && (
+            <Route exact path="/" component={SearchCID} />
+          )}
           <Route path="/home" component={Home} />
-          <Route path="/login" render={() => <Login changeLoginStatus={changeLoginStatus} />} />
           <Route path="/register" component={Register} />
           <Route path="/profile" component={Profile} />
+          <Route path="/login" render={() => <Login changeLoginStatus={changeLoginStatus} />} />
           <Route path="/linelogin" render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
         </Switch>
       </div>
