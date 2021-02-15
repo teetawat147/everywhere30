@@ -72,7 +72,7 @@ const App = () => {
           )}
       </nav>
       <div className="container mt-3">
-        <Switch basename={'/everwhere30'}>
+        <Switch>
           {(logined) && (
             <Route exact path='/' component={SearchCID} />
           )}

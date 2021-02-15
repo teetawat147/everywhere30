@@ -1,6 +1,6 @@
 {
   "name": "everywhere30",
-  "homepage": "https://cloud1.r8way.moph.go.th/everywhere30",
+  "homepage": "/everywhere30",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -17,6 +17,7 @@
     "@tevhooks/use-media-query": "^1.1.0",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
+    "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-auth-react": "^4.1.2",
     "moment": "^2.29.1",
