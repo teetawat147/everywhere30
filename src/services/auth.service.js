@@ -5,13 +5,19 @@ const register = (param) => {
   return axios.post(API_URL + "teamusers", param);
 };
 const login = async (param, res) => {
+  let _returnData={};
   try {
     const userinfo = await axios.post(API_URL + "teamusers/login?include=User", param);
     const roleName = await getAuthorize(userinfo.data);
     if (typeof param.picture !== 'undefined') { userinfo.data.user.picture = param.picture; }
     if (typeof roleName !== 'undefined' && roleName !== '') { userinfo.data.user.role = roleName; }
-    if (typeof userinfo.data !== 'undefined') { localStorage.setItem("EW30", JSON.stringify(userinfo.data)); }
-    return { response: userinfo.data, isLoginError: false };
+    if (typeof userinfo.data !== 'undefined') { 
+      localStorage.setItem("EW30", JSON.stringify(userinfo.data)); 
+      _returnData =  { response: userinfo.data, isLoginError: false };
+    }else{
+      _returnData = { response: userinfo.data, isLoginError: true };
+    }
+    return _returnData;
   } catch (err) {
     return { err, isLoginError: true };
   };

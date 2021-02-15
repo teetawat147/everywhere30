@@ -57,7 +57,8 @@ const Login = (props) => {
     if (checkBtn.current.context._errors.length === 0) {
       try {
         let loginData = await login({ email: email, password: password });
-        if (loginData.isAuthError) {
+        console.log(loginData);
+        if (typeof loginData!=='undefined' && loginData.isLoginError===false) {
           setLoading(false);
           setMessage(loginData.err);
           props.changeLoginStatus(true);
