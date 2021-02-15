@@ -15,7 +15,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@tevhooks/use-media-query": "^1.1.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-auth-react": "^4.1.2",

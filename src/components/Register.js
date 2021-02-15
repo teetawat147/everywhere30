@@ -1,11 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from '@material-ui/core';
 import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
 import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import CheckButton from "react-validation/build/button";
-import { isEmail } from "validator";
+// import { isEmail } from "validator";
+import { useHistory } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
+import UAPI from "../services/UniversalAPI";
 const useStyles = makeStyles(theme => ({
   root: {
     '& .MuiTextField-root': {
@@ -13,12 +15,13 @@ const useStyles = makeStyles(theme => ({
     },
     '& .MuiInputLabel-outlined': {
       zIndex: 1,
-      transform: 'translate(15px, 10px) scale(1)',
+      transform: 'translate(15px, 4px) scale(1)',
       pointerEvents: 'none'
     },
     '& .MuiInputLabel-shrink': {
       transform: 'translate(15px, -18px) scale(0.75)',
     }
+    // '@media(min - width: 576px)': {}
   },
   alertDanger: {
     color: '#ec0016',
@@ -45,19 +48,48 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Register = (props) => {
+  const redirect = useHistory();
   const classes = useStyles();
   const form = useRef();
   const checkBtn = useRef();
-  const [successful, setSuccessful] = useState(false);
-  const [message, setMessage] = useState("");
-  const [{ fullname, cid, mobile, email, password }, setState] = useState({
-    fullname: '', cid: '', mobile: '', email: '', password: ''
-  });
+  // const [successful, setSuccessful] = useState(false);
+  // const [message, setMessage] = useState("");
+  const [fullname, setFullname] = useState('');
+  const [position, setPosition] = useState('');
+  const [cid, setCid] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [changewats, setChangewats] = useState([]);
+  const [changewat, setChangewat] = useState('');
+  const [departments, setDepartments] = useState([]);
+  const [department, setDepartment] = useState('');
+  const [departmentI, setDepartmentI] = useState('');
+  //{ "hos_name": "", "hos_fullname": "" }
+  // const [{ fullname, cid, mobile, email, password }, setState] = useState({
+  //   fullname: '', cid: '', mobile: '', email: '', password: ''
+  // });
+  const [{ disEmail, disPassword }, setDisabledState] = useState({ disEmail: false, disPassword: false });
+  const setLineInfo = () => {
+    if (typeof props.lineInfo !== 'undefined') {
+      if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
+        setFullname(props.lineInfo.fullname);
+        setEmail(props.lineInfo.email);
+        setPassword(props.lineInfo.password);
+        setDisabledState({ disEmail: true, disPassword: true });
+      }
+    }
+  }
+
+  useEffect(() => {
+    setLineInfo();
+  }, [props.lineInfo]);
+
   const [inputError, setInputError] = useState({
-    'fullname': false, 'cid': false, 'mobile': false, 'email': false, 'password': false
+    'fullname': false,'position': false, 'cid': false, 'mobile': false, 'email': false, 'password': false
   });
   const [inputHelperText, setInputHelperText] = useState({
-    fullname: '', cid: '', mobile: '', email: '', password: ''
+    fullname: '', position:'', cid: '', mobile: '', email: '', password: ''
   });
   const helperTextConfig = {
     'fullname': [
@@ -91,89 +123,208 @@ const Register = (props) => {
     // setInputHelperText(config);
   }
   const handleInputChange = (e, validate) => {
-    let required = (e.target.hasAttribute('required')) ? true : false;
     let name = e.target.name;
     let value = e.target.value;
-    setState(prevState => ({ ...prevState, [name]: value }));
-    if (required === true) {
-      let inputErr = { ...inputError }
-      if (value === "") {
-        eval('inputErr.' + name + '=true');
-        setInputError(inputErr);
-        helperText(validate, name, true);
-        // setInputHelperText('กรุณาระบุข้อมูล');
-      } else {
-        eval('inputErr.' + name + '=false');
-        setInputError(inputErr);
-        helperText(validate, name, false);
-        // setInputHelperText('');
-      }
+    switch (name) {
+      case 'fullname': setFullname(value); break;
+      case 'position': setPosition(value); break;
+      case 'cid': setCid(value); break;
+      case 'mobile': setMobile(value); break;
+      case 'email': setEmail(value); break;
+      case 'password': setPassword(value); break;
     }
+    // console.log(email);
+    // if (required === true) {
+    //   let inputErr = { ...inputError }
+    //   if (value === "") {
+    //     eval('inputErr.' + name + '=true');
+    //     setInputError(inputErr);
+    //     helperText(validate, name, true);
+    //     // setInputHelperText('กรุณาระบุข้อมูล');
+    //   } else {
+    //     eval('inputErr.' + name + '=false');
+    //     setInputError(inputErr);
+    //     helperText(validate, name, false);
+    //     // setInputHelperText('');
+    //   }
+    // }
+  }
+  const getChangewat = async () => {
+    let response = await UAPI.getAll({ filter: { "fields": { "changwatname": "true" }, "where": { "zonecode": "08" } } }, 'cchangwats');
+    // console.log(response.data);
+    setChangewats(response.data);
+  }
+  const getDepartment = async (cw) => {
+    let response = await UAPI.getAll({ filter: { "fields": { "hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
+    setDepartments(response.data);
+  }
+  useEffect(() => {
+    getChangewat();
+  }, []);
+  const simpleRegisterForm = () => {
+    return < div >
+      <div className="form-group">
+        <TextField
+          id="fullname"
+          name="fullname"
+          label="ชื่อสกุล"
+          type="text"
+          size="small"
+          variant="outlined"
+          value={fullname}
+          onChange={(e) => handleInputChange(e, ['required', 'length'])}
+          helperText={inputHelperText.fullname}
+          error={inputError.fullname}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <TextField
+          id="position"
+          name="position"
+          label="ตำแหน่ง"
+          type="text"
+          size="small"
+          variant="outlined"
+          value={position}
+          onChange={(e) => handleInputChange(e, ['required', 'length'])}
+          helperText={inputHelperText.position}
+          error={inputError.position}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <TextField
+          id="cid"
+          name="cid"
+          label="หมายเลขประจำตัวประชาชน"
+          type="text"
+          size="small"
+          variant="outlined"
+          defaultValue={cid}
+          onChange={(e) => handleInputChange(e, ['required', 'length'])}
+          helperText={inputHelperText.cid}
+          error={inputError.cid}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <TextField
+          id="mobile"
+          name="mobile"
+          label="หมายเลขโทรศัพท์"
+          type="text"
+          size="small"
+          variant="outlined"
+          defaultValue={mobile}
+          onChange={(e) => handleInputChange(e, ['required', 'length'])}
+          helperText={inputHelperText.mobile}
+          error={inputError.mobile}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <TextField
+          id="email"
+          name="email"
+          label="อีเมลล์"
+          type="text"
+          size="small"
+          variant="outlined"
+          autoComplete='new-password'
+          value={email}
+          onChange={(e) => handleInputChange(e, ['required', 'length'])}
+          helperText={inputHelperText.email}
+          error={inputError.email}
+          disabled={disEmail}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <TextField
+          id="password"
+          name="password"
+          label="รหัสผ่าน"
+          type="password"
+          size="small"
+          variant="outlined"
+          autoComplete='new-password'
+          value={password}
+          onChange={(e) => handleInputChange(e, ['required', 'length'])}
+          helperText={inputHelperText.password}
+          error={inputError.password}
+          disabled={disPassword}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <Autocomplete
+          id="changewat"
+          size="small"
+          fullWidth
+          required
+          options={changewats}
+          getOptionSelected={(option, value) => value.changwatname === option.changwatname}
+          getOptionLabel={(option) => option.changwatname || ''}
+          onChange={(e, newValue) => {
+            setChangewat((newValue) ? newValue.changwatname : '');
+            setDepartment('');
+            // setDepartmentI('');
+            if (newValue !== null) { getDepartment(newValue.changwatname) }
+          }}
+          renderInput={(params) => <TextField {...params} label="จังหวัด" variant="outlined" />}
+        />
+      </div>
+      <div className="form-group">
+        <Autocomplete
+          id="department"
+          size="small"
+          fullWidth
+          required
+          options={departments}
+          getOptionSelected={(option, value) => {
+            // console.log(option, value);
+
+            // if (value === option) { return value === option }
+            return value === option
+          }}
+          getOptionLabel={(option) => option.hos_name || ''}
+          value={department}
+          onChange={(_, newValue) => {
+            // console.log(newValue);
+            setDepartment((newValue !== null) ? newValue : '')
+          }}
+          // inputValue={departmentI}
+          // onInputChange={(_, newInputValue) => {
+          //   // console.log(newInputValue);
+          //   setDepartmentI((newInputValue) ? newInputValue : '')
+          // }}
+          renderInput={(params) => <TextField {...params} label="หน่วยงาน" variant="outlined" />}
+        />
+      </div>
+      <div className="form-group">
+        <button className="btn btn-primary btn-block">ลงทะเบียน</button>
+      </div>
+    </div >
+  }
+  const lineRegisterForm = () => {
 
   }
-
-  const required = (value) => {
-    if (!value) {
-      return (
-        <div className={classes.alertDanger} role="alert">กรุณาระบุข้อมูล</div>
-      );
-    }
-  };
-  const validFullname = (value) => {
-    if (value.length < 3 || value.length > 50) {
-      return (
-        <div className={classes.alertDanger} role="alert">
-          ความยาว 3 ถึง 50 ตัวอักษร
-        </div>
-      );
-    }
-  };
-  const validCid = (value) => {
-    if (value.length != 13) {
-      return (
-        <div className={classes.alertDanger} role="alert">ความยาว 13 ตัวอักษร</div>
-      );
-    }
-  };
-  const validMobile = (value) => {
-    if (value.length > 10) {
-      return (
-        <div className={classes.alertDanger} role="alert">ความยาวไม่เกิน 10 ตัวอักษร</div>
-      );
-    }
-  };
-  const validEmail = (value) => {
-    if (!isEmail(value)) {
-      return (
-        <div className={classes.alertDanger} role="alert">
-          อีเมลล์ไม่ถูกต้อง
-        </div>
-      );
-    }
-  };
-  const validPassword = (value) => {
-    if (value.length < 6 || value.length > 40) {
-      return (
-        <div className={classes.alertDanger} role="alert">
-          ความยาว 6 ถึง 40 ตัวอักษร
-        </div>
-      );
-    }
-  };
-
   const handleRegister = (e) => {
     e.preventDefault();
-
-    setMessage("");
-    setSuccessful(false);
-
-    form.current.validateAll();
-
+    // setMessage("");
+    // setSuccessful(false);
+    // form.current.validateAll();
     if (checkBtn.current.context._errors.length === 0) {
-      AuthService.register(fullname, email, password).then(
+      AuthService.register({ fullname,position, cid, mobile, email, password, changewat, department }).then(
         (response) => {
-          setMessage(response.data.message);
-          setSuccessful(true);
+          if(response.status==200){
+            alert("ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน");
+            redirect.push("/login");
+          }
+          console.log(response);
+          // setMessage(response.data.message);
+          // setSuccessful(true);
         },
         (error) => {
           const resMessage =
@@ -183,8 +334,8 @@ const Register = (props) => {
             error.message ||
             error.toString();
 
-          setMessage(resMessage);
-          setSuccessful(false);
+          // setMessage(resMessage);
+          // setSuccessful(false);
         }
       );
     }
@@ -193,93 +344,11 @@ const Register = (props) => {
   return (
     <div className="col-md-12">
       <div className={"card " + classes.containerCard}>
-        {/* <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        /> */}
-
-        <label htmlFor="caption"><h3>ลงทะเบียน</h3></label>
+        <label htmlFor="caption" style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <h3>ลงทะเบียน</h3>
+        </label>
         <Form className={classes.root} onSubmit={handleRegister} ref={form} autoComplete="new-password">
-          {!successful && (
-            <div>
-              <div className="form-group">
-                <TextField
-                  id="fullname"
-                  name="fullname"
-                  label="ชื่อสกุล"
-                  type="text"
-                  variant="outlined"
-                  value={fullname}
-                  onChange={handleInputChange}
-                  helperText={inputHelperText.fullname}
-                  // validates={() => { return ['required', 'length'] }}
-                  error={inputError.fullname}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <TextField
-                  id="cid"
-                  name="cid"
-                  label="หมายเลขประจำตัวประชาชน"
-                  type="text"
-                  variant="outlined"
-                  value={cid}
-                  onChange={(e) => handleInputChange(e, ['required', 'length'])}
-                  helperText={inputHelperText.cid}
-                  error={inputError.cid}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="cid">หมายเลขโทรศัพท์</label>
-                <Input
-                  type="text"
-                  className="form-control"
-                  name="mobile"
-                  value={mobile}
-                  onChange={handleInputChange}
-                  validations={[required, validMobile]}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">อีเมลล์</label>
-                <Input
-                  type="text"
-                  className="form-control"
-                  name="email"
-                  autoComplete="new-password"
-                  value={email}
-                  onChange={handleInputChange}
-                  validations={[required, validEmail]}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">รหัสผ่าน</label>
-                <Input
-                  type="password"
-                  className="form-control"
-                  name="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={handleInputChange}
-                  validations={[required, validPassword]}
-                />
-              </div>
-              <div className="form-group">
-                <button className="btn btn-primary btn-block">ลงทะเบียน</button>
-              </div>
-            </div>
-          )}
-
-          {message && (
-            <div className="form-group">
-              <div className={successful ? classes.alertSuccess : classes.alertDanger} role="alert">
-                {message}
-              </div>
-            </div>
-          )}
+          {simpleRegisterForm()}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
       </div>

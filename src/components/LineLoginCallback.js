@@ -1,22 +1,24 @@
-import React, { useEffect } from "react";
-import * as AuthService from "../services/auth.service";
+import React, { useState, useEffect,useRef } from "react";
+import {login} from "../services/auth.service";
 import { LINE } from "../services/auth-header";
 import axios from "axios";
 import qs from 'qs';
 import url from 'url';
 import jwt from 'jsonwebtoken';
 import { useHistory } from "react-router-dom";
+import Register from "./Register";
 const LineLogin = (props) => {
   const redirect = useHistory();
   // const currentUser = AuthService.getCurrentUser();
-  // const [authorizes, setAuthorizes] = useState([]);
+  const [loginStatus, setLoginStatus] = useState(false);
+  const isMountedRef = useRef(null);
   // const [isRegist, setIsRegist] = useState(false)
   // const [picture, setPicture] = useState(null);
   // const [listThese, setListThese] = useState([]);
   // const listShow = ['Name', 'Email', 'LineUserID'];
   let params = new URLSearchParams(document.location.search.substring(1));
   let code = params.get("code");
-
+  const [{ fullname, email, password, picture }, setLineInfo] = useState({ fullname: '', email: '', password: '', picture: '' });
   const getAccessToken = (callbackURL) => {
     var urlParts = url.parse(callbackURL, true);
     var query = urlParts.query;
@@ -34,22 +36,37 @@ const LineLogin = (props) => {
       };
       axios.post(
         LINE.api + 'token', qs.stringify(reqBody), reqConfig
-      ).then((res) => {
+      ).then(async(res) => {
         // console.log('getAccessToken : ', res.data.id_token);
         const decodedIdToken = jwt.verify(res.data.id_token, LINE.client_secret, {
           algorithms: ['HS256'],
           audience: LINE.client_id,
           issuer: 'https://access.line.me',
         });
-        console.log("decodedIdToken : ", decodedIdToken);
-        AuthService.login({
+        // console.log("decodedIdToken : ", decodedIdToken);
+        await login({
           email: decodedIdToken.email,
           password: decodedIdToken.sub,
           picture: decodedIdToken.picture
         }).then((response) => {
-          console.log("userInfo : ", response.response);
-          props.changeLoginStatus(true);
-          redirect.push("/");
+          
+          if(!response.isLoginError){
+            // Login success then go to root page
+            console.log("userInfo : ", response.response);
+            setLoginStatus(true);
+            props.changeLoginStatus(true);
+            redirect.push("/");
+          }else{
+            // Set info for register page
+            console.log("Unauthorized need to register first.");
+            isMountedRef.current=true;
+            setLineInfo({
+              fullname: decodedIdToken.name,
+              email: decodedIdToken.email,
+              password: decodedIdToken.sub,
+              picture: decodedIdToken.picture
+            });
+          }
         }, (error) => {
           console.log("Error : ", error);
         });
@@ -60,11 +77,21 @@ const LineLogin = (props) => {
   };
 
   useEffect(() => {
+    isMountedRef.current=false;
     getAccessToken(window.location.href);
+    return () => isMountedRef.current = true;
   }, []);
+  // useEffect(()=>{
+    
+  // },[loginStatus])
 
   return (
-    <div className="container"></div>
+    <div className="container">
+      { (isMountedRef.current) ? (
+          <Register lineInfo={{fullname: fullname,email: email,password: password,picture: picture}} />
+        ):('')
+      }
+    </div>
   );
 };
 

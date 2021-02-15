@@ -1,12 +1,8 @@
 import axios from "axios";
 import { API_URL } from "../services/auth-header";
 
-const register = (username, email, password) => {
-  return axios.post(API_URL + "signup", {
-    username,
-    email,
-    password,
-  });
+const register = (param) => {
+  return axios.post(API_URL + "teamusers", param);
 };
 const login = async (param, res) => {
   try {
@@ -24,11 +20,9 @@ const logout = (changeLoginStatus) => {
   localStorage.removeItem("EW30");
   changeLoginStatus(false);
 };
-
 const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("EW30"));
 };
-
 const getAuthorize = async (userinfo) => {
   let auth = '';
   if (typeof userinfo !== 'undefined') { // กรณี Users มี roleId
