@@ -18,6 +18,7 @@
     "axios": "^0.21.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-auth-react": "^4.1.2",
+    "bootstrap": "^4.6.0",
     "moment": "^2.29.1",
     "react": "^16.14.0",
     "react-async-component": "^2.0.0",
