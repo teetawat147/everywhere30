@@ -3,3 +3,4 @@ node_modules/
 build/
 my edit/
 .DS_Store
+.env
