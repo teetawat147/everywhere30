@@ -1,6 +1,5 @@
 import React, { useState, useEffect,useRef } from "react";
 import {login} from "../services/auth.service";
-import { LINE } from "../services/auth-header";
 import axios from "axios";
 import qs from 'qs';
 import url from 'url';
@@ -27,20 +26,20 @@ const LineLogin = (props) => {
       const reqBody = {
         grant_type: 'authorization_code',
         code: code,
-        client_id: LINE.client_id,
-        client_secret: LINE.client_secret,
-        redirect_uri: LINE.redirect_uri
+        client_id: process.env.REACT_APP_LINE_CLIENT_ID,
+        client_secret: process.env.REACT_APP_LINE_CLIENT_SECRET,
+        redirect_uri : (process.env.NODE_ENV === 'development') ? process.env.REACT_APP_LINE_REDIRECT_URI_DEV : process.env.REACT_APP_LINE_REDIRECT_URI_PROD
       };
       const reqConfig = {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       };
       axios.post(
-        LINE.api + 'token', qs.stringify(reqBody), reqConfig
+        process.env.REACT_APP_LINE_API + 'token', qs.stringify(reqBody), reqConfig
       ).then(async(res) => {
         // console.log('getAccessToken : ', res.data.id_token);
-        const decodedIdToken = jwt.verify(res.data.id_token, LINE.client_secret, {
+        const decodedIdToken = jwt.verify(res.data.id_token, process.env.REACT_APP_LINE_CLIENT_SECRET, {
           algorithms: ['HS256'],
-          audience: LINE.client_id,
+          audience: process.env.REACT_APP_LINE_CLIENT_ID,
           issuer: 'https://access.line.me',
         });
         // console.log("decodedIdToken : ", decodedIdToken);
@@ -55,7 +54,7 @@ const LineLogin = (props) => {
             console.log("userInfo : ", response.response);
             setLoginStatus(true);
             props.changeLoginStatus(true);
-            redirect.push("/");
+            // redirect.push("/");
           }else{
             // Set info for register page
             console.log("Unauthorized need to register first.");
