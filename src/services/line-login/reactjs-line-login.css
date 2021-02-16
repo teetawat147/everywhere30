@@ -1,0 +1,17 @@
+._1RLww {
+  text-align: center;
+}
+
+._RU-K2 {
+  margin: 1rem;
+  width: 303px;
+  height: 88px;
+  background: url('https://i.imgur.com/khY4T6I.png') no-repeat;
+  display: inline-block;
+}
+._RU-K2:hover {
+  background: url('https://i.imgur.com/0pIIFzf.png') no-repeat;
+}
+._RU-K2:active {
+  background: url('https://i.imgur.com/JTGuGpQ.png') no-repeat;
+}
