@@ -13,18 +13,10 @@ const getToken = () => {
   const user = JSON.parse(localStorage.getItem('EW30')) || {};
   return { Authorization: user.id };
 }
-// const PORT = 3000;
-const API_URL = "https://cloud1.r8way.moph.go.th:3999/api/";
-const LINE = {
-  api: 'https://api.line.me/oauth2/v2.1/',
-  client_id: '1655591732',
-  client_secret: 'f801ca079698c589ec57284d3a3ae0fe',
-  redirect_uri: 'https://cloud1.r8way.moph.go.th/everywhere30/linelogin',
-  state: 'b41c8fd15b895f0fc28bf3b9d7da89054d931e7s'
-};
+
+const API_URL = process.env.REACT_APP_API_URL;
 export {
   authHeader,
   getToken,
-  API_URL,
-  LINE
+  API_URL
 };
