@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import {
   makeStyles
@@ -86,6 +87,7 @@ export default function BoxDiagnosis(props) {
       if (props.data.length>0) {
         let a=props.data;
         let x = [];
+        // eslint-disable-next-line array-callback-return
         a.map(i=>{
           let diag_code=i.icd10;
           if (typeof diag_code === 'undefined') {

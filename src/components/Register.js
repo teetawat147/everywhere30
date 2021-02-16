@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from '@material-ui/core';
 import Form from "react-validation/build/form";
@@ -70,18 +71,28 @@ const Register = (props) => {
   //   fullname: '', cid: '', mobile: '', email: '', password: ''
   // });
   const [{ disEmail, disPassword }, setDisabledState] = useState({ disEmail: false, disPassword: false });
-  const setLineInfo = () => {
-    if (typeof props.lineInfo !== 'undefined') {
-      if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
-        setFullname(props.lineInfo.fullname);
-        setEmail(props.lineInfo.email);
-        setPassword(props.lineInfo.password);
-        setDisabledState({ disEmail: true, disPassword: true });
-      }
-    }
-  }
+  // const setLineInfo = () => {
+  //   if (typeof props.lineInfo !== 'undefined') {
+  //     if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
+  //       setFullname(props.lineInfo.fullname);
+  //       setEmail(props.lineInfo.email);
+  //       setPassword(props.lineInfo.password);
+  //       setDisabledState({ disEmail: true, disPassword: true });
+  //     }
+  //   }
+  // }
 
   useEffect(() => {
+    const setLineInfo = () => {
+      if (typeof props.lineInfo !== 'undefined') {
+        if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
+          setFullname(props.lineInfo.fullname);
+          setEmail(props.lineInfo.email);
+          setPassword(props.lineInfo.password);
+          setDisabledState({ disEmail: true, disPassword: true });
+        }
+      }
+    }
     setLineInfo();
   }, [props.lineInfo]);
 
@@ -132,6 +143,7 @@ const Register = (props) => {
       case 'mobile': setMobile(value); break;
       case 'email': setEmail(value); break;
       case 'password': setPassword(value); break;
+      default : break;
     }
     // console.log(email);
     // if (required === true) {
@@ -318,7 +330,7 @@ const Register = (props) => {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.register({ fullname,position, cid, mobile, email, password, changewat, department }).then(
         (response) => {
-          if(response.status==200){
+          if(response.status===200){
             alert("ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน");
             redirect.push("/login");
           }

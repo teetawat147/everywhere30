@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // import React, { useState, useEffect } from "react";
 import React, { useState, useEffect } from 'react';
 import {
@@ -246,11 +247,11 @@ export default function SearchCID(props) {
           if (typeof yearsData[x] === 'undefined') {
             // console.log('ไม่มี-------',x);
             yearsData[x]=[];
-            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:service_date,hcode:i.hcode,hos_name:i.hospital.hos_name});
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:service_date,hos_name:i.hospital.hos_name});
           }
           else {
             // console.log('มี-------',x);
-            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:service_date,hcode:i.hcode,hos_name:i.hospital.hos_name});
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:service_date,hos_name:i.hospital.hos_name});
           }
         }
       });
@@ -347,24 +348,24 @@ export default function SearchCID(props) {
       if (serviceData.activities) {
         // console.log(serviceData.activities.assessment);
         if (typeof serviceData.activities.assessment !== 'undefined') {
-          if (typeof serviceData.activities.assessment !== null && serviceData.activities.assessment.length>0) {
+          if (serviceData.activities.assessment !== null && serviceData.activities.assessment.length>0) {
             assessment=serviceData.activities.assessment[0];
           }
         }
-        if (typeof serviceData.activities.diagnosis !== 'undefined' && typeof serviceData.activities.diagnosis !== null) {
+        if (typeof serviceData.activities.diagnosis !== 'undefined' && serviceData.activities.diagnosis !== null) {
           diagnosis=serviceData.activities.diagnosis;
         }
-        if (typeof serviceData.activities.laboratory !== 'undefined' && typeof serviceData.activities.laboratory !== null) {
+        if (typeof serviceData.activities.laboratory !== 'undefined' && serviceData.activities.laboratory !== null) {
           laboratory=serviceData.activities.laboratory;
         }
-        if (typeof serviceData.activities.radiology !== 'undefined' && typeof serviceData.activities.radiology !== null) {
+        if (typeof serviceData.activities.radiology !== 'undefined' && serviceData.activities.radiology !== null) {
           radiology=serviceData.activities.radiology;
         }
-        if (typeof serviceData.activities.treatment !== 'undefined' && typeof serviceData.activities.treatment !== null) {
+        if (typeof serviceData.activities.treatment !== 'undefined' && serviceData.activities.treatment !== null) {
           treatment=serviceData.activities.treatment;
         }
         if (typeof serviceData.activities.referout !== 'undefined') {
-          if (typeof serviceData.activities.referout !== null && serviceData.activities.referout.length>0) {
+          if (serviceData.activities.referout !== null && serviceData.activities.referout.length>0) {
             referout=serviceData.activities.referout[0];
           }
         }

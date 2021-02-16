@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 //https://devexpress.github.io/devextreme-reactive/react/chart/demos/line/line/
 // npm i --save @devexpress/dx-react-core
 // npm i --save @devexpress/dx-react-chart
