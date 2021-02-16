@@ -54,7 +54,7 @@ const LineLogin = (props) => {
             console.log("userInfo : ", response.response);
             setLoginStatus(true);
             props.changeLoginStatus(true);
-            // redirect.push("/");
+            redirect.push("/");
           }else{
             // Set info for register page
             console.log("Unauthorized need to register first.");
