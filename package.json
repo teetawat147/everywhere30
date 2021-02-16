@@ -16,8 +16,6 @@
     "@testing-library/user-event": "^7.1.2",
     "@tevhooks/use-media-query": "^1.1.0",
     "axios": "^0.21.1",
-    "bootstrap": "^4.6.0",
-    "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-auth-react": "^4.1.2",
     "moment": "^2.29.1",
@@ -29,10 +27,12 @@
     "react-moment": "^1.1.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
+    "react-uuid": "^1.0.2",
     "react-validation": "^3.0.7",
-    "reactjs-line-login": "^1.2.3",
     "use-mediaquery": "^1.0.1",
-    "validator": "^13.5.2"
+    "validator": "^13.5.2",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^4.5.0"
   },
   "scripts": {
     "start": "react-scripts start",
