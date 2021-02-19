@@ -1,10 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  Route,
-  useHistory,
-  Link,
-  Switch
-} from 'react-router-dom';
+import React, { useState, useEffect, useRef } from "react";
+import {  Route, useHistory, Link, Switch } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { getCurrentUser, logout } from "./services/auth.service";
@@ -29,21 +24,43 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+
+import WcIcon from '@material-ui/icons/Wc';
+import HomeIcon from '@material-ui/icons/Home';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import Avatar from '@material-ui/core/Avatar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-
+import Button from '@material-ui/core/Button';
 import SearchCID from "./components/SearchCID";
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
+    display: "flex",
     flexGrow: 1,
+    "& .MuiToolbar-root h6":{width:'100%'},
+    "& .navMenu":{
+      position: 'absolute',
+      right: '24px'
+    },
     "& .MuiAppBar-colorSecondary": {
       color: "#fff",
       backgroundColor : "#2e2e37"
-    }
+    },
+    "& a.navbar-brand, .navMenu a":{color: '#fdfeff',textDecoration:'none'},
+    "& a.navbar-brand:hover, .navMenu a:hover":{color: '#e0e0e0',textDecoration:'none'},
+    "& .MuiDrawer-root a":{color: 'rgba(0, 0, 0, 0.87)',textDecoration:'none'},
+    "& .MuiDrawer-root a:hover":{color: 'rgba(0, 0, 0, 0.87)',textDecoration:'none'},
+    "& .MuiButton-root:hover":{backgroundColor:'#ffffff0f'},
+    "& .MuiButton-root":{marginLeft:'5px'}
+  },
+  popupMenuLink:{
+    "& a":{color: 'rgba(0, 0, 0, 0.87)',textDecoration:'none'},
+    "& a:hover":{textDecoration:'none'}
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -52,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   appBar: {
+    zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -61,12 +79,26 @@ const useStyles = makeStyles((theme) => ({
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
     transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
+      easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(2)
+  },
+  menuButtonIconClosed: {
+    transition: theme.transitions.create(["transform"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    transform: "rotate(0deg)"
+  },
+  menuButtonIconOpen: {
+    transition: theme.transitions.create(["transform"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    transform: "rotate(180deg)"
   },
   hide: {
     display: 'none',
@@ -86,6 +118,14 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
+  toolbar: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: theme.spacing(),
+    justifyContent: "flex-end",
+    padding: "0 8px",
+    ...theme.mixins.toolbar
+  },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
@@ -102,49 +142,67 @@ const useStyles = makeStyles((theme) => ({
     }),
     marginLeft: 0,
   },
+  avatarSmall: {
+    width: theme.spacing(4),
+    height: theme.spacing(4),
+  },
 }));
 
 const App = () => {
   const redirect = useHistory();
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
-  const [logined, setLogined] = useState(true);
+  const [logined, setLogined] = useState(false);
+  const [isLineLogin, setIsLineLogin] = useState(false);
   const [userFullname, setUserFullname] = useState('');
-
+  const [mobileView,setMobileView] = useState(false);
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openMenu = Boolean(anchorEl);
-
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
   const handleDrawerClose = () => {
     setOpen(false);
   };
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  useEffect(() => {
+    const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+    const mobile = Boolean(userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i));
+    setMobileView(mobile);
+  });
   useEffect(() => {
     if (currentUser !== null) {
       if (currentUser.user.fullname !== null && typeof currentUser.user.fullname !== 'undefined') {
         setUserFullname(currentUser.user.fullname);
       }
+      if(currentUser.user.picture !== null && typeof currentUser.user.picture !=='undefined'){
+        setIsLineLogin(true);
+        console.log("When Line login : ",isLineLogin)
+      }
+      console.log("When Simple login line login is : ",isLineLogin)
       setLogined(true);
+      console.log(currentUser.user);
     } else {
-      // setLogined(false);
       setCurrentUser(getCurrentUser());
+      if (currentUser == null){
+        setIsLineLogin(false);
+        setLogined(false);
+      }
     }
   }, [currentUser]);
   const changeLoginStatus = (status) => {
     setLogined(status);
     setCurrentUser(getCurrentUser());
+    if(currentUser !== null && currentUser.user.picture !== null && typeof currentUser.user.picture !=='undefined'){
+      setIsLineLogin(false);
+    }
     if (status === false) {
       redirect.push("/login");
     }
@@ -152,6 +210,7 @@ const App = () => {
   const logOut = (e) => {
     e.preventDefault();
     logout(changeLoginStatus);
+    handleClose();
   };
 
   return (
@@ -174,9 +233,10 @@ const App = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            EveryWhere30
+            <Link to={"/"} className="navbar-brand">R8WAY - EveryWhere30</Link>
           </Typography>
-          {logined && (
+          
+          {(logined) ? (
             <div>
               <IconButton
                 aria-label="account of current user"
@@ -185,7 +245,12 @@ const App = () => {
                 onClick={handleMenu}
                 color="inherit"
               >
-                <AccountCircle />
+                {(!isLineLogin)?(
+                  <AccountCircle />
+                ):(
+                  <Avatar className={classes.avatarSmall} src={(currentUser!=null)?currentUser.user.picture:''} />
+                )}
+                
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -201,53 +266,33 @@ const App = () => {
                 }}
                 open={openMenu}
                 onClose={handleClose}
+                className={classes.popupMenuLink}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <Link to={"/profile"}>
+                  <MenuItem onClick={handleClose}>ข้อมูลส่วนตัว</MenuItem>
+                </Link>
+                <MenuItem onClick={logOut}>ออกจากระบบ</MenuItem>
               </Menu>
             </div>
+          ):(
+            (!mobileView)&&(
+              (!logined) ? (
+                <div className="navMenu">
+                  <Link to={"/login"}>
+                    <Button color="inherit"><LockOpenIcon style={{marginRight:'5px'}}/> เข้าสู่ระบบ</Button>
+                  </Link>
+                  <Link to={"/register"}>
+                    <Button color="inherit"><PersonAddIcon style={{marginRight:'5px'}}/> ลงทะเบียน</Button>
+                  </Link>
+                </div>
+              ):(
+                <div className="navMenu">
+                  <Button color="inherit" onClick={logout}><ExitToAppIcon style={{marginRight:'5px'}} /> ออกจากระบบ</Button>
+                </div>
+              )
+            )
           )}
         </Toolbar>
-
-        {/* <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Photos
-          </Typography>
-          {logined && (
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={openMenu}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-              </Menu>
-            </div>
-          )}
-        </Toolbar> */}
       </AppBar>
       <Drawer
         className={classes.drawer}
@@ -265,76 +310,68 @@ const App = () => {
         </div>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
+          <Link to={"/"}>
+            <ListItem button key="หน้าหลัก">
+              <ListItemIcon><HomeIcon /></ListItemIcon>
+              <ListItemText primary="หน้าหลัก" />
             </ListItem>
-          ))}
+          </Link>
+          {(logined) && (
+            <Link to={"/"}>
+              <ListItem button key="ข้อมูลผู้ป่วย">
+                <ListItemIcon><WcIcon /></ListItemIcon>
+                <ListItemText primary="ข้อมูลผู้ป่วย" />
+              </ListItem>
+            </Link>
+          )}
         </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
+        {(mobileView)&&(<Divider />)}
+        {(mobileView)&&(
+          (!logined) ? (
+            <List>
+              <Link to={"/login"}>
+                <ListItem button key="เข้าสู่ระบบ">
+                  <ListItemIcon><LockOpenIcon /></ListItemIcon>
+                  <ListItemText primary="เข้าสู่ระบบ" />
+                </ListItem>
+              </Link>
+              <Link to={"/register"}>
+                <ListItem button key="ลงทะเบียน">
+                  <ListItemIcon><PersonAddIcon /></ListItemIcon>
+                  <ListItemText primary="ลงทะเบียน" />
+                </ListItem>
+              </Link>
+            </List>
+          ):(
+            <List>
+              <Link to={"/logout"} onClick={logOut}>
+                <ListItem button key="ออกจากระบบ">
+                  <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+                  <ListItemText primary="ออกจากระบบ" />
+                </ListItem>
+                </Link>
+            </List>
+          )
+          
+        )}
       </Drawer>
       <main
         className={clsx(classes.content, {
           [classes.contentShift]: open,
         })}
       >
-        <div className={classes.drawerHeader} />
+        <div className={classes.toolbar} />
+        <Switch>
+          {(logined) && (
+            <Route exact path='/' component={SearchCID} />
+          )}
+          <Route path='/home' component={Home} />
+          <Route path='/register' component={Register} />
+          <Route path='/profile' component={Profile} />
+          <Route path='/login' render={() => <Login changeLoginStatus={changeLoginStatus} />} />
+          <Route path='/linelogin' render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
+        </Switch>
       </main>
-      {/* <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        {<Link to={"/"} className="navbar-brand">R8WAY everyWhere30</Link>}
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-            <ul class="navbar-nav ">
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" id="navDropDownLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Profile
-            </a>
-                    <div class="dropdown-menu" aria-labelledby="navDropDownLink">
-                        <a class="dropdown-item" href="#">Preferences</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-      </div> */}
-
-        {/* <Link to={"/"} className="navbar-brand">R8WAY everyWhere30</Link>
-        {(logined) ? (
-          <div className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link to={"/profile"} className="nav-link">{userFullname}</Link>
-            </li>
-            <li className="nav-item">
-              <a href="/logout" className="nav-link" onClick={logOut}>ออกจากระบบ</a>
-            </li>
-          </div>
-        ) : (
-            <div className="navbar-nav ml-auto">
-              <li className="nav-item">
-                <Link to={"/login"} className="nav-link">เข้าสู่ระบบ</Link>
-              </li>
-              <li className="nav-item">
-                <Link to={"/register"} className="nav-link">ลงทะเบียน</Link>
-              </li>
-            </div>
-          )} */}
-      {/* </nav> */}
-       {/* <div className="container mt-3"> */}
-
-      {/* </div> */}
     </div >
   );
 };
