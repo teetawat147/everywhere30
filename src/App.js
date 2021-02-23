@@ -95,7 +95,7 @@ const App = () => {
       <div style={{ width: 'auto', margin: 10,}}>
         <Switch>
           {(logined) && (
-            <Route exact path='/' component={SearchCID} />
+            <Route exact path='/' component={Home} />
           )}
           <Route path='/home' component={Home} />
           <Route path='/register' component={Register} />

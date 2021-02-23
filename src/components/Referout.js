@@ -87,7 +87,12 @@ const useStyles = makeStyles({
   tcell: {
     whiteSpace: 'nowrap',
     borderBottom: 'solid 1px #dadada',
-    paddingRight: 3
+    padding: 5,
+  },
+  tcellWrap: {
+    whiteSpace: 'auto',
+    borderBottom: 'solid 1px #dadada',
+    padding: 5,
   }
 });
 
@@ -149,7 +154,7 @@ export default function SearchCID(props) {
                 }
               }
             });
-            // console.log(refer);
+            console.log(refer);
             r.push(
               <tr key={i.id}>
                 <td className={classes.tcell} style={{paddingLeft: 10, paddingRight: 10}}>
@@ -160,14 +165,14 @@ export default function SearchCID(props) {
                 <td className={classes.tcell}>{typeof refer.refer_date !=='undefined'?refer.refer_date:refer.date}</td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined'?refer.refer_number:''}</td>
-                <td className={classes.tcell}>
+                <td className={classes.tcellWrap}>
                   {typeof refer.refer_hospcode !== 'undefined'?refer.refer_hospcode:''} {typeof refer.refer_hospital_name !== 'undefined'?refer.refer_hospital_name:''}
                 </td>
                 <td className={classes.tcell}>{i.hn}</td>
                 <td className={classes.tcell}>{i.fname} {i.lname}</td>
                 <td className={classes.tcell}>{i.cid}</td>
-                <td className={classes.tcell}>{i.hcode}</td>
-                <td className={classes.tcell}>{typeof refer.pttype_name !== 'undefined'?refer.pttype_name:''}</td>
+                <td className={classes.tcellWrap}>{typeof refer.pttype_name !== 'undefined'?refer.pttype_name:''}</td>
+                <td className={classes.tcellWrap}>{typeof refer.diag_name !== 'undefined'?refer.diag_name:''}</td>
                 <td className={classes.tcell}>{typeof refer.depcode !== 'undefined'?refer.depcode:''}</td>
                 <td className={classes.tcell}>{typeof refer.department !== 'undefined'?refer.department:''}</td>
                 <td className={classes.tcell}>{typeof refer.refer_type_name !== 'undefined'?refer.refer_type_name:''}</td>
