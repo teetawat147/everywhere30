@@ -13,6 +13,10 @@ import LineLogin from "./components/LineLoginCallback";
 import Register from "./components/Register";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
+import Emr from "./components/SearchCID";
+import Referout from "./components/Referout";
+import Referin from "./components/Referin";
+
 // import BoardUser from "./components/BoardUser";
 // import BoardModerator from "./components/BoardModerator";
 // import BoardAdmin from "./components/BoardAdmin";
@@ -48,17 +52,34 @@ const App = () => {
   };
 
   return (
+    // <div style={{border: 'solid 1px blue'}}>
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
-        <Link to={"/"} className="navbar-brand">R8WAY everyWhere30</Link>
+        <Link to={"/"} className="navbar-brand">R8WAY|EveryWhere30</Link>
         {(logined) ? (
-          <div className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link to={"/profile"} className="nav-link">{userFullname}</Link>
-            </li>
-            <li className="nav-item">
-              <a href="/logout" className="nav-link" onClick={logOut}>ออกจากระบบ</a>
-            </li>
+          <div style={{ width: '100%' ,display:'flex' ,justifyContent:'space-between' }}>
+
+            <div className="navbar-nav">
+              <li className="nav-item">
+                <Link to={"/emr"} className="nav-link">EMR</Link>
+              </li>
+              <li className="nav-item">
+                <Link to={"/referout"} className="nav-link">ReferOut</Link>
+              </li>
+              <li className="nav-item">
+                <Link to={"/referin"} className="nav-link">ReferIn</Link>
+              </li>
+            </div>
+
+            <div className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link to={"/profile"} className="nav-link">{userFullname}</Link>
+              </li>
+              <li className="nav-item">
+                <a href="/logout" className="nav-link" onClick={logOut}>ออกจากระบบ</a>
+              </li>
+            </div>
+
           </div>
         ) : (
             <div className="navbar-nav ml-auto">
@@ -71,7 +92,7 @@ const App = () => {
             </div>
           )}
       </nav>
-      <div className="container mt-3">
+      <div style={{ width: 'auto', margin: 10,}}>
         <Switch>
           {(logined) && (
             <Route exact path='/' component={SearchCID} />
@@ -81,6 +102,9 @@ const App = () => {
           <Route path='/profile' component={Profile} />
           <Route path='/login' render={() => <Login changeLoginStatus={changeLoginStatus} />} />
           <Route path='/linelogin' render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
+          <Route path='/emr' component={Emr} />
+          <Route path='/referout' component={Referout} />
+          <Route path='/referin' component={Referin} />
         </Switch>
       </div>
     </div >
