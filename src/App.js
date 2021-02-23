@@ -94,9 +94,10 @@ const App = () => {
       </nav>
       <div style={{ width: 'auto', margin: 10,}}>
         <Switch>
-          {(logined) && (
+          {/* {(logined) && (
             <Route exact path='/' component={Home} />
-          )}
+          )} */}
+          <Route exact path='/' component={Home} />
           <Route path='/home' component={Home} />
           <Route path='/register' component={Register} />
           <Route path='/profile' component={Profile} />
