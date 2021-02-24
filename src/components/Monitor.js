@@ -7,21 +7,11 @@ const Monitor = () => {
     const getData = async () => {
         let xParams = {
             filter: {
-              where: {cid:{inq:['1471400120432']}},
-              
-              limit: 1
-            //   include: {
-            //     relation: "intervention",
-            //     scope: {
-            //       include: {
-            //         relation: "hospital",
-            //       }
-            //     }
-            //   }
+                groupBy: "hcode"
             }
         };
 
-        let response = await UAPI.getAll(xParams, 'people');
+        let response = await UAPI.getGroupBy(xParams, 'people');
         if (response.status === 200) {
             if (response.data) {
                 if (response.data.length > 0) {
