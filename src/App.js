@@ -18,6 +18,7 @@ import Referout from "./components/Referout";
 import Referin from "./components/Referin";
 import UserList from "./components/UserList";
 import UserEdit from "./components/UserEdit";
+import Monitor from "./components/Monitor";
 
 // import BoardUser from "./components/BoardUser";
 // import BoardModerator from "./components/BoardModerator";
@@ -110,6 +111,7 @@ const App = () => {
           <Route path='/referin' component={Referin} />
           <Route path='/userlist' component={UserList} />
           <Route path='/useredit' component={UserEdit} />
+          <Route path='/monitor' component={Monitor} />
         </Switch>
       </div>
     </div >
