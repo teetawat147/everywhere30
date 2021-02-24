@@ -233,7 +233,7 @@ const App = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            <Link to={"/"} className="navbar-brand">R8WAY - EveryWhere30</Link>
+            <Link to={"/"} className="navbar-brand">R8AnyWhere</Link>
           </Typography>
           
           {(logined) ? (
