@@ -57,7 +57,7 @@ const App = () => {
     // <div style={{border: 'solid 1px blue'}}>
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
-        <Link to={"/"} className="navbar-brand">R8WAY|EveryWhere30</Link>
+        <Link to={"/"} className="navbar-brand">R8 | Anywhere</Link>
         {(logined) ? (
           <div style={{ width: '100%' ,display:'flex' ,justifyContent:'space-between' }}>
 
