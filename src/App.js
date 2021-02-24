@@ -16,6 +16,8 @@ import Profile from "./components/Profile";
 import Emr from "./components/SearchCID";
 import Referout from "./components/Referout";
 import Referin from "./components/Referin";
+import UserList from "./components/UserList";
+import UserEdit from "./components/UserEdit";
 
 // import BoardUser from "./components/BoardUser";
 // import BoardModerator from "./components/BoardModerator";
@@ -106,6 +108,8 @@ const App = () => {
           <Route path='/emr' component={Emr} />
           <Route path='/referout' component={Referout} />
           <Route path='/referin' component={Referin} />
+          <Route path='/userlist' component={UserList} />
+          <Route path='/useredit' component={UserEdit} />
         </Switch>
       </div>
     </div >

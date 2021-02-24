@@ -4,3 +4,4 @@ build/
 my edit/
 .DS_Store
 .env
+src/.DS_Store
