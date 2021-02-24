@@ -31,7 +31,7 @@ const getCurrentUser = () => {
 };
 const getAuthorize = async (userinfo) => {
   let auth = '';
-  if (typeof userinfo !== 'undefined') { // กรณี Users มี roleId
+  if (typeof userinfo.user.roleId !== 'undefined') { // กรณี Users มี roleId
     let role = await axios.get(`${API_URL}/Roles`, {
       headers: { Authorization: userinfo.id },
       params: { filter: { where: { "id": userinfo.user.roleId } } }
