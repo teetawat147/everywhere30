@@ -1,17 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
 import {  Route, useHistory, Link, Switch } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+
 import { getCurrentUser, logout } from "./services/auth.service";
 import Login from "./components/Login";
 import LineLogin from "./components/LineLoginCallback";
 import Register from "./components/Register";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
+import Consent from "./components/Consent";
+
 import clsx from 'clsx';
 import { makeStyles,useTheme  } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
+// import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
@@ -30,6 +34,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Avatar from '@material-ui/core/Avatar';
@@ -82,9 +87,6 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
-  },
-  menuButton: {
-    marginRight: theme.spacing(2)
   },
   menuButtonIconClosed: {
     transition: theme.transitions.create(["transform"], {
@@ -176,7 +178,8 @@ const App = () => {
     const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
     const mobile = Boolean(userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i));
     setMobileView(mobile);
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
   useEffect(() => {
     if (currentUser !== null) {
       if (currentUser.user.fullname !== null && typeof currentUser.user.fullname !== 'undefined') {
@@ -184,11 +187,11 @@ const App = () => {
       }
       if(currentUser.user.picture !== null && typeof currentUser.user.picture !=='undefined'){
         setIsLineLogin(true);
-        console.log("When Line login : ",isLineLogin)
+        // console.log("When Line login : ",isLineLogin)
       }
-      console.log("When Simple login line login is : ",isLineLogin)
+      // console.log("When Simple login line login is : ",isLineLogin)
       setLogined(true);
-      console.log(currentUser.user);
+      // console.log(currentUser.user);
     } else {
       setCurrentUser(getCurrentUser());
       if (currentUser == null){
@@ -196,6 +199,7 @@ const App = () => {
         setLogined(false);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
   const changeLoginStatus = (status) => {
     setLogined(status);
@@ -233,7 +237,7 @@ const App = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            <Link to={"/"} className="navbar-brand">R8AnyWhere</Link>
+            <Link to={"/"} className="navbar-brand">R8 | Anywhere</Link>
           </Typography>
           
           {(logined) ? (
@@ -317,25 +321,33 @@ const App = () => {
             </ListItem>
           </Link>
           {(logined) && (
-            <Link to={"/"}>
-              <ListItem button key="ข้อมูลผู้ป่วย">
-                <ListItemIcon><WcIcon /></ListItemIcon>
-                <ListItemText primary="ข้อมูลผู้ป่วย" />
-              </ListItem>
-            </Link>
+            <>
+              <Link to={"/"} onClick={handleDrawerClose}>
+                <ListItem button key="ข้อมูลผู้ป่วย">
+                  <ListItemIcon><WcIcon /></ListItemIcon>
+                  <ListItemText primary="ข้อมูลผู้ป่วย" />
+                </ListItem>
+              </Link>
+                <Link to={"/consent"} onClick={handleDrawerClose}>
+                <ListItem button key="consent">
+                  <ListItemIcon><AssignmentIcon /></ListItemIcon>
+                  <ListItemText primary="consent" />
+                </ListItem>
+              </Link>
+            </>
           )}
         </List>
         {(mobileView)&&(<Divider />)}
         {(mobileView)&&(
           (!logined) ? (
             <List>
-              <Link to={"/login"}>
+              <Link to={"/login"} onClick={handleDrawerClose}>
                 <ListItem button key="เข้าสู่ระบบ">
                   <ListItemIcon><LockOpenIcon /></ListItemIcon>
                   <ListItemText primary="เข้าสู่ระบบ" />
                 </ListItem>
               </Link>
-              <Link to={"/register"}>
+              <Link to={"/register"} onClick={handleDrawerClose}>
                 <ListItem button key="ลงทะเบียน">
                   <ListItemIcon><PersonAddIcon /></ListItemIcon>
                   <ListItemText primary="ลงทะเบียน" />
@@ -363,7 +375,10 @@ const App = () => {
         <div className={classes.toolbar} />
         <Switch>
           {(logined) && (
-            <Route exact path='/' component={SearchCID} />
+            <>
+              <Route exact path='/' component={SearchCID} />
+              <Route exact path='/consent' component={Consent} />
+            </>
           )}
           <Route path='/home' component={Home} />
           <Route path='/register' component={Register} />
