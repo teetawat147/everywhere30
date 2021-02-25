@@ -3,7 +3,25 @@ import React, { useState, useEffect } from "react";
 import UserService from "../services/user.service";
 import UAPI from "../services/UniversalAPI";
 
+import {
+    Grid,
+    Link,
+    Breadcrumbs as MuiBreadcrumbs,
+    Card as MuiCard,
+    CardContent as MuiCardContent,
+    Divider as MuiDivider,
+    Paper as MuiPaper,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Typography
+  } from "@material-ui/core";
+
 const Monitor = () => {
+    const [data, setData] = useState(null);
+
     const getData = async () => {
         let xParams = {
             filter: {
@@ -16,41 +34,58 @@ const Monitor = () => {
             if (response.data) {
                 if (response.data.length > 0) {
                     console.log(response.data);
-                // let r=response.data[0];
-                // console.log(r);
-                // setData(response.data);
+                    setData(response.data);
                 }
             }
         }
     }
-//   const [content, setContent] = useState("");
 
-//   useEffect(() => {
-//     UserService.getAdminBoard().then(
-//       (response) => {
-//         setContent(response.data);
-//       },
-//       (error) => {
-//         const _content =
-//           (error.response &&
-//             error.response.data &&
-//             error.response.data.message) ||
-//           error.message ||
-//           error.toString();
-
-//         setContent(_content);
-//       }
-//     );
-//   }, []);
     useEffect(() => {
         getData();
     }, []);
 
-  return (
-    <div style={{marginBottom:100, width: '100%' }}>
-        <div><h5>Monitor Data</h5></div>
-    </div>
-  );
+    const mkRows = () => {
+        let r = [];
+        if (data) {
+            if (typeof data !== 'undefined') {
+                if (data.length > 0) {
+                    let ii = 1;
+                    data.forEach(i => {
+                        r.push(
+                            <TableRow key={i.hcode}>
+                                <TableCell align="center">{ii++}</TableCell>
+                                <TableCell component="th" scope="row">{i.hcode}</TableCell>
+                                <TableCell></TableCell>
+                                <TableCell align="right">{i.count}</TableCell>
+                            </TableRow>
+                        );
+                    });
+                }
+            }
+        }
+        return(
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell align="center">ลำดับ</TableCell>
+                        <TableCell>รหัสหน่วยบริการ</TableCell>
+                        <TableCell>หน่วยบริการ</TableCell>
+                        <TableCell align="right">จำนวน</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {r}
+                </TableBody>
+            </Table>
+        );
+    }
+
+    return (
+        <div style={{marginBottom:100, width: '100%' }}>
+            <div><h5>Monitor Data</h5></div>
+            {mkRows()}
+        </div>
+    );
 };
 
 export default Monitor;
