@@ -4,4 +4,5 @@ build/
 my edit/
 .DS_Store
 .env
+R8Way.code-workspace
 src/.DS_Store

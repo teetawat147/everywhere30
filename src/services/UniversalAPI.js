@@ -27,7 +27,9 @@ const get = (id, thisCollection) => {
 const create = (data, thisCollection) => {
   return axios.post(API_URL + thisCollection, data, { headers: authHeader.getToken() });
 };
-
+const uploadFile = (params,collection)=>{
+  return axios.post(API_URL + collection, params, { headers: authHeader.setHeader()});
+}
 const update = (id, data, thisCollection) => {
   return axios.put(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
 };
@@ -54,5 +56,6 @@ export default {
   remove,
   removeAll,
   findByTitle,
+  uploadFile,
   getGroupBy
 };
