@@ -4,18 +4,9 @@ import {  Route, useHistory, Link, Switch } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import { getCurrentUser, logout } from "./services/auth.service";
-import Login from "./components/Login";
-import LineLogin from "./components/LineLoginCallback";
-import Register from "./components/Register";
-import Home from "./components/Home";
-import Profile from "./components/Profile";
-import Consent from "./components/Consent";
-
 import clsx from 'clsx';
 import { makeStyles,useTheme  } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-// import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
@@ -28,20 +19,32 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-
 import WcIcon from '@material-ui/icons/Wc';
 import HomeIcon from '@material-ui/icons/Home';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Avatar from '@material-ui/core/Avatar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Button from '@material-ui/core/Button';
-import SearchCID from "./components/SearchCID";
+
+import { getCurrentUser, logout } from "./services/auth.service";
+import Login from "./components/Login";
+import LineLogin from "./components/LineLoginCallback";
+import Register from "./components/Register";
+import Home from "./components/Home";
+import Profile from "./components/Profile";
+import Consent from "./components/Consent";
+import Emr from "./components/SearchCID";
+import Referout from "./components/Referout";
+import Referin from "./components/Referin";
+import UserList from "./components/UserList";
+import UserEdit from "./components/UserEdit";
+import Monitor from "./components/Monitor";
+
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -376,13 +379,19 @@ const App = () => {
         <Switch>
           {(logined) && (
             <>
-              <Route exact path='/' component={SearchCID} />
-              <Route exact path='/consent' component={Consent} />
+              <Route path='/profile' component={Profile} />
+              <Route path='/consent' component={Consent} />
+              <Route path='/emr' component={Emr} />
+              <Route path='/referout' component={Referout} />
+              <Route path='/referin' component={Referin} />
+              <Route path='/userlist' component={UserList} />
+              <Route path='/useredit' component={UserEdit} />
+              <Route path='/monitor' component={Monitor} />
             </>
           )}
+          <Route exact path='/' component={Home} />
           <Route path='/home' component={Home} />
           <Route path='/register' component={Register} />
-          <Route path='/profile' component={Profile} />
           <Route path='/login' render={() => <Login changeLoginStatus={changeLoginStatus} />} />
           <Route path='/linelogin' render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
         </Switch>
