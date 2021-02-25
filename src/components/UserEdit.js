@@ -256,6 +256,7 @@ export default function UserEdit(props) {
   useEffect(() => {
     if (isAddMode!=='newadd') {getTeamuser()};
     getChangewat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //console.log({users.fullname})
   //console.log(props.location.state);

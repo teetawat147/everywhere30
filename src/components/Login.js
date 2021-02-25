@@ -64,7 +64,7 @@ const Login = (props) => {
           setLoading(false);
           setMessage(loginData.err);
           props.changeLoginStatus(true);
-          redirect.push("/");
+          redirect.push("/home");
         } else {
           setLoading(false);
           alert("เข้าสู่ระบบไม่สำเร็จ เนื่องจาก\nชื่อผู้ใช้หรือรหัสผ่านผิด\nหรือคุณยังไม่ได้รับการอนุมัติใช้งาน");

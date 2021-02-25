@@ -53,8 +53,6 @@ const Register = (props) => {
   const classes = useStyles();
   const form = useRef();
   const checkBtn = useRef();
-  // const [successful, setSuccessful] = useState(false);
-  // const [message, setMessage] = useState("");
   const [fullname, setFullname] = useState('');
   const [position, setPosition] = useState('');
   const [cid, setCid] = useState('');
@@ -66,21 +64,7 @@ const Register = (props) => {
   const [departments, setDepartments] = useState([]);
   const [department, setDepartment] = useState('');
   const [departmentI, setDepartmentI] = useState('');
-  //{ "hos_name": "", "hos_fullname": "" }
-  // const [{ fullname, cid, mobile, email, password }, setState] = useState({
-  //   fullname: '', cid: '', mobile: '', email: '', password: ''
-  // });
   const [{ disEmail, disPassword }, setDisabledState] = useState({ disEmail: false, disPassword: false });
-  // const setLineInfo = () => {
-  //   if (typeof props.lineInfo !== 'undefined') {
-  //     if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
-  //       setFullname(props.lineInfo.fullname);
-  //       setEmail(props.lineInfo.email);
-  //       setPassword(props.lineInfo.password);
-  //       setDisabledState({ disEmail: true, disPassword: true });
-  //     }
-  //   }
-  // }
 
   useEffect(() => {
     const setLineInfo = () => {
@@ -97,10 +81,10 @@ const Register = (props) => {
   }, [props.lineInfo]);
 
   const [inputError, setInputError] = useState({
-    'fullname': false,'position': false, 'cid': false, 'mobile': false, 'email': false, 'password': false
+    'fullname': false,'position': false, 'cid': false, 'mobile': false, 'email': false, 'username': false, 'password': false
   });
   const [inputHelperText, setInputHelperText] = useState({
-    fullname: '', position:'', cid: '', mobile: '', email: '', password: ''
+    fullname: '', position:'', cid: '', mobile: '', email: '',username:'', password: ''
   });
   const helperTextConfig = {
     'fullname': [
@@ -142,6 +126,7 @@ const Register = (props) => {
       case 'cid': setCid(value); break;
       case 'mobile': setMobile(value); break;
       case 'email': setEmail(value); break;
+      // case 'username': setUsername(value); break;
       case 'password': setPassword(value); break;
       default : break;
     }

@@ -16,6 +16,10 @@ const getCount = (params, thisCollection) => {
   return axios.get(API_URL + thisCollection + "/count", { headers: authHeader.getToken(), params: params });
 };
 
+const getGroupBy = (params, thisCollection) => {
+  return axios.get(API_URL + thisCollection + "/groupBy", { headers: authHeader.getToken(), params: params });
+};
+
 const get = (id, thisCollection) => {
   return axios.get(API_URL + thisCollection + "/" + id, { headers: authHeader.getToken() });
 };
@@ -23,7 +27,9 @@ const get = (id, thisCollection) => {
 const create = (data, thisCollection) => {
   return axios.post(API_URL + thisCollection, data, { headers: authHeader.getToken() });
 };
-
+const uploadFile = (params,collection)=>{
+  return axios.post(API_URL + collection, params, { headers: authHeader.setHeader()});
+}
 const update = (id, data, thisCollection) => {
   return axios.put(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
 };
@@ -49,5 +55,7 @@ export default {
   update,
   remove,
   removeAll,
-  findByTitle
+  findByTitle,
+  uploadFile,
+  getGroupBy
 };
