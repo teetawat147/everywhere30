@@ -216,7 +216,10 @@ export default function UserEdit(props) {
       "cchangwats"
     );
     console.log(response.data);
-    setLookUpChangewats(response.data);
+    if( typeof variable ==='undefined') {
+        setLookUpChangewats(response.data);
+    }
+    
   };
 
   //   const setAutocompleteDefaultValue = (data) => {
@@ -355,7 +358,7 @@ export default function UserEdit(props) {
         </div>
         <div className="form-group">
           {/* {console.log(lookupchangewats, lookupchangewats.find((option)=>option.changwatname===changewat), changewat)} */}
-          {lookupchangewats.length > 0 && (
+          {/* {lookupchangewats.length > 0 && ( */}
             <Autocomplete
               id="changewat"
               size="small"
@@ -383,7 +386,7 @@ export default function UserEdit(props) {
                 <TextField {...params} label="จังหวัด" variant="outlined" />
               )}
             />
-          )}
+          {/* )} */}
         </div>
         {/* <div>{changewat} ค่าchangewat</div> */}
         <div className="form-group">
