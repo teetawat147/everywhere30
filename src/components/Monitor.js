@@ -33,7 +33,7 @@ const Monitor = () => {
         if (response.status === 200) {
             if (response.data) {
                 if (response.data.length > 0) {
-                    console.log(response.data);
+                    // console.log(response.data);
                     setData(response.data);
                 }
             }
