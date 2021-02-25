@@ -177,7 +177,7 @@ function ConsentArea() {
           <Grid item xs={12} md={12} >
             <Typography component="p">ค้นหาผู้ป่วย</Typography>
           </Grid>
-          <Grid item xs={12} md={11} >
+          <Grid item xs={11} md={11} >
             <TextField
               id="cid"
               name="cid"
@@ -192,8 +192,8 @@ function ConsentArea() {
               required
             />
           </Grid>
-          <Grid item xs={12} md={1} style={{display: 'flex'}}>
-            <IconButton color="primary" aria-label="search" style={{width: '100%'}} onClick={(e) => handleSearch(e)}><SearchIcon /></IconButton >
+          <Grid item xs={1} md={1} style={{display: 'flex',justifyContent: 'center'}}>
+            <IconButton color="primary" aria-label="search" style={{width: '58px'}} onClick={(e) => handleSearch(e)}><SearchIcon /></IconButton >
           </Grid>
           <Grid item xs={12} md={12} >
             {(typeof person.id!=='undefined')?(
