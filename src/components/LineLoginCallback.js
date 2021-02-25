@@ -51,7 +51,6 @@ const LineLogin = (props) => {
             password: decodedIdToken.sub,
             picture: decodedIdToken.picture
           }).then((response) => {
-            
             if(!response.isLoginError){
               // Login success then go to root page
               // console.log("userInfo : ", response.response);
@@ -73,6 +72,7 @@ const LineLogin = (props) => {
             console.log("Error : ", error);
           });
         }).catch((error) => {
+          redirect.push("/login");
           console.log("Error : ", error);
         });
       }
