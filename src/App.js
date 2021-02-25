@@ -394,6 +394,12 @@ const App = () => {
           <Route path='/register' component={Register} />
           <Route path='/login' render={() => <Login changeLoginStatus={changeLoginStatus} />} />
           <Route path='/linelogin' render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
+          <Route path='/emr' component={Emr} />
+          <Route path='/referout' component={Referout} />
+          <Route path='/referin' component={Referin} />
+          <Route path='/userlist' component={UserList} />
+          <Route path='/useredit' component={UserEdit} />
+          <Route path='/monitor' component={Monitor} />
         </Switch>
       </main>
     </div >

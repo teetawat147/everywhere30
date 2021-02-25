@@ -146,8 +146,16 @@ export default function SearchCID(props) {
     }
   }
 
-  const handleClickSearch = async () => {
-    if (searchCID) {
+  const handleClickSearch = async (e,cid) => {
+    let c=null;
+    if (cid===null) {
+      c=searchCID
+    }
+    else {
+      c=cid;
+    }
+    if (typeof c !=='undefined') {
+      if (c !== null) {
       setPatientData([]);
       setinterventionData([]);
       setServiceData({});
@@ -155,17 +163,25 @@ export default function SearchCID(props) {
       setAssessmentListData([]);
       setHcodeData({});
       setServiceInfoData({});
-      getPersonInfo();
+      getPersonInfo(c);
+      }
     }
   }
 
-  const getPersonInfo = async () => {
+  const getPersonInfo = async (cid) => {
+    let c=null;
+    if (searchCID) {
+      c=searchCID;
+    }
+    else {
+      c=cid;
+    }
     setPatientData([]);
     setinterventionData([]);
     setServiceData({});
     let xParams = {
       filter: {
-        where: {cid:searchCID},
+        where: {cid:c},
         include: {
           relation: "intervention",
           scope: {
@@ -176,12 +192,12 @@ export default function SearchCID(props) {
         }
       }
     };
-    
+    // console.log(xParams);
     let response = await UAPI.getAll(xParams, 'people');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length>0) {
-          // console.log(response.data);
+          console.log(response.data);
           let r=response.data[0];
           // console.log(r);
           let x=[];
@@ -190,7 +206,8 @@ export default function SearchCID(props) {
           x['birthday']=r['birthday'];
           x['age']=calcAge(r['birthday']);
           x['bloodgrp']=r['bloodgrp'];
-          x['address_info']='';
+          // x['address_info']='';
+          x['address_info']=r['informaddr'];
           x['drugallergy']=(r['drugallergy']!==''?r['drugallergy']:'ไม่พบข้อมูลการแพ้ยา');
           setPatientData(x);
           let intervention=r.intervention;
@@ -198,6 +215,19 @@ export default function SearchCID(props) {
             if (intervention.length>0) {
               intervention.reverse();
               setinterventionData(intervention);   
+              let s=null;
+              if (typeof props.history.location.state !== 'undefined') {
+                s=props.history.location.state;
+              }
+              if (s) {
+                intervention.forEach(i => {
+                  // if (i.date===d) {
+                  if (i.hcode===s.hcode && i.vn===s.vn) {
+                    x=i;
+                  }
+                });
+                setServiceData(x);
+              }
             }
           }
         }
@@ -551,6 +581,16 @@ export default function SearchCID(props) {
     extractServiceInfo();
   }, [serviceData]); // eslint-disable-line react-hooks/exhaustive-deps
   
+  useEffect(() => {
+    let s=null;
+    if (typeof props.history.location.state !== 'undefined') {
+      s=props.history.location.state;
+    }
+    if (s) {
+      setSearchCID(s.cid);
+      handleClickSearch(null,s.cid);
+    }
+  }, [props.history.location]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{marginBottom:100}}>
@@ -575,7 +615,7 @@ export default function SearchCID(props) {
         </div>
         <div>
           <Button
-            onClick={handleClickSearch}
+            onClick={(e)=>handleClickSearch(e,null)}
             style={{height:55}}
             variant="contained"
             color="primary"

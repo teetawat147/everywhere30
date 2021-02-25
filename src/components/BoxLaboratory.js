@@ -74,10 +74,11 @@ export default function BoxLaboratory(props) {
 
 // console.log(labHead);
 // console.log(labItemGroup);
-
+      let ii=0;
       labHead.forEach(i => {
+        ii++;
         laboratoryElement.push(
-          <div key={i.lab_order_number} style={{marginBottom: 20}}>
+          <div key={i.lab_order_number+'_'+ii} style={{marginBottom: 20}}>
             <div style={{backgroundColor: '#e2e2e2', borderRadius: 10, paddingLeft: 30}}><b>{i.form_name}</b></div>
             <div>
               {mkLabDetail(labItemGroup[i.lab_order_number])}
@@ -90,47 +91,52 @@ export default function BoxLaboratory(props) {
   }
 
   const mkLabDetail = (x) => {
-    let elem=[];
-    let n=0;
-  // console.log(x);
-    x[0].forEach(i => {
-      n++;
-      // console.log(i);
-      elem.push(
-        <tr key={i.lab_order_number+'_'+i.lab_items_code+'_'+n}>
-          <td style={{width:30}}>{n}</td>
-          <td style={{width:'auto'}}>{i.lab_items_name_ref}</td>
-          <td style={{width:'15%'}}>{i.lab_order_result}</td>
-          <td style={{width:'15%'}}>{i.lab_items_unit}</td>
-          <td style={{width:'15%'}}>{i.lab_items_normal_value_ref}</td>
-        </tr>
-      );
-    });
+    if (typeof x !== 'undefined') {
+      let elem=[];
+      let n=0;
+    // console.log(x);
+      x[0].forEach(i => {
+        n++;
+        // console.log(i);
+        elem.push(
+          <tr key={i.lab_order_number+'_'+i.lab_items_code+'_'+n}>
+            <td style={{width:30}}>{n}</td>
+            <td style={{width:'auto'}}>{i.lab_items_name_ref}</td>
+            <td style={{width:'15%'}}>{i.lab_order_result}</td>
+            <td style={{width:'15%'}}>{i.lab_items_unit}</td>
+            <td style={{width:'15%'}}>{i.lab_items_normal_value_ref}</td>
+          </tr>
+        );
+      });
 
-    return (
-      <div>
+      return (
         <div>
-          <table style={{width: '100%'}}>
-            <thead>
-              <tr>
-                <td style={{width:30}}><br /></td>
-                <td style={{width:'auto'}}>ชื่อแลป</td>
-                <td style={{width:'15%'}}>ผล</td>
-                <td style={{width:'15%'}}>หน่วย</td>
-                <td style={{width:'15%'}}>ค่าปกติ</td>
-              </tr>
-            </thead>
-          </table>
+          <div>
+            <table style={{width: '100%'}}>
+              <thead>
+                <tr>
+                  <td style={{width:30}}><br /></td>
+                  <td style={{width:'auto'}}>ชื่อแลป</td>
+                  <td style={{width:'15%'}}>ผล</td>
+                  <td style={{width:'15%'}}>หน่วย</td>
+                  <td style={{width:'15%'}}>ค่าปกติ</td>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+            <table style={{width: '100%'}}>
+              <tbody>
+                {elem}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
-          <table style={{width: '100%'}}>
-            <tbody>
-              {elem}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
+      );
+    }
+    else {
+      return null;
+    }
   }
 
   useEffect(() => {
