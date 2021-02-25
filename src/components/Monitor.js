@@ -25,7 +25,7 @@ const Monitor = () => {
     const getData = async () => {
         let xParams = {
             filter: {
-                groupBy: "hcode"
+                groupBy: "hname"
             }
         };
 
@@ -54,8 +54,8 @@ const Monitor = () => {
                         r.push(
                             <TableRow key={i.hcode}>
                                 <TableCell align="center">{ii++}</TableCell>
-                                <TableCell component="th" scope="row">{i.hcode}</TableCell>
-                                <TableCell></TableCell>
+                                <TableCell component="th" scope="row"></TableCell>
+                                <TableCell component="th" scope="row">{i.hname}</TableCell>
                                 <TableCell align="right">{i.count}</TableCell>
                             </TableRow>
                         );
