@@ -286,15 +286,15 @@ const App = () => {
               (!logined) ? (
                 <div className="navMenu">
                   <Link to={"/login"}>
-                    <Button color="inherit"><LockOpenIcon style={{marginRight:'5px'}}/> เข้าสู่ระบบ</Button>
+                    <Button color="inherit"><LockOpenIcon style={{marginRight:'5px'}}/> Login</Button>
                   </Link>
                   <Link to={"/register"}>
-                    <Button color="inherit"><PersonAddIcon style={{marginRight:'5px'}}/> ลงทะเบียน</Button>
+                    <Button color="inherit"><PersonAddIcon style={{marginRight:'5px'}}/> Register</Button>
                   </Link>
                 </div>
               ):(
                 <div className="navMenu">
-                  <Button color="inherit" onClick={logout}><ExitToAppIcon style={{marginRight:'5px'}} /> ออกจากระบบ</Button>
+                  <Button color="inherit" onClick={logout}><ExitToAppIcon style={{marginRight:'5px'}} /> Logout</Button>
                 </div>
               )
             )
@@ -317,24 +317,36 @@ const App = () => {
         </div>
         <Divider />
         <List>
-          <Link to={"/"}>
-            <ListItem button key="หน้าหลัก">
+          <Link to={"/home"}>
+            <ListItem button key="Home">
               <ListItemIcon><HomeIcon /></ListItemIcon>
-              <ListItemText primary="หน้าหลัก" />
+              <ListItemText primary="Home" />
             </ListItem>
           </Link>
           {(logined) && (
             <>
-              <Link to={"/"} onClick={handleDrawerClose}>
-                <ListItem button key="ข้อมูลผู้ป่วย">
+              <Link to={"/emr"} onClick={handleDrawerClose}>
+                <ListItem button key="EMR">
                   <ListItemIcon><WcIcon /></ListItemIcon>
-                  <ListItemText primary="ข้อมูลผู้ป่วย" />
+                  <ListItemText primary="EMR" />
                 </ListItem>
               </Link>
-                <Link to={"/consent"} onClick={handleDrawerClose}>
-                <ListItem button key="consent">
+              <Link to={"/referin"} onClick={handleDrawerClose}>
+                <ListItem button key="ReferIn">
+                  <ListItemIcon><WcIcon /></ListItemIcon>
+                  <ListItemText primary="ReferIn" />
+                </ListItem>
+              </Link>
+              <Link to={"/referout"} onClick={handleDrawerClose}>
+                <ListItem button key="Referout">
+                  <ListItemIcon><WcIcon /></ListItemIcon>
+                  <ListItemText primary="Referout" />
+                </ListItem>
+              </Link>
+              <Link to={"/consent"} onClick={handleDrawerClose}>
+                <ListItem button key="Consent">
                   <ListItemIcon><AssignmentIcon /></ListItemIcon>
-                  <ListItemText primary="consent" />
+                  <ListItemText primary="Consent" />
                 </ListItem>
               </Link>
             </>
@@ -345,24 +357,24 @@ const App = () => {
           (!logined) ? (
             <List>
               <Link to={"/login"} onClick={handleDrawerClose}>
-                <ListItem button key="เข้าสู่ระบบ">
+                <ListItem button key="Login">
                   <ListItemIcon><LockOpenIcon /></ListItemIcon>
-                  <ListItemText primary="เข้าสู่ระบบ" />
+                  <ListItemText primary="Login" />
                 </ListItem>
               </Link>
               <Link to={"/register"} onClick={handleDrawerClose}>
-                <ListItem button key="ลงทะเบียน">
+                <ListItem button key="Register">
                   <ListItemIcon><PersonAddIcon /></ListItemIcon>
-                  <ListItemText primary="ลงทะเบียน" />
+                  <ListItemText primary="Register" />
                 </ListItem>
               </Link>
             </List>
           ):(
             <List>
               <Link to={"/logout"} onClick={logOut}>
-                <ListItem button key="ออกจากระบบ">
+                <ListItem button key="Logout">
                   <ListItemIcon><ExitToAppIcon /></ListItemIcon>
-                  <ListItemText primary="ออกจากระบบ" />
+                  <ListItemText primary="Logout" />
                 </ListItem>
                 </Link>
             </List>
