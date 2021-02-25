@@ -19,12 +19,16 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+
 import WcIcon from '@material-ui/icons/Wc';
 import HomeIcon from '@material-ui/icons/Home';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import CallMissedOutgoingIcon from '@material-ui/icons/CallMissedOutgoing';
+import GetAppIcon from '@material-ui/icons/GetApp';
+
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Avatar from '@material-ui/core/Avatar';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -63,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     "& a.navbar-brand:hover, .navMenu a:hover":{color: '#e0e0e0',textDecoration:'none'},
     "& .MuiDrawer-root a":{color: 'rgba(0, 0, 0, 0.87)',textDecoration:'none'},
     "& .MuiDrawer-root a:hover":{color: 'rgba(0, 0, 0, 0.87)',textDecoration:'none'},
-    "& .MuiButton-root:hover":{backgroundColor:'#ffffff0f'},
+    // "& .MuiButton-root:hover":{backgroundColor:'#ffffff0f'},
     "& .MuiButton-root":{marginLeft:'5px'}
   },
   popupMenuLink:{
@@ -333,13 +337,13 @@ const App = () => {
               </Link>
               <Link to={"/referin"} onClick={handleDrawerClose}>
                 <ListItem button key="ReferIn">
-                  <ListItemIcon><WcIcon /></ListItemIcon>
+                  <ListItemIcon><GetAppIcon /></ListItemIcon>
                   <ListItemText primary="ReferIn" />
                 </ListItem>
               </Link>
               <Link to={"/referout"} onClick={handleDrawerClose}>
                 <ListItem button key="Referout">
-                  <ListItemIcon><WcIcon /></ListItemIcon>
+                  <ListItemIcon><CallMissedOutgoingIcon /></ListItemIcon>
                   <ListItemText primary="Referout" />
                 </ListItem>
               </Link>
@@ -389,29 +393,29 @@ const App = () => {
       >
         <div className={classes.toolbar} />
         <Switch>
-          {(logined) && (
+          {(logined) ? (
             <>
+              <Route exact path='/' component={Home} />
+              <Route path='/home' component={Home} />
               <Route path='/profile' component={Profile} />
-              <Route path='/consent' component={Consent} />
               <Route path='/emr' component={Emr} />
               <Route path='/referout' component={Referout} />
               <Route path='/referin' component={Referin} />
               <Route path='/userlist' component={UserList} />
               <Route path='/useredit' component={UserEdit} />
               <Route path='/monitor' component={Monitor} />
+              <Route path='/consent' component={Consent} />
+            </>
+          ):(
+            <>
+              <Route exact path='/' component={Home} />
+              <Route path='/home' component={Home} />
+              <Route path='/register' component={Register} />
+              <Route path='/login' render={() => <Login changeLoginStatus={changeLoginStatus} />} />
+              <Route path='/linelogin' render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
             </>
           )}
-          <Route exact path='/' component={Home} />
-          <Route path='/home' component={Home} />
-          <Route path='/register' component={Register} />
-          <Route path='/login' render={() => <Login changeLoginStatus={changeLoginStatus} />} />
-          <Route path='/linelogin' render={() => <LineLogin changeLoginStatus={changeLoginStatus} />} />
-          <Route path='/emr' component={Emr} />
-          <Route path='/referout' component={Referout} />
-          <Route path='/referin' component={Referin} />
-          <Route path='/userlist' component={UserList} />
-          <Route path='/useredit' component={UserEdit} />
-          <Route path='/monitor' component={Monitor} />
+          
         </Switch>
       </main>
     </div >
