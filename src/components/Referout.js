@@ -16,13 +16,6 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import UAPI from "../services/UniversalAPI";
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
-import BoxServiceInfo from "./BoxServiceInfo";
-import BoxAssessment from "./BoxAssessment";
-import BoxDiagnosis from "./BoxDiagnosis";
-import BoxTreatment from "./BoxTreatment";
-import BoxLaboratory from "./BoxLaboratory";
-import BoxRadiology from "./BoxRadiology";
-import BoxReferout from "./BoxReferout";
 
 import {
   // InputAdornment,
@@ -82,7 +75,7 @@ const useStyles = makeStyles({
     whiteSpace: 'nowrap',
     borderBottom: 'solid 1px #dadada',
     padding: 5,
-    backgroundColor: '#E3E3E3'
+    backgroundColor: '#E3E3E3',
   },
   tcell: {
     whiteSpace: 'nowrap',
@@ -154,7 +147,7 @@ export default function SearchCID(props) {
                 }
               }
             });
-            console.log(refer);
+            // console.log(refer);
             r.push(
               <tr key={i.id}>
                 <td className={classes.tcell} style={{paddingLeft: 10, paddingRight: 10}}>
@@ -162,7 +155,7 @@ export default function SearchCID(props) {
                     <MdRemoveRedEye size={20} />
                   </IconButton>
                 </td>
-                <td className={classes.tcell}>{typeof refer.refer_date !=='undefined'?refer.refer_date:refer.date}</td>
+                <td className={classes.tcell}>{typeof refer.refer_date !=='undefined'?thaiXSDate(refer.refer_date):thaiXSDate(refer.date)}</td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined'?refer.refer_number:''}</td>
                 <td className={classes.tcellWrap}>
@@ -225,7 +218,6 @@ export default function SearchCID(props) {
   // useEffect(() => {
   //   extractServiceInfo();
   // }, [serviceData]); // eslint-disable-line react-hooks/exhaustive-deps
-  
   
   return (
     <div style={{marginBottom:100, width: '100%' }}>

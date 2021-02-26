@@ -32,11 +32,28 @@ const useStyles = makeStyles({
       background: "#E5E5E5",
     },
   },
+  rowHead: {
+    borderBottom: 'solid 1px #E2E2E2'
+  },
+  rowCellA: {
+  },
+  rowCellB: {
+    backgroundColor: '#f3f3f3',
+  },
+  OF_True: {
+    height:200, 
+    overflowX: 'hidden', 
+    overflowY: 'scroll'
+  },
+  OF_False: {
+    height:'auto', 
+  }
 });
 
 export default function BoxLaboratory(props) {
   const classes = useStyles();
   const [laboratory, setLaboratory] = useState({});
+  const [classOverflow, setClassOverflow] = useState(classes.OF_Ture);
 
   const mkLaboratoryList = () => {
     let laboratoryElement=[];
@@ -44,41 +61,25 @@ export default function BoxLaboratory(props) {
     let labItemGroup=[];
     if (laboratory.length>0) {
       laboratory.forEach(i => {
-        // if (typeof i.form_name === 'undefined') {
-        //   if (typeof labItemGroup[i.lab_order_number] === 'undefined') {
-        //     labItemGroup[i.lab_order_number]=[];
-        //     labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
-        //   }
-        //   else {
-        //     labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
-        //   }
-        // }
-        // else {
-        //   labHead.push(i);
-        // }
         if (typeof i.form_name !== 'undefined') {
-          labHead.push(i);
+          if (typeof labHead[i.lab_order_number] === 'undefined') {
+            labHead[i.lab_order_number]={lab_order_number:i.lab_order_number, form_name:i.form_name};
+          }
         }
         if (typeof labItemGroup[i.lab_order_number] === 'undefined') {
-          if (typeof i.laboratoryDetail !== 'undefined') {
-            labItemGroup[i.lab_order_number]=[];
-            labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
-          }
+          labItemGroup[i.lab_order_number]=[];
+          labItemGroup[i.lab_order_number].push(i);
         }
         else {
-          if (typeof i.laboratoryDetail !== 'undefined') {
-            labItemGroup[i.lab_order_number].push(i.laboratoryDetail);
-          }
+          labItemGroup[i.lab_order_number].push(i);
         }
       });
 
 // console.log(labHead);
 // console.log(labItemGroup);
-      let ii=0;
       labHead.forEach(i => {
-        ii++;
         laboratoryElement.push(
-          <div key={i.lab_order_number+'_'+ii} style={{marginBottom: 20}}>
+          <div key={'LOB_'+i.lab_order_number} style={{marginBottom: 20}}>
             <div style={{backgroundColor: '#e2e2e2', borderRadius: 10, paddingLeft: 30}}><b>{i.form_name}</b></div>
             <div>
               {mkLabDetail(labItemGroup[i.lab_order_number])}
@@ -95,16 +96,20 @@ export default function BoxLaboratory(props) {
       let elem=[];
       let n=0;
     // console.log(x);
-      x[0].forEach(i => {
+      x.forEach(i => {
         n++;
         // console.log(i);
+        let className=classes.rowCellA;
+        if (n%2===0) {
+          className=classes.rowCellB;
+        }
         elem.push(
           <tr key={i.lab_order_number+'_'+i.lab_items_code+'_'+n}>
-            <td style={{width:30}}>{n}</td>
-            <td style={{width:'auto'}}>{i.lab_items_name_ref}</td>
-            <td style={{width:'15%'}}>{i.lab_order_result}</td>
-            <td style={{width:'15%'}}>{i.lab_items_unit}</td>
-            <td style={{width:'15%'}}>{i.lab_items_normal_value_ref}</td>
+            <td style={{width:30}} className={className}>{n}</td>
+            <td style={{width:'auto'}} className={className}>{i.lab_items_name_ref}</td>
+            <td style={{width:'15%'}} className={className}>{i.lab_order_result}</td>
+            <td style={{width:'15%'}} className={className}>{i.lab_items_unit}</td>
+            <td style={{width:'15%'}} className={className}>{i.lab_items_normal_value_ref}</td>
           </tr>
         );
       });
@@ -115,16 +120,17 @@ export default function BoxLaboratory(props) {
             <table style={{width: '100%'}}>
               <thead>
                 <tr>
-                  <td style={{width:30}}><br /></td>
-                  <td style={{width:'auto'}}>ชื่อแลป</td>
-                  <td style={{width:'15%'}}>ผล</td>
-                  <td style={{width:'15%'}}>หน่วย</td>
-                  <td style={{width:'15%'}}>ค่าปกติ</td>
+                  <td style={{width:30}} className={classes.rowHead}><br /></td>
+                  <td style={{width:'auto'}} className={classes.rowHead}>ชื่อแลป</td>
+                  <td style={{width:'15%'}} className={classes.rowHead}>ผล</td>
+                  <td style={{width:'15%'}} className={classes.rowHead}>หน่วย</td>
+                  <td style={{width:'15%'}} className={classes.rowHead}>ค่าปกติ</td>
                 </tr>
               </thead>
             </table>
           </div>
-          <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+          {/* <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}> */}
+          <div className={classOverflow}>
             <table style={{width: '100%'}}>
               <tbody>
                 {elem}
@@ -143,9 +149,16 @@ export default function BoxLaboratory(props) {
     if (props.data) {
       if (props.data.length>0) {
         setLaboratory(props.data);
+        // console.log(props.data);
       }
     }
-  }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (props.currentView==='summary') {
+      setClassOverflow(classes.OF_True);
+    }
+    else {
+      setClassOverflow(classes.OF_False);
+    }
+  }, [props.data, props.currentView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
       <>

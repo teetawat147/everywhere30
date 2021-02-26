@@ -32,11 +32,20 @@ const useStyles = makeStyles({
       background: "#E5E5E5",
     },
   },
+  OF_True: {
+    height:200, 
+    overflowX: 'hidden', 
+    overflowY: 'scroll'
+  },
+  OF_False: {
+    height:'auto', 
+  }
 });
 
 export default function BoxDiagnosis(props) {
   const classes = useStyles();
   const [diagnosis, setDiagnosis] = useState({});
+  const [classOverflow, setClassOverflow] = useState(classes.OF_Ture);
 
   const mkDiagnosisList = () => {
     let elem=[];
@@ -48,9 +57,9 @@ export default function BoxDiagnosis(props) {
           elem.push(
             <tr key={'treatment_'+n}>
               <td style={{width:30}}>{n}</td>
-              <td style={{width:180}}>{i.diagtype_name}</td>
+              <td style={{width:250}}>{i.diagtype_name}</td>
               <td style={{width:60}}>{i.icd10}</td>
-              <td style={{width:'auto'}}>{i.icd10_name}</td>
+              <td style={{width:'auto'}}>{i.diag_name}</td>
             </tr>
           );
         }
@@ -64,14 +73,15 @@ export default function BoxDiagnosis(props) {
             <thead>
               <tr>
                 <td style={{width:30}}><br /></td>
-                <td style={{width:180}}>ประเภท</td>
+                <td style={{width:250}}>ประเภท</td>
                 <td style={{width:60}}>ICD10</td>
                 <td style={{width:'auto'}}>วินิจฉัย</td>
               </tr>
             </thead>
           </table>
         </div>
-        <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+        {/* <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}> */}
+        <div className={classOverflow}>
           <table style={{width: '100%'}}>
             <tbody>
               {elem}
@@ -105,7 +115,13 @@ export default function BoxDiagnosis(props) {
         setDiagnosis(x);
       }
     }
-  }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (props.currentView==='summary') {
+      setClassOverflow(classes.OF_True);
+    }
+    else {
+      setClassOverflow(classes.OF_False);
+    }
+  }, [props.data, props.currentView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
       <>
