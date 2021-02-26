@@ -31,23 +31,31 @@ const getCurrentUser = () => {
 };
 const getAuthorize = async (userinfo) => {
   let auth = '';
-  if (typeof userinfo !== 'undefined') { // กรณี Users มี roleId
-    let role = await axios.get(`${API_URL}/Roles`, {
-      headers: { Authorization: userinfo.id },
-      params: { filter: { where: { "id": userinfo.user.roleId } } }
-    });
-    auth = role.data[0].name;
-  } else { // กรณี Users ไม่มี roleId ใช้ id ไปหาใน RoleMappings, Role
-    let roleMapping = await axios.get(`${API_URL}/RoleMappings`, {
-      headers: { Authorization: userinfo.id },
-      params: { filter: { where: { "principalId": userinfo.user.id } } }
-    });
-    let roleId = roleMapping.data[0].roleId;
-    let role = await axios.get(`${API_URL}/Roles`, {
-      headers: { Authorization: userinfo.id },
-      params: { filter: { where: { "id": roleId } } }
-    });
-    auth = role.data[0].name;
+  if (typeof userinfo.user !== 'undefined') { 
+    if (typeof userinfo.user.roleId !== 'undefined') { // กรณี Users มี roleId
+      console.log("Teamuser have roleId");
+      let role = await axios.get(`${API_URL}/Roles`, {
+        headers: { Authorization: userinfo.id },
+        params: { filter: { where: { "id": userinfo.user.roleId } } }
+      });
+      auth = role.data[0].name;
+    } else { // กรณี Users ไม่มี roleId ใช้ id ไปหาใน RoleMappings, Role
+      console.log("Teamuser don't have roleId");
+      let roleMapping = await axios.get(`${API_URL}/RoleMappings`, {
+        headers: { Authorization: userinfo.id },
+        params: { filter: { where: { "principalId": userinfo.user.id } } }
+      });
+      if(typeof roleMapping.data[0]!=='undefined'){
+        let roleId = roleMapping.data[0].roleId;
+        let role = await axios.get(`${API_URL}/Roles`, {
+          headers: { Authorization: userinfo.id },
+          params: { filter: { where: { "id": roleId } } }
+        });
+        auth = role.data[0].name;
+      }
+    }
+  }else{
+    console.log("Don't have userinfo.user ");
   }
   return auth;
 };
