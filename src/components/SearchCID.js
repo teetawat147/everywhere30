@@ -197,7 +197,7 @@ export default function SearchCID(props) {
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length>0) {
-          console.log(response.data);
+          // console.log(response.data);
           let r=response.data[0];
           // console.log(r);
           let x=[];
@@ -400,7 +400,7 @@ export default function SearchCID(props) {
           }
         }
       }
-      // console.log(serviceData);
+      console.log(serviceData);
       // console.log(serviceData.activities.referout);
       // console.log(assessment);
     }

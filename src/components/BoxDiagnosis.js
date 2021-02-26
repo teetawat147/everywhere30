@@ -48,9 +48,9 @@ export default function BoxDiagnosis(props) {
           elem.push(
             <tr key={'treatment_'+n}>
               <td style={{width:30}}>{n}</td>
-              <td style={{width:180}}>{i.diagtype_name}</td>
+              <td style={{width:250}}>{i.diagtype_name}</td>
               <td style={{width:60}}>{i.icd10}</td>
-              <td style={{width:'auto'}}>{i.icd10_name}</td>
+              <td style={{width:'auto'}}>{i.diag_name}</td>
             </tr>
           );
         }
@@ -64,7 +64,7 @@ export default function BoxDiagnosis(props) {
             <thead>
               <tr>
                 <td style={{width:30}}><br /></td>
-                <td style={{width:180}}>ประเภท</td>
+                <td style={{width:250}}>ประเภท</td>
                 <td style={{width:60}}>ICD10</td>
                 <td style={{width:'auto'}}>วินิจฉัย</td>
               </tr>

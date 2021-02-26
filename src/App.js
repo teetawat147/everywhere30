@@ -92,7 +92,8 @@ const App = () => {
             </div>
           )}
       </nav>
-      <div style={{ width: 'auto', margin: 10,}}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignitems: 'center' }}>
+      <div style={{ width: '90%', margin: 10, alignSelf: 'center'}}>
         <Switch>
           {/* {(logined) && (
             <Route exact path='/' component={Home} />
@@ -107,6 +108,7 @@ const App = () => {
           <Route path='/referout' component={Referout} />
           <Route path='/referin' component={Referin} />
         </Switch>
+      </div>
       </div>
     </div >
   );
