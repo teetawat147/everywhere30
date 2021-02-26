@@ -32,6 +32,14 @@ const useStyles = makeStyles({
       background: "#E5E5E5",
     },
   },
+  rowHead: {
+    borderBottom: 'solid 1px #E2E2E2'
+  },
+  rowCellA: {
+  },
+  rowCellB: {
+    backgroundColor: '#f3f3f3',
+  }
 });
 
 export default function BoxTreatment(props) {
@@ -73,14 +81,35 @@ export default function BoxTreatment(props) {
   const mkDrugList = (x) => {
     let elem=[];
     let n=0;
+
+    x.sort(function(a,b){
+      // b-a เรียงมากไปน้อย
+      // a-b เรียงน้อยไปมาก
+      return a.sub_type-b.sub_type;
+    });
+
     x.forEach(i => {
       n++;
       // console.log(i);
+      let className=classes.rowCellA;
+      if (n%2===0) {
+        className=classes.rowCellB;
+      }
+      let drugusage_name=null;
+      if (typeof i.drugusage_name !== 'undefined') {
+        if (i.drugusage_name!==null&&i.drugusage_name!=='') {
+          drugusage_name=i.drugusage_name; 
+        }
+      }
       elem.push(
         <tr key={'treatment_'+n}>
-          <td style={{width:30}}>{n}</td>
-          <td style={{width:'auto'}}>{typeof i.result !== 'undefined'?i.result.icode_name:i.icode_name}</td>
-          <td style={{width:'15%'}}>{typeof i.result !== 'undefined'?i.result.qty:i.qty}</td>
+          <td style={{width:30}} className={className}>{n}</td>
+          <td style={{width:'auto'}} className={className}>
+            {typeof i.drug_name !== 'undefined'?i.drug_name:''}
+            {drugusage_name?<br />:''}
+            {drugusage_name?drugusage_name:''}
+          </td>
+          <td style={{width:'15%'}} className={className}>{typeof i.qty !== 'undefined'?i.qty:''} {typeof i.units !== 'undefined'?i.units:''}</td>
         </tr>
       );
     });
@@ -91,9 +120,9 @@ export default function BoxTreatment(props) {
           <table style={{width: '100%'}}>
             <thead>
               <tr>
-                <td style={{width:30}}><br /></td>
-                <td style={{width:'auto'}}>รายการ</td>
-                <td style={{width:'15%'}}>จำนวน</td>
+                <td style={{width:30}} className={classes.rowHead}><br /></td>
+                <td style={{width:'auto'}} className={classes.rowHead}>รายการ</td>
+                <td style={{width:'15%'}} className={classes.rowHead}>จำนวน</td>
               </tr>
             </thead>
           </table>

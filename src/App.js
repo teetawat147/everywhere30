@@ -28,6 +28,8 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import CallMissedOutgoingIcon from '@material-ui/icons/CallMissedOutgoing';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import DvrIcon from '@material-ui/icons/Dvr';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Avatar from '@material-ui/core/Avatar';
@@ -48,7 +50,9 @@ import Referin from "./components/Referin";
 import UserList from "./components/UserList";
 import UserEdit from "./components/UserEdit";
 import Monitor from "./components/Monitor";
+import logo from "./images/logo192.png";
 
+import { ConfirmProvider } from 'material-ui-confirm';
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -79,6 +83,10 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+  },
+  logo: {
+    maxWidth: 40,
+    marginRight: '10px'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -226,6 +234,7 @@ const App = () => {
 
   return (
     <div className={classes.root}>
+      
       <AppBar 
         position="fixed" 
         color="secondary" 
@@ -243,6 +252,7 @@ const App = () => {
           >
             <MenuIcon />
           </IconButton>
+          <img src={logo} alt="R8 Anywhere" className={classes.logo} />
           <Typography variant="h6" noWrap>
             <Link to={"/"} className="navbar-brand">R8 | Anywhere</Link>
           </Typography>
@@ -353,6 +363,19 @@ const App = () => {
                   <ListItemText primary="Consent" />
                 </ListItem>
               </Link>
+              <Divider />
+              <Link to={"/monitor"} onClick={handleDrawerClose}>
+                <ListItem button key="Monitor">
+                  <ListItemIcon><DvrIcon /></ListItemIcon>
+                  <ListItemText primary="Monitor" />
+                </ListItem>
+              </Link>
+              <Link to={"/userlist"} onClick={handleDrawerClose}>
+                <ListItem button key="Users">
+                  <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
+                  <ListItemText primary="Users" />
+                </ListItem>
+              </Link>
             </>
           )}
         </List>
@@ -386,6 +409,7 @@ const App = () => {
           
         )}
       </Drawer>
+      <ConfirmProvider>
       <main
         className={clsx(classes.content, {
           [classes.contentShift]: open,
@@ -418,6 +442,7 @@ const App = () => {
           
         </Switch>
       </main>
+      </ConfirmProvider>
     </div >
   );
 };

@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { Link } from 'react-router-dom';
 import styled from "styled-components";
 import {
   CardActions,
@@ -25,9 +24,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
-import axios, { post } from 'axios';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import { useConfirm } from "material-ui-confirm";
+
 const useStyles = makeStyles(theme => ({
   card:{
     '& .MuiInputLabel-outlined': {
@@ -66,6 +69,7 @@ const useStyles = makeStyles(theme => ({
 const Card = styled(MuiCard)(spacing);
 const Button = styled(MuiButton)(spacing);
 const Assignment = styled(AssignmentIcon)(spacing);
+
 function ConsentArea() {
   const classes = useStyles();
   const [cid, setCid] = useState('');
@@ -73,12 +77,12 @@ function ConsentArea() {
   const [consentFile, setConsentFile] = useState('');
   const [filename, setFilename] = useState('');
   const [open, setOpen] = React.useState(false);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const alertOpen = () => {setOpen(true);};
   const alertClose = () => {setOpen(false);};
   const [alertText, setAlertText] = useState('');
   const [alertClass,setAlertClass] = useState('error');
+  const [confirmConsent,setConfirmConsent] = useState('Y');
+  const confirm = useConfirm();
 
   const handleInputChange = (e, validate) => {
     let name = e.target.name;
@@ -108,56 +112,63 @@ function ConsentArea() {
       }
     }
   }
-  const handleSubmit = async(e) => {
+  const handleSubmit = () => {
     const userinfo=JSON.parse(localStorage.getItem("EW30"));
     if(typeof person.id !== 'undefined'){ // มีข้อมูลผู้ป่วยที่ได้จากการค้น
       if(typeof consentFile !=='undefined' && consentFile !==''){ // มีไฟล์อัพโหลดที่ browse เข้ามา
-        let extension = consentFile.type.replace('///g', '');
-        switch (extension){
-          case 'image/jpeg':extension='jpg';break;
-          case 'image/png':extension='png';break;
-          case 'application/pdf':extension='pdf';break;
-          default:extension=''
-        }
-        if(extension!==''){
-          const newFile = new File([consentFile], `${person.id}.${extension}`, { type: consentFile.type });
-          console.log(newFile);
-          const formData = new FormData();
-          formData.append('container','consentForm');
-          formData.append('file',newFile);
-          let uploadResult = await UAPI.uploadFile(formData, 'containers/consentForm/upload'); // อัพโหลดผ่าน loopback
-          // let uploadResult={status:false};
-          if(uploadResult.status===200){ // อัพโหลดไฟล์สำเร็จ
-            const consentData = {
-              "cid":cid,
-              "personId": person.id,
-              "fileConsent": newFile.name,
-              "statusConsent": "Y",
-              "consentDate": moment().format("YYYY-MM-DD HH:mm:ss"),
-              "recorderId":userinfo.user.id
-            };
-            let consentResult = await UAPI.create(consentData, 'consents'); // บันทึกข้อมูล consent
-            // let consentResult={status:false};
-            if(consentResult.status===200){
-              // บันทึกข้อมูล consent สำเร็จ แล้วเครียร์ข้อมูลใน state
-              setCid('');
-              setPerson('');
-              setConsentFile('');
-              setFilename('');
-              setAlertClass('success');
-              setAlertText('ยืนยันการเปิดเผยข้อมูลสำเร็จ');
-              alertOpen();
+        confirm({ 
+          title:'บันทึกข้อมูล',
+          description: (confirmConsent==='Y') ?
+            <span>ต้องการบันทึกข้อมูล <span style={{color:'green'}}>"ยินยอม"</span> ใช่หรือไม่</span>:
+            <span>ต้องการบันทึกข้อมูล <span style={{color:'red'}}>"ไม่ยินยอม"</span> ใช่หรือไม่</span>,
+          confirmationText:'ยืนยัน',
+          cancellationText:'ยกเลิก'
+        }).then(async() => {
+          let extension = consentFile.type.replace('///g', '');
+          switch (extension){
+            case 'image/jpeg':extension='jpg';break;
+            case 'image/png':extension='png';break;
+            case 'application/pdf':extension='pdf';break;
+            default:extension=''
+          }
+          if(extension!==''){
+            const newFile = new File([consentFile], `${person.id}.${extension}`, { type: consentFile.type });
+            const formData = new FormData();
+            formData.append('container','consentForm');
+            formData.append('file',newFile);
+            let uploadResult = await UAPI.uploadFile(formData, 'containers/consentForm/upload'); // อัพโหลดผ่าน loopback
+            if(uploadResult.status===200){ // อัพโหลดไฟล์สำเร็จ
+              const consentData = {
+                "cid":cid,
+                "personId": person.id,
+                "fileConsent": newFile.name,
+                "statusConsent": confirmConsent,
+                "consentDate": moment().format("YYYY-MM-DD HH:mm:ss"),
+                "recorderId":userinfo.user.id
+              };
+              let consentResult = await UAPI.create(consentData, 'consents'); // บันทึกข้อมูล consent
+              if(consentResult.status===200){
+                // บันทึกข้อมูล consent สำเร็จ แล้วเครียร์ข้อมูลใน state
+                setCid('');
+                setPerson('');
+                setConsentFile('');
+                setFilename('');
+                setAlertClass('success');
+                setAlertText('ยืนยันการเปิดเผยข้อมูลสำเร็จ');
+                setConfirmConsent('N');
+                alertOpen();
+              }else{
+                console.log(consentResult);
+              }
             }else{
-              console.log(consentResult);
+              console.log(uploadResult);
             }
           }else{
-            console.log(uploadResult);
+            setAlertClass('error');
+            setAlertText('รองรับไฟล์ jpg, png, pdf เท่านั้น');
+            alertOpen();
           }
-        }else{
-          setAlertClass('error');
-          setAlertText('รองรับไฟล์ jpg, png, pdf เท่านั้น');
-          alertOpen();
-        }
+        }).catch(() => {});
       }else{
         setAlertClass('error');
         setAlertText('กรุณาเลือกไฟล์ก่อน');
@@ -177,7 +188,7 @@ function ConsentArea() {
           <Grid item xs={12} md={12} >
             <Typography component="p">ค้นหาผู้ป่วย</Typography>
           </Grid>
-          <Grid item xs={12} md={11} >
+          <Grid item xs={11} md={11} >
             <TextField
               id="cid"
               name="cid"
@@ -192,8 +203,8 @@ function ConsentArea() {
               required
             />
           </Grid>
-          <Grid item xs={12} md={1} style={{display: 'flex'}}>
-            <IconButton color="primary" aria-label="search" style={{width: '100%'}} onClick={(e) => handleSearch(e)}><SearchIcon /></IconButton >
+          <Grid item xs={1} md={1} style={{display: 'flex',justifyContent: 'center'}}>
+            <IconButton color="primary" aria-label="search" style={{width: '58px'}} onClick={(e) => handleSearch(e)}><SearchIcon /></IconButton >
           </Grid>
           <Grid item xs={12} md={12} >
             {(typeof person.id!=='undefined')?(
@@ -245,6 +256,23 @@ function ConsentArea() {
               </Typography>
             </label>
           </Grid>
+          <Grid item xs={12} md={12} className={(typeof person.consent!=='undefined')?classes.hide:classes.display}>
+            <FormControlLabel
+              label="ยินยอมให้เปิดเผยข้อมูล"
+              control={
+              <Checkbox icon={<CheckBoxOutlineBlankIcon />} 
+                checkedIcon={<CheckBoxIcon />} 
+                color="primary" 
+                name="confirmConsent" 
+                value={confirmConsent}
+                checked={(confirmConsent==='Y')?true:false}
+                onChange={() => { 
+                  let v = (confirmConsent==='Y')?'N':'Y';
+                  setConfirmConsent(v);
+                }}
+              />}
+            />
+          </Grid>
         </Grid>
       </CardContent>
       <CardActions style={{padding: '0 30px 30px 30px'}}>
@@ -254,7 +282,7 @@ function ConsentArea() {
               className={classes.indigoButton} 
               fullWidth 
               style={{'marginLeft':'unset','padding': '10px 16px'}}
-              onClick={(e) => handleSubmit(e)}
+              onClick={(e) => handleSubmit()}
             >
                 ยืนยัน
             </Button>
