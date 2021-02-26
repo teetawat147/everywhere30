@@ -258,7 +258,7 @@ function ConsentArea() {
           </Grid>
           <Grid item xs={12} md={12} className={(typeof person.consent!=='undefined')?classes.hide:classes.display}>
             <FormControlLabel
-              label="ยินยอมให้เปิดเพยข้อมูล"
+              label="ยินยอมให้เปิดเผยข้อมูล"
               control={
               <Checkbox icon={<CheckBoxOutlineBlankIcon />} 
                 checkedIcon={<CheckBoxIcon />} 
