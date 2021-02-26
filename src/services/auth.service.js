@@ -1,6 +1,6 @@
+/* eslint-disable no-unused-vars */
 import axios from "axios";
 import { API_URL } from "../services/auth-header";
-
 const register = (param) => {
   return axios.post(API_URL + "teamusers", param);
 };
@@ -22,9 +22,8 @@ const login = async (param, res) => {
     return { err, isLoginError: true };
   };
 }
-const logout = (changeLoginStatus) => {
+const logout = () => {
   localStorage.removeItem("EW30");
-  changeLoginStatus(false);
 };
 const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("EW30"));
@@ -59,11 +58,20 @@ const getAuthorize = async (userinfo) => {
   }
   return auth;
 };
-
+const getPermissions = () => {
+  const userinfo = getCurrentUser();
+  if(typeof userinfo !=='undefined' && userinfo != null){
+    const role = (typeof userinfo.user.role !== 'undefined') ? userinfo.user.role : 'noRole';
+    return role;
+  }else{
+    return 'noRole';
+  }
+}
 export {
   register,
   login,
   logout,
   getCurrentUser,
-  getAuthorize
+  getAuthorize,
+  getPermissions
 };
