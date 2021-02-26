@@ -1,20 +1,29 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useRef } from "react";
 import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
+import TextField from '@material-ui/core/TextField';
 import CheckButton from "react-validation/build/button";
-import { login } from "../services/auth.service";
+import { login,getPermissions } from "../services/auth.service";
 import uuid from 'react-uuid'
 import { LineLogin } from '../services/line-login/reactjs-line-login';
 import '../services/line-login/reactjs-line-login.css';
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core';
+import useGlobal from "../store";
 const useStyles = makeStyles(theme => ({
   root: {
     '& ._RU-K2': {
       margin: '0',
       width:'100%',
       backgroundSize: 'contain'
+    },
+    '& .MuiInputLabel-outlined': {
+      zIndex: 1,
+      transform: 'translate(15px, 4px) scale(1)',
+      pointerEvents: 'none'
+    },
+    '& .MuiInputLabel-shrink': {
+      transform: 'translate(15px, -18px) scale(0.75)',
     }
   }
 }));
@@ -27,7 +36,8 @@ const required = (value) => {
     );
   }
 };
-const Login = (props) => {
+const Login = () => {
+  const [globalState, globalActions] = useGlobal();
   const classes = useStyles();
   const redirect = useHistory();
   const form = useRef();
@@ -38,8 +48,6 @@ const Login = (props) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  // const [payload, setPayload] = useState(null);
-  // const [idToken, setIdToken] = useState(null);
 
   const onChangeEmail = (e) => {
     const email = e.target.value;
@@ -63,7 +71,9 @@ const Login = (props) => {
         if (typeof loginData!=='undefined' && loginData.isLoginError===false) {
           setLoading(false);
           setMessage(loginData.err);
-          props.changeLoginStatus(true);
+          globalActions.changeLoginStatus(true);
+          globalActions.setCurrentUser(loginData.response);
+          globalActions.setUserRole(getPermissions());
           redirect.push("/home");
         } else {
           setLoading(false);
@@ -82,36 +92,39 @@ const Login = (props) => {
   return (
     <div className="col-md-12">
       <div className="card card-container">
-        <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        />
-
+        <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" alt="profile-img" className="profile-img-card" />
         <Form className={classes.root} onSubmit={handleLogin} ref={form}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <Input
-              type="text"
-              className="form-control"
+          <div className="form-group" style={{marginTop:'40px'}}>
+            {/* <label htmlFor="email">Email</label> */}
+            <TextField
+              id="email"
               name="email"
+              label="อีเมลล์"
+              type="text"
+              size="small"
+              variant="outlined"
               value={email}
               onChange={onChangeEmail}
-              validations={[required]}
+              required
+              fullWidth
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <Input
-              type="password"
-              className="form-control"
+          <div className="form-group" style={{marginTop:'20px'}}>
+            {/* <label htmlFor="password">Password</label> */}
+            <TextField
+              id="password"
               name="password"
+              label="รหัสผ่าน"
+              type="password"
+              size="small"
+              variant="outlined"
               value={password}
               onChange={onChangePassword}
-              validations={[required]}
+              required
+              fullWidth
             />
           </div>
-          <div className="form-group">
+          <div className="form-group" style={{marginTop:'40px'}}>
             <button className="btn btn-primary btn-block" disabled={loading}>
               {loading && (
                 <span className="spinner-border spinner-border-sm"></span>
@@ -120,7 +133,6 @@ const Login = (props) => {
             </button>
           </div>
           <div className="form-group">
-          {/* {process.env.NODE_ENV === 'development' ? process.env.REACT_APP_DEV_MODE : process.env.REACT_APP_PRO_MODE} */}
             <LineLogin
               clientID={process.env.REACT_APP_LINE_CLIENT_ID}
               clientSecret={process.env.REACT_APP_LINE_CLIENT_SECRET}
@@ -140,7 +152,6 @@ const Login = (props) => {
             </div>
           )}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
-
         </Form>
       </div>
     </div>
