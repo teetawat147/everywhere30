@@ -39,13 +39,21 @@ const useStyles = makeStyles({
   },
   rowCellB: {
     backgroundColor: '#f3f3f3',
+  },
+  OF_True: {
+    height:200, 
+    overflowX: 'hidden', 
+    overflowY: 'scroll'
+  },
+  OF_False: {
+    height:'auto', 
   }
 });
 
 export default function BoxTreatment(props) {
   const classes = useStyles();
   const [treatment, setTreatment] = useState({});
-  const [typeIO, setTypeIO] = useState('OPD');
+  const [classOverflow, setClassOverflow] = useState(classes.OF_Ture);
 
   const mkTreatmentList = () => {
     let elem=[];
@@ -127,7 +135,7 @@ export default function BoxTreatment(props) {
             </thead>
           </table>
         </div>
-        <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+        <div className={classOverflow}>
           <table style={{width: '100%'}}>
             <tbody>
               {elem}
@@ -142,10 +150,15 @@ export default function BoxTreatment(props) {
     if (props.data) {
       if (props.data.length>0) {
         setTreatment(props.data);
-        setTypeIO(props.type_io);
       }
     }
-  }, [props.data, props.type_io]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (props.currentView==='summary') {
+      setClassOverflow(classes.OF_True);
+    }
+    else {
+      setClassOverflow(classes.OF_False);
+    }
+  }, [props.data, props.currentView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
       <>

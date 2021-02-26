@@ -47,22 +47,40 @@ export default function BoxServiceInfo(props) {
   return (
     <>
     <div>
-      <div className={classes.contentGroup}>
-        <div className={classes.contentTitle}>หน่วยบริการ</div>
-        <div className={classes.contentText}>({serviceInfo.hcode}) {serviceInfo.hos_name}</div>
-      </div>
-      <div className={classes.contentGroup}>
-        <div className={classes.contentTitle}>วันที่รับบริการ</div>
-        <div className={classes.contentText}>{thaiXSDate(serviceInfo.date)}</div>
-      </div>
-      <div className={classes.contentGroup}>
-        <div className={classes.contentTitle}>เวลารับบริการ</div>
-        <div className={classes.contentText}>{serviceInfo.vsttime}</div>
-      </div>
-      {typeof serviceInfo.an !== 'undefined' && (
+      <div>
         <div className={classes.contentGroup}>
-          <div className={classes.contentTitle}>AN</div>
-          <div className={classes.contentText}>{serviceInfo.an}</div>
+          <div className={classes.contentTitle}>หน่วยบริการ</div>
+          <div className={classes.contentText}>({serviceInfo.hcode}) {serviceInfo.hos_name}</div>
+        </div>
+        <div className={classes.contentGroup}>
+          <div className={classes.contentTitle}>แผนก</div>
+          <div className={classes.contentText}>{serviceInfo.type_io}</div>
+        </div>
+        <div className={classes.contentGroup}>
+          <div className={classes.contentTitle}>วันที่รับบริการ</div>
+          <div className={classes.contentText}>{thaiXSDate(serviceInfo.vstdate)}</div>
+        </div>
+        {serviceInfo.type_io==='OPD' && (
+        <div className={classes.contentGroup}>
+          <div className={classes.contentTitle}>เวลารับบริการ</div>
+          <div className={classes.contentText}>{serviceInfo.vsttime} น.</div>
+        </div>
+        )}
+      </div>
+      {serviceInfo.type_io==='IPD' && (
+        <div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>AN</div>
+            <div className={classes.contentText}>{serviceInfo.an}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>วันแอดมิด</div>
+            <div className={classes.contentText}>{thaiXSDate(serviceInfo.regdate)}</div>
+          </div>
+          <div className={classes.contentGroup}>
+            <div className={classes.contentTitle}>วันจำหน่าย</div>
+            <div className={classes.contentText}>{thaiXSDate(serviceInfo.dchdate)}</div>
+          </div>
         </div>
       )}
     </div>

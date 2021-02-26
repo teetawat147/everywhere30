@@ -32,11 +32,20 @@ const useStyles = makeStyles({
       background: "#E5E5E5",
     },
   },
+  OF_True: {
+    height:200, 
+    overflowX: 'hidden', 
+    overflowY: 'scroll'
+  },
+  OF_False: {
+    height:'auto', 
+  }
 });
 
 export default function BoxRadiology(props) {
   const classes = useStyles();
   const [radiology, setRadiology] = useState({});
+  const [classOverflow, setClassOverflow] = useState(classes.OF_Ture);
 
   // const mkRadiologyList = () => {
   //   let radiologyElement=[];
@@ -83,7 +92,8 @@ export default function BoxRadiology(props) {
             </thead>
           </table>
         </div>
-        <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+        {/* <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}> */}
+        <div className={classOverflow}>
           <table style={{width: '100%'}}>
             <tbody>
               {elem}
@@ -100,7 +110,13 @@ export default function BoxRadiology(props) {
         setRadiology(props.data);
       }
     }
-  }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (props.currentView==='summary') {
+      setClassOverflow(classes.OF_True);
+    }
+    else {
+      setClassOverflow(classes.OF_False);
+    }
+  }, [props.data, props.currentView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
       <>
