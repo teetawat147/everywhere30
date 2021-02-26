@@ -53,7 +53,7 @@ const Monitor = () => {
                     let ii = 1;
                     data.forEach(i => {
                         r.push(
-                            <TableRow key={i.hcode}>
+                            <TableRow key={ii}>
                                 <TableCell align="center">{ii++}</TableCell>
                                 <TableCell component="th" scope="row"></TableCell>
                                 <TableCell component="th" scope="row">{i.hname}</TableCell>
