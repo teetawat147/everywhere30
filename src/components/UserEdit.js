@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UserEdit(props) {
   //const { id } = props.location.state.status;
   const isAddMode = props.location.state.status;
-  console.log(props.location.state.status)
+  console.log(props.location.state.status);
   //   const { id } = "uwyuwiow";
   const redirect = useHistory();
   const classes = useStyles();
@@ -194,7 +194,6 @@ export default function UserEdit(props) {
     // }
   };
   const getTeamuser = async () => {
-   
     let response = await UAPI.get(props.location.state.status, "teamusers");
     console.log(response.data);
     setFullname(response.data.fullname);
@@ -205,7 +204,6 @@ export default function UserEdit(props) {
     setChangewat(response.data.changewat);
     setDepartment(response.data.department);
     // setDepartmentI(response.data.department.hos_name);
-    
   };
 
   const getChangewat = async () => {
@@ -215,11 +213,10 @@ export default function UserEdit(props) {
       },
       "cchangwats"
     );
-    console.log(response.data);
-    if( typeof variable ==='undefined') {
-        setLookUpChangewats(response.data);
+    // console.log(response.data);
+    if (typeof variable === "undefined") {
+      setLookUpChangewats(response.data);
     }
-    
   };
 
   //   const setAutocompleteDefaultValue = (data) => {
@@ -245,21 +242,35 @@ export default function UserEdit(props) {
     let response = await UAPI.getAll(
       {
         filter: {
-          fields: { hos_name: "true", hos_fullname: "true" },
+          fields: { hos_id: "true", hos_name: "true", hos_fullname: "true" },
           where: { province_name: cw },
         },
       },
       "hospitals"
     );
+
+    // let response = await UAPI.getAll(
+    //   {
+    //     filter: {
+    //       fields: { hos_name: "true", hos_fullname: "true" },
+    //       where: { province_name: cw },
+    //     },
+    //   },
+    //   "hospitals"
+    // );
     setDepartments(response.data);
   };
   useEffect(() => {
-    if (isAddMode!=='newadd') {getTeamuser()};
+    if (isAddMode !== "newadd") {
+      getTeamuser();
+    }
     getChangewat();
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //console.log({users.fullname})
   //console.log(props.location.state);
+
   const simpleRegisterForm = () => {
     return (
       <div>
@@ -358,8 +369,15 @@ export default function UserEdit(props) {
           />
         </div>
         <div className="form-group">
-          {/* {console.log(lookupchangewats, lookupchangewats.find((option)=>option.changwatname===changewat), changewat)} */}
-          {/* {lookupchangewats.length > 0 && ( */}
+          {/* {console.log(
+            lookupchangewats,
+            lookupchangewats.find(
+              (option) => option.changwatname === changewat
+            ),
+            changewat
+          )} */}
+          {/* {console.log(lookupRoles, lookupRoles.find((option)=>option.changwatname===getRole), getRole)} */}
+          {lookupchangewats.length > 0 && (
             <Autocomplete
               id="changewat"
               size="small"
@@ -387,7 +405,7 @@ export default function UserEdit(props) {
                 <TextField {...params} label="จังหวัด" variant="outlined" />
               )}
             />
-          {/* )} */}
+          )}
         </div>
         {/* <div>{changewat} ค่าchangewat</div> */}
         <div className="form-group">
@@ -406,6 +424,9 @@ export default function UserEdit(props) {
             getOptionLabel={(option) => option.hos_name || ""}
             value={department}
             onChange={(_, newValue) => {
+              delete Object.assign(newValue, { hcode: newValue["hos_id"] })[
+                "hos_id"
+              ];
               // console.log(newValue);
               setDepartment(newValue !== null ? newValue : "");
             }}
@@ -477,7 +498,7 @@ export default function UserEdit(props) {
           htmlFor="caption"
           style={{ textAlign: "center", marginBottom: "20px" }}
         >
-          <h3>{isAddMode==='newadd' ? "Add User" : "Edit User"}</h3>
+          <h3>{isAddMode === "newadd" ? "Add User" : "Edit User"}</h3>
           {/* <h3>แก้ไข</h3> */}
         </label>
         <Form
