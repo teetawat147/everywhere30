@@ -25,6 +25,7 @@ import Emr from "../components/SearchCID";
 import Referout from "../components/Referout";
 import Referin from "../components/Referin";
 import UserList from "../components/UserList";
+import UserEdit from "../components/UserEdit";
 import Monitor from "../components/Monitor";
 
 const root = {
@@ -94,8 +95,15 @@ const userlist = {
   id: "UserList",
   path: "/userlist",
   icon: <SupervisorAccountIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor"],
+  roles:["AdminR8","AdminChangwat","AdminHospital"],
   component: UserList
+};
+const useredit = {
+  id: "useredit",
+  path: "/useredit",
+  icon: <SupervisorAccountIcon />,
+  roles:["AdminR8","AdminChangwat","AdminHospital"],
+  component: UserEdit
 };
 const consent = {
   id: "Consent",
@@ -115,7 +123,7 @@ const monitor = {
   id: "monitor",
   path: "/monitor",
   icon: <DvrIcon/>,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor"],
+  roles:["AdminR8","AdminChangwat","AdminHospital"],
   component: Monitor
 };
 
@@ -146,6 +154,7 @@ export const mainRoute = [
   referin,
   referout,
   userlist,
+  useredit,
   consent,
   profile,
   monitor
