@@ -51,6 +51,8 @@ import UserList from "./components/UserList";
 import UserEdit from "./components/UserEdit";
 import Monitor from "./components/Monitor";
 import logo from "./images/logo192.png";
+
+import { ConfirmProvider } from 'material-ui-confirm';
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -232,6 +234,7 @@ const App = () => {
 
   return (
     <div className={classes.root}>
+      
       <AppBar 
         position="fixed" 
         color="secondary" 
@@ -406,6 +409,7 @@ const App = () => {
           
         )}
       </Drawer>
+      <ConfirmProvider>
       <main
         className={clsx(classes.content, {
           [classes.contentShift]: open,
@@ -438,6 +442,7 @@ const App = () => {
           
         </Switch>
       </main>
+      </ConfirmProvider>
     </div >
   );
 };
