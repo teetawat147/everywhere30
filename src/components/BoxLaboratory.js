@@ -139,7 +139,7 @@ export default function BoxLaboratory(props) {
     if (props.data) {
       if (props.data.length>0) {
         setLaboratory(props.data);
-        console.log(props.data);
+        // console.log(props.data);
       }
     }
   }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
