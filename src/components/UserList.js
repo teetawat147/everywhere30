@@ -22,32 +22,66 @@ export default function UserList(props) {
   const [lookuproles, setLookUpRoles] = useState([]);
   const [role, setRole] = useState("");
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
+  const [userroleid, setUserRoleId] = useState({});
+  const [currentRoleId, setCurrentRoleId] = useState(null);
+  const [currentRoleMapping, setCurrentRoleMapping] = useState({});
+  
+  
+  const [userData, setUserData] = useState({});
 
-  const handleClickOpen = (x) => {
-
+  const handleClickRole = (x) => {
     setOpen(true);
-    // setRole(currentUser.user.role);
+    console.log(x)
+
+        if (x.RoleMapping.length>0) {
+            setCurrentRoleMapping(x.RoleMapping[0])
+            console.log(x.RoleMapping[0].roleId)
+            setCurrentRoleId(x.RoleMapping[0].roleId)
+        }
+    setUserRoleId(x.id);
+
   };
 
   const handleClose = () => {
     setOpen(false);
   };
   const getTeamuser = async () => {
-    let response = await UAPI.getAll({}, "teamusers");
+    let xParams = {
+        filter: {
+          include: {
+            relation: "RoleMapping",
+            scope: {
+              include: {
+                relation: "role",
+              }
+            }
+          }
+        }
+      };
+    
+    let response = await UAPI.getAll(xParams, "teamusers");
  console.log(response.data);
     setUsers(response.data);
   };
 
   useEffect(() => {
     getTeamuser();
+
+
     getLookUpRoles();
-    
-    // UAPI.getAll({},'teamusers').then(x => setUsers(x.data));
-    //     // console.log(users)
   }, []);
 //   console.log( currentUser );
 //   console.log( currentUser.user );
   // console.log( currentUser.user.role )
+
+  useEffect(() => {
+    console.log(props.location.state);
+    if (typeof props.location.state !== 'undefined') {
+      if (typeof props.location.state.status !== 'undefined') {
+        setUserData(props.location.state.status);
+      }
+    }
+  }, [props.location]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const clickUserEditlink = (x) => {
     // console.log(x)
@@ -58,32 +92,84 @@ export default function UserList(props) {
     }
   };
 
-  const getRoles = async (x) => {
-    let response = await UAPI.getAll(
-      {
-        filter: { where: { principalId: x } },
-      },
-      "rolemappings"
-    );
-   let response2=response.data[0]
-     //console.log(response2);
-        setRole(response2.roleId);
-  };
 
   const getLookUpRoles = async () => {
     let response = await UAPI.getAll({}, "roles");
     // console.log(response.data);
-    if (typeof variable === "undefined") {
-      setLookUpRoles(response.data);
-    }
+    // if (typeof variable === "undefined") {
+    //   setLookUpRoles(response.data);
+    // }
+    if (response.status === 200) {
+        if (response.data) {
+          if (response.data.length>0) {
+            setLookUpRoles(response.data);
+          }
+        }
+      }
   };
+
+  const getAutoDefaultValueRole = (x) => {
+    console.log(currentRoleId);
+    let r=null;
+    lookuproles.forEach(i => {
+      if (i.id === x) {
+        r=i;
+      }
+    });
+    return r;
+  }
 
   function addRole() {
 
-    console.log()
-    // UAPI.remove(id).then(() => {
-    //   setUsers((users) => users.filter((x) => x.id !== id));
-    // });
+    if (typeof currentRoleMapping.id!=='undefined') {
+        UAPI.patch(currentRoleMapping.id,currentRoleMapping,'rolemappings').then(
+            (response) => {
+              if (response.status === 200) {
+                alert("สำเร็จ");
+              }
+               console.log(response);
+              // setMessage(response.data.message);
+              // setSuccessful(true);
+            },
+            (error) => {
+              const resMessage =
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.message) ||
+                error.message ||
+                error.toString();
+    
+              // setMessage(resMessage);
+              // setSuccessful(false);
+            }
+          );
+    }else{
+        console.log({"principalType": "USER","principalId": userroleid,"roleId": currentRoleMapping.roleId})
+    UAPI.create({"principalType": "USER","principalId": userroleid,"roleId": currentRoleMapping.roleId},'rolemappings').then(
+        (response) => {
+          if (response.status === 200) {
+            alert("สำเร็จ");
+            handleClose()
+          }
+           console.log(response);
+          // setMessage(response.data.message);
+          // setSuccessful(true);
+        },
+        (error) => {
+          const resMessage =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+
+          // setMessage(resMessage);
+          // setSuccessful(false);
+        }
+      );
+    }
+    handleClose()
+    getTeamuser();
   }
 
   function deleteUser(id) {
@@ -115,7 +201,7 @@ export default function UserList(props) {
           <tr>
             <th style={{ width: "30%" }}>Name</th>
             <th style={{ width: "30%" }}>Email</th>
-            <th style={{ width: "30%" }}>CID</th>
+            <th style={{ width: "30%" }}>สิทธิการใช้งาน</th>
             <th style={{ width: "30%" }}>Mobile</th>
             <th style={{ width: "10%" }}></th>
           </tr>
@@ -126,20 +212,20 @@ export default function UserList(props) {
               <tr key={user.id}>
                 <td>{user.fullname}</td>
                 <td>{user.email}</td>
-                <td>{user.cid}</td>
+                <td>{user.RoleMapping.length>0 ? user.RoleMapping[0].role.name : ""}</td>
                 <td>{user.mobile}</td>
                 <td style={{ whiteSpace: "nowrap" }}>
                   {/* <Link to={`/useredit/${user.id}`} className="btn btn-sm btn-primary mr-1">Edit</Link> */}
                   <button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleClickOpen(user.id)}
+                    onClick={() => handleClickRole(user)}
                     className="btn btn-sm btn-warning mr-1"
                   >
                     อนุมัติ
                   </button>
                   <button
-                    onClick={() => clickUserEditlink(user.id)}
+                    onClick={() => clickUserEditlink(user)}
                     className="btn btn-sm btn-primary mr-1"
                   >
                     แก้ไข
@@ -178,8 +264,7 @@ export default function UserList(props) {
         <Dialog
           open={open}
           onClose={handleClose}
-          aria-labelledby="form-dialog-title"
-        >
+          aria-labelledby="form-dialog-title">
           <DialogTitle id="form-dialog-title">
             กำหนดสิทธิใช้งานgggggggggggggg
           </DialogTitle>
@@ -187,7 +272,7 @@ export default function UserList(props) {
             <DialogContentText>กำหนดสิทธิใช้งาน</DialogContentText>
             {console.log(lookuproles, lookuproles.find((option)=>option.id===role), role)}
             {/* {console.log('ffffffff'+getRole)} */}
-            <Autocomplete
+            {/* <Autocomplete
               id="role"
               size="small"
               fullWidth
@@ -195,7 +280,8 @@ export default function UserList(props) {
               //   defaultValue={{ label: Roles, value: Roles }}
               // value={Role}
               options={lookuproles}
-              defaultValue={lookuproles.find((f) => f.id === role)}
+            //   defaultValue={lookuproles.find((f) => f.id === role)}
+              defaultValue={getRoleDV(userData['changewat'])}
               getOptionSelected={(option, value) => value.name === option.name}
               getOptionLabel={(option) => option.name || ""}
               onChange={(e, newValue) => {
@@ -208,7 +294,41 @@ export default function UserList(props) {
                   variant="outlined"
                 />
               )}
+            /> */}
+            <div className="form-group">
+          {/* {console.log(
+            lookupchangewats,
+            lookupchangewats.find(
+              (option) => option.changwatname === changewat
+            ),
+            changewat
+          )} */}
+          {/* {console.log(lookupRoles, lookupRoles.find((option)=>option.changwatname===getRole), getRole)} */}
+          {/* {lookuproles.length > 0 && ( */}
+            <Autocomplete
+              id="changewat"
+              size="small"
+              fullWidth
+              required
+              options={lookuproles}
+            //   value={currentRoleId}
+            defaultValue={getAutoDefaultValueRole(currentRoleId)}
+              getOptionSelected={(option, value) =>
+                value.name === option.name
+              }
+              getOptionLabel={(option) => option.name || ""}
+              onChange={(e, newValue) => {
+                  console.log(newValue.id)
+                let x=currentRoleMapping;
+                x['roleId']=newValue.id;
+                setCurrentRoleMapping({...currentRoleMapping,...x});  
+              }}
+              renderInput={(params) => (
+                <TextField {...params} label="จังหวัด" variant="outlined" />
+              )}
             />
+          {/* )} */}
+        </div>
           </DialogContent>
 
           <DialogActions>
@@ -216,7 +336,7 @@ export default function UserList(props) {
               ยกเลิก
             </Button>
             <Button variant="outlined" onClick={() => addRole()} color="primary">
-              ตกลง
+              บันทึก
             </Button>
           </DialogActions>
         </Dialog>

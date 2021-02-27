@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, * as others from 'axios'
 import * as authHeader from "../services/auth-header";
 
 // const API_URL = "https://cloud1.r8way.moph.go.th:3099/api/";
@@ -34,6 +34,15 @@ const update = (id, data, thisCollection) => {
   return axios.put(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
 };
 
+const update2 = (where, data, thisCollection) => {
+  return axios.update(API_URL + thisCollection + "/" + where, data, { headers: authHeader.getToken() });
+ 
+};
+
+const patch = (id, data, thisCollection) => {
+  return axios.patch(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
+ 
+};
 const remove = (id, thisCollection) => {
   return axios.delete(API_URL + thisCollection + "/" + id, { headers: authHeader.getToken() });
 };
@@ -57,5 +66,7 @@ export default {
   removeAll,
   findByTitle,
   uploadFile,
-  getGroupBy
+  getGroupBy,
+  update2,
+  patch
 };
