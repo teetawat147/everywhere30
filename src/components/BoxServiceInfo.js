@@ -49,12 +49,12 @@ export default function BoxServiceInfo(props) {
     <div>
       <div>
         <div className={classes.contentGroup}>
-          <div className={classes.contentTitle}>หน่วยบริการ</div>
-          <div className={classes.contentText}>({serviceInfo.hcode}) {serviceInfo.hos_name}</div>
-        </div>
-        <div className={classes.contentGroup}>
           <div className={classes.contentTitle}>แผนก</div>
           <div className={classes.contentText}>{serviceInfo.type_io}</div>
+        </div>
+        <div className={classes.contentGroup}>
+          <div className={classes.contentTitle}>หน่วยบริการ</div>
+          <div className={classes.contentText}>({serviceInfo.hcode}) {serviceInfo.hos_name}</div>
         </div>
         <div className={classes.contentGroup}>
           <div className={classes.contentTitle}>วันที่รับบริการ</div>
