@@ -217,7 +217,7 @@ const App = () => {
           )}
           <img src={logo} alt="R8 Anywhere" className={classes.logo} />
           <Typography variant="h6" noWrap>
-            <Link to={"/"} className="navbar-brand">R8 | Anywhere</Link>
+            <Link to={"/"} className="navbar-brand">R8 Anywhere</Link>
           </Typography>
           
           {(globalState.loginStatus) ? (
