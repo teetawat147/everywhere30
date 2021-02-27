@@ -204,7 +204,7 @@ const App = () => {
         })}
       >
         <Toolbar>
-          {(globalState.loginStatus)&&(
+          {/* {(globalState.loginStatus)&&( */}
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -214,7 +214,7 @@ const App = () => {
             >
               <MenuIcon />
             </IconButton>
-          )}
+          {/* )} */}
           <img src={logo} alt="R8 Anywhere" className={classes.logo} />
           <Typography variant="h6" noWrap>
             <Link to={"/"} className="navbar-brand">R8 Anywhere</Link>
