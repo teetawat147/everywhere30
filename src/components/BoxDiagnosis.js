@@ -93,6 +93,7 @@ export default function BoxDiagnosis(props) {
   }
 
   useEffect(() => {
+    console.log(props.data);
     if (props.data) {
       if (props.data.length>0) {
         let a=props.data;
