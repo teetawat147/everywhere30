@@ -1,15 +1,12 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
 import Form from "react-validation/build/form";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckButton from "react-validation/build/button";
-// import { isEmail } from "validator";
 import { useHistory } from "react-router-dom";
-import * as AuthService from "../services/auth.service";
 import UAPI from "../services/UniversalAPI";
-import { CloudDone } from "@material-ui/icons";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiTextField-root": {
@@ -23,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiInputLabel-shrink": {
       transform: "translate(15px, -18px) scale(0.75)",
     },
-    // '@media(min - width: 576px)': {}
   },
   alertDanger: {
     color: "#ec0016",
@@ -49,62 +45,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UserEdit(props) {
-  //const { id } = props.location.state.status;
   const isAddMode = props.location.state.status;
-  // console.log(props.location.state.status);
-  //   const { id } = "uwyuwiow";
   const redirect = useHistory();
   const classes = useStyles();
   const form = useRef();
   const checkBtn = useRef();
-  // const [successful, setSuccessful] = useState(false);
-  // const [message, setMessage] = useState("");
-  const [fullname, setFullname] = useState("");
-  const [position, setPosition] = useState("");
-  const [cid, setCid] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [lookupchangewats, setLookUpChangewats] = useState([]);
-  const [changewat, setChangewat] = useState([]);
   const [lookupdepartments, setLookUpDepartments] = useState([]);
-  const [department, setDepartment] = useState("");
-  const [users, setUsers] = useState("");
-
   const [userData, setUserData] = useState({});
-
-  //{ "hos_name": "", "hos_fullname": "" }
-  // const [{ fullname, cid, mobile, email, password }, setState] = useState({
-  //   fullname: '', cid: '', mobile: '', email: '', password: ''
-  // });
-  const [{ disEmail, disPassword }, setDisabledState] = useState({
-    disEmail: false,
-    disPassword: false,
-  });
-  // const setLineInfo = () => {
-  //   if (typeof props.lineInfo !== 'undefined') {
-  //     if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
-  //       setFullname(props.lineInfo.fullname);
-  //       setEmail(props.lineInfo.email);
-  //       setPassword(props.lineInfo.password);
-  //       setDisabledState({ disEmail: true, disPassword: true });
-  //     }
-  //   }
-  // }
-
-  //   useEffect(() => {
-  //     const setLineInfo = () => {
-  //       if (typeof props.lineInfo !== 'undefined') {
-  //         if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
-  //           setFullname(props.lineInfo.fullname);
-  //           setEmail(props.lineInfo.email);
-  //           setPassword(props.lineInfo.password);
-  //           setDisabledState({ disEmail: true, disPassword: true });
-  //         }
-  //       }
-  //     }
-  //     setLineInfo();
-  //   }, [props.lineInfo]);
+  const [{ disEmail, disPassword }, setDisabledState] = useState({ disEmail: false, disPassword: false });
 
   const [inputError, setInputError] = useState({
     fullname: false,
@@ -158,60 +107,32 @@ export default function UserEdit(props) {
   const handleInputChange = (e, validate) => {
     let name = e.target.name;
     let value = e.target.value;
-    let x=userData;
-    console.log(userData)
-    console.log(x)
+    let x = userData;
+    console.log(userData);
+    console.log(x);
     switch (name) {
       case "fullname":
-        x['fullname']=value;
+        x["fullname"] = value;
         break;
       case "position":
-        x['position']=value;
+        x["position"] = value;
         break;
       case "cid":
-        x['cid']=value;
+        x["cid"] = value;
         break;
       case "mobile":
-        x['mobile']=value;
+        x["mobile"] = value;
         break;
       case "email":
-        x['email']=value;
-        break;  
+        x["email"] = value;
+        break;
       case "password":
-        x['password']=value;
+        x["password"] = value;
         break;
       default:
         break;
     }
-    setUserData({...userData,...x});
-    //console.log(email);
-    // if (required === true) {
-    //   let inputErr = { ...inputError }
-    //   if (value === "") {
-    //     eval('inputErr.' + name + '=true');
-    //     setInputError(inputErr);
-    //     helperText(validate, name, true);
-    //     // setInputHelperText('กรุณาระบุข้อมูล');
-    //   } else {
-    //     eval('inputErr.' + name + '=false');
-    //     setInputError(inputErr);
-    //     helperText(validate, name, false);
-    //     // setInputHelperText('');
-    //   }
-    // }
-  };
-  const getTeamuser = async () => {
-    // console.log('getTeamuser-------------------',props.location.state.status);
-    // let response = await UAPI.get(props.location.state.status, "teamusers");
-    // console.log(response.data);
-    // setFullname(response.data.fullname);
-    // setEmail(response.data.email);
-    // setCid(response.data.cid);
-    // setMobile(response.data.mobile);
-    // setPosition(response.data.position);
-    // setChangewat(response.data.changewat);
-    // setDepartment(response.data.department);
-    // setDepartmentI(response.data.department.hos_name);
+    setUserData({ ...userData, ...x });
   };
 
   const getChangewat = async () => {
@@ -221,39 +142,15 @@ export default function UserEdit(props) {
       },
       "cchangwats"
     );
-    // console.log(response.data);
-    // if (typeof variable === "undefined") {
-    //   setLookUpChangewats(response.data);
-    // }
+
     if (response.status === 200) {
       if (response.data) {
-        if (response.data.length>0) {
+        if (response.data.length > 0) {
           setLookUpChangewats(response.data);
         }
       }
     }
   };
-
-  
-
-  //   const setAutocompleteDefaultValue = (data) => {
-  //     let r;
-  //     // let data_value=data[key_name];
-  //     // let data_lookUp=lookUp[key_config.input_select_source_name];
-  //     if (data) {
-  //       //console.log(data)
-  //       if (typeof lookupchangewats != "undefined") {
-  //         lookupchangewats.map((i, n) => {
-  //           //console.log(i)
-  //           if (i.changwatname === data) {
-  //             r = i;
-  //           }
-  //           return r;
-  //         });
-  //       }
-  //     }
-  //     return r;
-  //   };
 
   const getDepartment = async (cw) => {
     let response = await UAPI.getAll(
@@ -266,96 +163,68 @@ export default function UserEdit(props) {
       "hospitals"
     );
 
-    // let response = await UAPI.getAll(
-    //   {
-    //     filter: {
-    //       fields: { hos_name: "true", hos_fullname: "true" },
-    //       where: { province_name: cw },
-    //     },
-    //   },
-    //   "hospitals"
-    // );
-    // console.log(response.data)
     if (response.status === 200) {
       if (response.data) {
-        if (response.data.length>0) {
+        if (response.data.length > 0) {
           setLookUpDepartments(response.data);
         }
       }
     }
   };
   useEffect(() => {
-    if (isAddMode !== "newadd") {
-      getTeamuser();
-    }
     getChangewat();
-
-
-    
-    
   }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    console.log(props.location.state);
-    console.log(props.location.state.status)
 
-    if (typeof props.location.state !== 'undefined') {
-      if (typeof props.location.state.status !== 'undefined') {
-        console.log(Object.keys(props.location.state.status).length>0 , props.location.state.status)
-        console.log(Object.keys(props.location.state.status).length>0 && props.location.state.status!=="newadd")
-        if (Object.keys(props.location.state.status).length>0 && props.location.state.status!=="newadd") {
-          console.log('ffffffff')
+
+    if (typeof props.location.state !== "undefined") {
+      if (typeof props.location.state.status !== "undefined") {
+        if (
+          Object.keys(props.location.state.status).length > 0 &&
+          props.location.state.status !== "newadd"
+        ) {
           setUserData(props.location.state.status);
-        }else{
-          console.log('sssssssssss')
-                  
+        } else {
           setUserData({
-            "username":"",
-            "email":"",
-            "fullname":"",
-            "cid":"",
-            "mobile":"",
-            "password":"",
-            "department":null,
-            "position":"",
-            "changewat":""
-            })
+            username: "",
+            email: "",
+            fullname: "",
+            cid: "",
+            mobile: "",
+            password: "",
+            department: null,
+            position: "",
+            changewat: "",
+          });
         }
-        if(typeof props.location.state.status.changewat!=='undefined'){
+        if (typeof props.location.state.status.changewat !== "undefined") {
           getDepartment(props.location.state.status.changewat);
         }
-        
       }
     }
   }, [props.location]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
-  //console.log({users.fullname})
-  //console.log(props.location.state);
-
   const getAutoDefaultValueChangwat = (x) => {
-    // console.log(x);
-console.log('getAutoDefaultValueChangwat-----')
-    let r=null;
-    lookupchangewats.forEach(i => {
+    let r = null;
+    lookupchangewats.forEach((i) => {
       if (i.changwatname === x) {
-        r=i;
+        r = i;
       }
     });
     return r;
-  }
-
+  };
 
   const getAutoDefaultValueDepartment = (x) => {
-    let r=null;
-    if (typeof x!=='undefined') {
+    let r = null;
+    if (typeof x !== "undefined") {
       if (x) {
-        if (lookupdepartments.length>0) {
-
+        if (lookupdepartments.length > 0) {
           // console.log(x)
           // console.log(lookupdepartments)
-          lookupdepartments.forEach(i => {
+          lookupdepartments.forEach((i) => {
             if (i.hos_name === x.hos_name) {
-              r=i;
+              r = i;
               // console.log(i)
             }
           });
@@ -363,13 +232,11 @@ console.log('getAutoDefaultValueChangwat-----')
       }
     }
     return r;
-  }
-
+  };
 
   const simpleRegisterForm = () => {
     return (
       <div>
-        <div>dkkkkggggggg{typeof userData['fullname']}ggggggggg</div>
         <div className="form-group">
           <TextField
             id="fullname"
@@ -379,7 +246,7 @@ console.log('getAutoDefaultValueChangwat-----')
             size="small"
             variant="outlined"
             // value={fullname}
-            value={userData['fullname']}
+            value={userData["fullname"]}
             onChange={(e) => handleInputChange(e, ["required", "length"])}
             helperText={inputHelperText.fullname}
             error={inputError.fullname}
@@ -395,7 +262,7 @@ console.log('getAutoDefaultValueChangwat-----')
             size="small"
             variant="outlined"
             // value={position}
-            value={userData['position']}
+            value={userData["position"]}
             onChange={(e) => handleInputChange(e, ["required", "length"])}
             helperText={inputHelperText.position}
             error={inputError.position}
@@ -411,7 +278,7 @@ console.log('getAutoDefaultValueChangwat-----')
             size="small"
             variant="outlined"
             // value={cid}
-            value={userData['cid']}
+            value={userData["cid"]}
             onChange={(e) => handleInputChange(e, ["required", "length"])}
             helperText={inputHelperText.cid}
             error={inputError.cid}
@@ -427,7 +294,7 @@ console.log('getAutoDefaultValueChangwat-----')
             size="small"
             variant="outlined"
             // value={mobile}
-            value={userData['mobile']}
+            value={userData["mobile"]}
             onChange={(e) => handleInputChange(e, ["required", "length"])}
             helperText={inputHelperText.mobile}
             error={inputError.mobile}
@@ -443,8 +310,7 @@ console.log('getAutoDefaultValueChangwat-----')
             size="small"
             variant="outlined"
             autoComplete="new-password"
-            // value={email}
-            value={userData['email']}
+            value={userData["email"]}
             onChange={(e) => handleInputChange(e, ["required", "length"])}
             helperText={inputHelperText.email}
             error={inputError.email}
@@ -462,7 +328,7 @@ console.log('getAutoDefaultValueChangwat-----')
             variant="outlined"
             autoComplete="new-password"
             // value={password}
-            value={userData['password']}
+            value={userData["password"]}
             onChange={(e) => handleInputChange(e, ["required", "length"])}
             helperText={inputHelperText.password}
             error={inputError.password}
@@ -471,14 +337,6 @@ console.log('getAutoDefaultValueChangwat-----')
           />
         </div>
         <div className="form-group">
-          {/* {console.log(
-            lookupchangewats,
-            lookupchangewats.find(
-              (option) => option.changwatname === changewat
-            ),
-            changewat
-          )} */}
-          {/* {console.log(lookupRoles, lookupRoles.find((option)=>option.changwatname===getRole), getRole)} */}
           {lookupchangewats.length > 0 && (
             <Autocomplete
               id="changewat"
@@ -486,21 +344,21 @@ console.log('getAutoDefaultValueChangwat-----')
               fullWidth
               required
               options={lookupchangewats}
-              defaultValue={getAutoDefaultValueChangwat(userData['changewat'])}
+              defaultValue={getAutoDefaultValueChangwat(userData["changewat"])}
               getOptionSelected={(option, value) =>
                 value.changwatname === option.changwatname
               }
               getOptionLabel={(option) => option.changwatname || ""}
               onChange={(e, newValue) => {
-                let x=userData;
-                x['department']=null;
-                setUserData({...userData,...x});
+                let x = userData;
+                x["department"] = null;
+                setUserData({ ...userData, ...x });
 
                 if (newValue !== null) {
                   getDepartment(newValue.changwatname);
-                  x['changewat']=newValue.changwatname;
-                  setUserData({...userData,...x});
-                }                
+                  x["changewat"] = newValue.changwatname;
+                  setUserData({ ...userData, ...x });
+                }
               }}
               renderInput={(params) => (
                 <TextField {...params} label="จังหวัด" variant="outlined" />
@@ -508,7 +366,6 @@ console.log('getAutoDefaultValueChangwat-----')
             />
           )}
         </div>
-        {/* <div>{changewat} ค่าchangewat</div> */}
         <div className="form-group">
           {lookupdepartments.length > 0 && (
             <Autocomplete
@@ -518,26 +375,15 @@ console.log('getAutoDefaultValueChangwat-----')
               required
               options={lookupdepartments}
               getOptionSelected={(option, value) => {
-                // console.log(option, value);
-
-                // if (value === option) { return value === option }
                 return value === option;
               }}
               getOptionLabel={(option) => option.hos_name || ""}
-              value={userData['department']}
-              // defaultValue={getAutoDefaultValueDepartment(userData['department'])}
+              value={userData["department"]}
               onChange={(_, newValue) => {
-                // delete Object.assign(newValue, {'hcode': newValue['hos_id'] })['hos_id'];
-                // setDepartment((newValue !== null) ? newValue : '')
-                let x=userData;
-                x['department']=newValue;
-                setUserData({...userData,...x});
+                let x = userData;
+                x["department"] = newValue;
+                setUserData({ ...userData, ...x });
               }}
-              // inputValue={departmentI}
-              // onInputChange={(_, newInputValue) => {
-              //   // console.log(newInputValue);
-              //   setDepartmentI((newInputValue) ? newInputValue : '')
-              // }}
               renderInput={(params) => (
                 <TextField {...params} label="หน่วยงาน" variant="outlined" />
               )}
@@ -550,25 +396,16 @@ console.log('getAutoDefaultValueChangwat-----')
       </div>
     );
   };
-  //   const lineRegisterForm = () => {};
   const handleRegister = (e) => {
     e.preventDefault();
-     console.log(JSON.stringify(userData))
-    // setMessage("");
-    // setSuccessful(false);
-    // form.current.validateAll();
     if (checkBtn.current.context._errors.length === 0) {
       if (isAddMode === "newadd") {
-        console.log('NEW')
-        UAPI.create(userData,'teamusers').then(
+        UAPI.create(userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
               alert("สำเร็จ");
               redirect.push("/userlist");
             }
-             console.log(response);
-            // setMessage(response.data.message);
-            // setSuccessful(true);
           },
           (error) => {
             const resMessage =
@@ -578,20 +415,16 @@ console.log('getAutoDefaultValueChangwat-----')
               error.message ||
               error.toString();
 
-            // setMessage(resMessage);
-            // setSuccessful(false);
           }
         );
-      }else{
-      UAPI.patch(userData["id"],userData,'teamusers').then(
+      } else {
+        UAPI.patch(userData["id"], userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
               alert("สำเร็จ");
               redirect.push("/userlist");
             }
-             console.log(response);
-            // setMessage(response.data.message);
-            // setSuccessful(true);
+
           },
           (error) => {
             const resMessage =
@@ -601,11 +434,10 @@ console.log('getAutoDefaultValueChangwat-----')
               error.message ||
               error.toString();
 
-            // setMessage(resMessage);
-            // setSuccessful(false);
+
           }
         );
-    }
+      }
     }
   };
 
@@ -616,8 +448,7 @@ console.log('getAutoDefaultValueChangwat-----')
           htmlFor="caption"
           style={{ textAlign: "center", marginBottom: "20px" }}
         >
-          <h3>{isAddMode === "newadd" ? "Add User" : "Edit User"}</h3>
-          {/* <h3>แก้ไข</h3> */}
+          <h3>{isAddMode === "newadd" ? "เพิ่มผู้ใช้งาน" : "แก้ไขผู้ใช้งาน"}</h3>
         </label>
         <Form
           className={classes.root}
@@ -632,5 +463,3 @@ console.log('getAutoDefaultValueChangwat-----')
     </div>
   );
 }
-
-// export default UserEdit;
