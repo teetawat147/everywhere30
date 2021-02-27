@@ -22,7 +22,6 @@ const useStyles = makeStyles(theme => ({
     '& .MuiInputLabel-shrink': {
       transform: 'translate(15px, -18px) scale(0.75)',
     }
-    // '@media(min - width: 576px)': {}
   },
   alertDanger: {
     color: '#ec0016',
@@ -45,7 +44,6 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '.25rem'
   },
   containerCard: { maxWidth: '400px!important', padding: '40px 40px' }
-
 }));
 
 const Register = (props) => {
@@ -148,16 +146,16 @@ const Register = (props) => {
   }
   const getChangewat = async () => {
     let response = await UAPI.getAll({ filter: { "fields": { "changwatname": "true" }, "where": { "zonecode": "08" } } }, 'cchangwats');
-    // console.log(response.data);
     setChangewats(response.data);
   }
   const getDepartment = async (cw) => {
-    let response = await UAPI.getAll({ filter: { "fields": { "hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
+    let response = await UAPI.getAll({ filter: { "fields": { "hos_id":"true","hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
     setDepartments(response.data);
   }
   useEffect(() => {
     getChangewat();
   }, []);
+  
   const simpleRegisterForm = () => {
     return < div >
       <div className="form-group">
@@ -266,7 +264,6 @@ const Register = (props) => {
           onChange={(e, newValue) => {
             setChangewat((newValue) ? newValue.changwatname : '');
             setDepartment('');
-            // setDepartmentI('');
             if (newValue !== null) { getDepartment(newValue.changwatname) }
           }}
           renderInput={(params) => <TextField {...params} label="จังหวัด" variant="outlined" />}
@@ -280,22 +277,14 @@ const Register = (props) => {
           required
           options={departments}
           getOptionSelected={(option, value) => {
-            // console.log(option, value);
-
-            // if (value === option) { return value === option }
             return value === option
           }}
           getOptionLabel={(option) => option.hos_name || ''}
           value={department}
           onChange={(_, newValue) => {
-            // console.log(newValue);
+            delete Object.assign(newValue, {'hcode': newValue['hos_id'] })['hos_id'];
             setDepartment((newValue !== null) ? newValue : '')
           }}
-          // inputValue={departmentI}
-          // onInputChange={(_, newInputValue) => {
-          //   // console.log(newInputValue);
-          //   setDepartmentI((newInputValue) ? newInputValue : '')
-          // }}
           renderInput={(params) => <TextField {...params} label="หน่วยงาน" variant="outlined" />}
         />
       </div>

@@ -68,12 +68,20 @@ const useStyles = makeStyles({
     display: 'inline',
     marginRight: 10
   },
-  linkDateServ: {
+  linkDateServOPD: {
+    color: 'black',
     cursor: 'pointer',
     '&:hover': {
       background: "#cdf1ff",
     },
   },
+  linkDateServIPD: {
+    color: 'red',
+    cursor: 'pointer',
+    '&:hover': {
+      background: "#cdf1ff",
+    },
+  }
 });
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -125,6 +133,7 @@ export default function SearchCID(props) {
   const [tabValue, setTabValue] = useState(0);
   const [serviceInfoData, setServiceInfoData] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
+  const [selectedHCode, setSelectedHCode] = useState('all');
 
   const onchangeSearchText = (e) => {
     let v=e.target.value;
@@ -206,15 +215,24 @@ export default function SearchCID(props) {
           x['birthday']=r['birthday'];
           x['age']=calcAge(r['birthday']);
           x['bloodgrp']=r['bloodgrp'];
-          // x['address_info']='';
           x['address_info']=r['informaddr'];
           x['drugallergy']=(r['drugallergy']!==''?r['drugallergy']:'ไม่พบข้อมูลการแพ้ยา');
           setPatientData(x);
           let intervention=r.intervention;
           if (typeof intervention != 'undefined') {
             if (intervention.length>0) {
-              intervention.reverse();
+              intervention.sort(function(a,b){
+                // b-a เรียงมากไปน้อย
+                // a-b เรียงน้อยไปมาก
+                let ax=(typeof a.an !== 'undefined'?'2':'1');
+                let bx=(typeof b.an !== 'undefined'?'2':'1');
+                let ai=parseInt((new Date(a.vstdate).getTime()).toString()+ax);
+                let bi=parseInt((new Date(b.vstdate).getTime()).toString()+bx);
+                return bi-ai;
+              });
               setinterventionData(intervention);   
+
+              // กดดูประวัติมาจากหน้า refer -- START
               let s=null;
               if (typeof props.history.location.state !== 'undefined') {
                 s=props.history.location.state;
@@ -228,6 +246,7 @@ export default function SearchCID(props) {
                 });
                 setServiceData(x);
               }
+              // กดดูประวัติมาจากหน้า refer -- END
             }
           }
         }
@@ -243,9 +262,9 @@ export default function SearchCID(props) {
     let lastYear='';
     let n=0;
     interventionData.forEach(i => {
-      if (typeof i.date != 'undefined') {
+      if (typeof i.vstdate != 'undefined') {
         n++;
-        let x=(parseInt(i.date.substr(0,4))+543).toString();
+        let x=(parseInt(i.vstdate.substr(0,4))+543).toString();
         yearShowTemp[x]='none';
         if (n===1) {
           lastYear=x;
@@ -260,33 +279,30 @@ export default function SearchCID(props) {
     if (interventionData.length>0) {
       let yearsData=[];
       interventionData.forEach(i => {
-        let service_date = i.date;
-        if (typeof service_date === 'undefined') {
-          service_date = i.vstdate;
-        }
-        if (typeof service_date === 'undefined') {
-          service_date = i.dchdate;
-        }
-        if (typeof service_date != 'undefined') {
-        // if (typeof i.hcode != 'undefined' && typeof i.vn != 'undefined') {
-          // if (i.date==='2018-03-30') {
-          //   console.log(i);
-          // }
-          let x=(parseInt(service_date.substr(0,4))+543).toString();
-          // let x=i.hcode+'_'+i.vn;
-          if (typeof yearsData[x] === 'undefined') {
-            // console.log('ไม่มี-------',x);
+        // console.log(selectedHCode);
+        let x=(parseInt(i.vstdate.substr(0,4))+543).toString();
+        let an=(typeof i.an !== 'undefined'?i.an:null);
+        if (typeof yearsData[x] === 'undefined') {
+          if (selectedHCode==='all') {
             yearsData[x]=[];
-            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:service_date,hos_name:i.hospital.hos_name});
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, an: an, date:i.vstdate ,hos_name:i.hospital.hos_name});
           }
-          else {
-            // console.log('มี-------',x);
-            yearsData[x].push({hcode: i.hcode, vn: i.vn, date:service_date,hos_name:i.hospital.hos_name});
+          else if (selectedHCode===i.hcode) {
+            yearsData[x]=[];
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, an: an, date:i.vstdate ,hos_name:i.hospital.hos_name});
+          }
+        }
+        else {
+          if (selectedHCode==='all') {
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, an: an, date:i.vstdate ,hos_name:i.hospital.hos_name});
+          }
+          else if (selectedHCode===i.hcode) {
+            yearsData[x].push({hcode: i.hcode, vn: i.vn, an: an, date:i.vstdate ,hos_name:i.hospital.hos_name});
           }
         }
       });
 
-// console.log(yearsData);
+      // console.log(yearsData);
 
       let yearList=[];
       yearsData.reverse();
@@ -300,17 +316,17 @@ export default function SearchCID(props) {
           // console.log(d);
           i++;
           yearTitle=(parseInt(d.date.substr(0,4))+543).toString();
-          // if (yearTitle==='2561') {
-          //   console.log(d);
-          // }
+          let io=(d.an?'IPD':'OPD');
+          let an_number=(d.an?'AN='+d.an+'':'');
+          let classIO=(d.an?classes.linkDateServIPD:classes.linkDateServOPD);
           dateList.push(
-            <Tooltip title={<span style={{fontSize: 16}}>{d.hos_name} ({d.hcode})</span>} arrow={true} placement="right" key={d.date.toString()+'_'+i} >
+            <Tooltip title={<span style={{fontSize: 16}}>{d.hos_name} ({d.hcode}) {an_number}</span>} arrow={true} placement="right" key={d.date.toString()+'_'+i} >
               <div 
-                className={classes.linkDateServ} 
-                onClick={(e)=>selectDateServ(e,d.date,d.hcode,d.vn)} 
+                className={classIO} 
+                onClick={(e)=>selectDateServ(e,d.date,d.hcode,d.vn,d.an)} 
                 style={{ width: '100%', height: 25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2, borderRadius: 10, paddingLeft: 5 }}
               >
-                {thaiXSDate(d.date)} {d.hos_name}
+                {thaiXSDate(d.date)} ({io}) {d.hos_name}
               </div>
             </Tooltip>
           );
@@ -343,11 +359,11 @@ export default function SearchCID(props) {
     setYearShow({...yearShow,...a}); 
   }
 
-  const selectDateServ = (e,d,hcode,vn) => {
+  const selectDateServ = (e,date,hcode,vn,an) => {
     let x={};
     interventionData.forEach(i => {
-      // if (i.date===d) {
-      if (i.hcode===hcode && i.vn===vn) {
+      let this_an=(typeof i.an === 'undefined'?null:i.an);
+      if (i.hcode===hcode && i.vstdate===date && i.vn===vn && this_an===an) {
         x=i;
       }
     });
@@ -366,15 +382,7 @@ export default function SearchCID(props) {
     let laboratory=[];
     let radiology=[];
     let referout=[];
-    let type_io='OPD';
-    let an='';
     if (Object.keys(serviceData).length>0) {
-      if (typeof serviceData.an !== 'undefined') {
-        // if (serviceData.an !== null && serviceData.an !== '') {
-          type_io='IPD';
-          an=serviceData.an;
-        // }
-      }
       if (serviceData.activities) {
         // console.log(serviceData.activities.assessment);
         if (typeof serviceData.activities.assessment !== 'undefined') {
@@ -435,16 +443,16 @@ export default function SearchCID(props) {
               {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
-              {diagnosis.length>0 && <BoxDiagnosis data={diagnosis} /> }
+              {diagnosis.length>0 && <BoxDiagnosis data={diagnosis} currentView={currentView} /> }
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
-              {laboratory.length>0 && <BoxLaboratory data={laboratory} /> }
+              {laboratory.length>0 && <BoxLaboratory data={laboratory} currentView={currentView} /> }
             </TabPanel>
             <TabPanel value={tabValue} index={3}>
-              {radiology.length>0 && <BoxRadiology data={radiology} /> }
+              {radiology.length>0 && <BoxRadiology data={radiology} currentView={currentView} /> }
             </TabPanel>
             <TabPanel value={tabValue} index={4}>
-              {treatment.length>0 && <BoxTreatment data={treatment} type_io={type_io} /> }
+              {treatment.length>0 && <BoxTreatment data={treatment} currentView={currentView} /> }
             </TabPanel>
             <TabPanel value={tabValue} index={5}>
               {Object.keys(referout).length>0 && <BoxReferout data={referout} />}
@@ -460,16 +468,16 @@ export default function SearchCID(props) {
           {Object.keys(assessment).length>0 && <BoxAssessment data={assessment} dataAll={assessmentListData} /> }
 
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Diagnosis</b></div>
-          {diagnosis.length>0 && <BoxDiagnosis data={diagnosis} /> }
+          {diagnosis.length>0 && <BoxDiagnosis data={diagnosis} currentView={currentView} /> }
 
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Laboratory</b></div>
-          {laboratory.length>0 && <BoxLaboratory data={laboratory} /> }
+          {laboratory.length>0 && <BoxLaboratory data={laboratory} currentView={currentView} /> }
 
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Radiology</b></div>
-          {radiology.length>0 && <BoxRadiology data={radiology} /> }
+          {radiology.length>0 && <BoxRadiology data={radiology} currentView={currentView} /> }
 
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Treatment</b></div>
-          {treatment.length>0 && <BoxTreatment data={treatment} type_io={type_io} /> }
+          {treatment.length>0 && <BoxTreatment data={treatment} currentView={currentView} /> }
 
           <div style={{marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0'}}><b>Refer Out</b></div>
           {Object.keys(referout).length>0 && <BoxReferout data={referout} />}
@@ -493,7 +501,7 @@ export default function SearchCID(props) {
         }
       }
 
-      if (typeof i.date != 'undefined') {
+      if (typeof i.vstdate != 'undefined') {
         if (hcodeText.indexOf(i.hcode)<0) {
           hcodeText=hcodeText+"|"+i.hcode;
           hcodeDataTemp.push({hcode: i.hcode, hos_name:i.hospital.hos_name});
@@ -506,26 +514,15 @@ export default function SearchCID(props) {
 
   const extractServiceInfo = () => {
     if (Object.keys(serviceData).length>0) {
-      // console.log(serviceData);
-      let service_date=serviceData.date;
-      if (typeof service_date === 'undefined') {
-        service_date = serviceData.vstdate;
-      }
-      if (typeof service_date === 'undefined') {
-        service_date = serviceData.dchdate;
-      }
       let serviceInfo={};
-      // serviceInfo['date']=serviceData['date'];
-      serviceInfo['date']=service_date;
+      serviceInfo['vstdate']=serviceData['vstdate'];
       serviceInfo['vsttime']=serviceData['vsttime'];
       serviceInfo['hcode']=serviceData['hcode'];
-      if (typeof serviceData['hospital'] !== 'undefined') {
-        serviceInfo['hos_name']=serviceData['hospital']['hos_name'];
-      }
-      else {
-        serviceInfo['hos_name']='';
-      }
-      // serviceInfo['hos_name']='';
+      serviceInfo['hos_name']=(typeof serviceData['hospital'] !== 'undefined'?serviceData['hospital']['hos_name']:'');
+      serviceInfo['an']=(typeof serviceData['an'] !== 'undefined'?serviceData['an']:'');
+      serviceInfo['type_io']=(typeof serviceData['an'] !== 'undefined'?'IPD':'OPD');
+      serviceInfo['regdate']=(typeof serviceData['regdate'] !== 'undefined'?serviceData['regdate']:'');
+      serviceInfo['dchdate']=(typeof serviceData['dchdate'] !== 'undefined'?serviceData['dchdate']:'');
       setServiceInfoData(serviceInfo);
     }
   }
@@ -553,14 +550,13 @@ export default function SearchCID(props) {
   }
 
   const changeHCode = (e) => {
-    console.log('changeHCode------------',e.target.value);
-    // interventionData
+    setSelectedHCode(e.target.value);
   }
 
   const clickChangeView = () => {
-    // console.log('clickChangeView------', currentView);
     let x=currentView;
     let v=(x==='summary'?'tab':'summary');
+    // console.log(v);
     setCurrentView(v);
   }
 

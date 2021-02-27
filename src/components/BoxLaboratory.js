@@ -39,12 +39,21 @@ const useStyles = makeStyles({
   },
   rowCellB: {
     backgroundColor: '#f3f3f3',
+  },
+  OF_True: {
+    height:200, 
+    overflowX: 'hidden', 
+    overflowY: 'scroll'
+  },
+  OF_False: {
+    height:'auto', 
   }
 });
 
 export default function BoxLaboratory(props) {
   const classes = useStyles();
   const [laboratory, setLaboratory] = useState({});
+  const [classOverflow, setClassOverflow] = useState(classes.OF_Ture);
 
   const mkLaboratoryList = () => {
     let laboratoryElement=[];
@@ -96,7 +105,7 @@ export default function BoxLaboratory(props) {
         }
         elem.push(
           <tr key={i.lab_order_number+'_'+i.lab_items_code+'_'+n}>
-            <td style={{width:30}}>{n}</td>
+            <td style={{width:30}} className={className}>{n}</td>
             <td style={{width:'auto'}} className={className}>{i.lab_items_name_ref}</td>
             <td style={{width:'15%'}} className={className}>{i.lab_order_result}</td>
             <td style={{width:'15%'}} className={className}>{i.lab_items_unit}</td>
@@ -120,7 +129,8 @@ export default function BoxLaboratory(props) {
               </thead>
             </table>
           </div>
-          <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+          {/* <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}> */}
+          <div className={classOverflow}>
             <table style={{width: '100%'}}>
               <tbody>
                 {elem}
@@ -142,7 +152,13 @@ export default function BoxLaboratory(props) {
         // console.log(props.data);
       }
     }
-  }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (props.currentView==='summary') {
+      setClassOverflow(classes.OF_True);
+    }
+    else {
+      setClassOverflow(classes.OF_False);
+    }
+  }, [props.data, props.currentView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
       <>

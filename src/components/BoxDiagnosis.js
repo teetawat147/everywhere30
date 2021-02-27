@@ -32,11 +32,20 @@ const useStyles = makeStyles({
       background: "#E5E5E5",
     },
   },
+  OF_True: {
+    height:200, 
+    overflowX: 'hidden', 
+    overflowY: 'scroll'
+  },
+  OF_False: {
+    height:'auto', 
+  }
 });
 
 export default function BoxDiagnosis(props) {
   const classes = useStyles();
   const [diagnosis, setDiagnosis] = useState({});
+  const [classOverflow, setClassOverflow] = useState(classes.OF_Ture);
 
   const mkDiagnosisList = () => {
     let elem=[];
@@ -71,7 +80,8 @@ export default function BoxDiagnosis(props) {
             </thead>
           </table>
         </div>
-        <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}>
+        {/* <div style={{height:200, overflowX: 'hidden', overflowY: 'scroll' }}> */}
+        <div className={classOverflow}>
           <table style={{width: '100%'}}>
             <tbody>
               {elem}
@@ -83,6 +93,7 @@ export default function BoxDiagnosis(props) {
   }
 
   useEffect(() => {
+    console.log(props.data);
     if (props.data) {
       if (props.data.length>0) {
         let a=props.data;
@@ -105,7 +116,13 @@ export default function BoxDiagnosis(props) {
         setDiagnosis(x);
       }
     }
-  }, [props.data]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (props.currentView==='summary') {
+      setClassOverflow(classes.OF_True);
+    }
+    else {
+      setClassOverflow(classes.OF_False);
+    }
+  }, [props.data, props.currentView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
       <>
