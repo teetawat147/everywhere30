@@ -19,12 +19,12 @@ export default function UserList(props) {
   const history = useHistory();
   const [open, setOpen] = React.useState(false);
   const [lookuproles, setLookUpRoles] = useState([]);
-  const [role, setRole] = useState([]);
+  const [role, setRole] = useState("");
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
 
   const handleClickOpen = (x) => {
+
     setOpen(true);
-    getRoles(x);
     // setRole(currentUser.user.role);
   };
 
@@ -33,7 +33,7 @@ export default function UserList(props) {
   };
   const getTeamuser = async () => {
     let response = await UAPI.getAll({}, "teamusers");
-    // console.log(response.data);
+ console.log(response.data);
     setUsers(response.data);
   };
 
@@ -66,7 +66,7 @@ export default function UserList(props) {
     );
    let response2=response.data[0]
      //console.log(response2);
-    setRole(response2.roleId);
+        setRole(response2.roleId);
   };
 
   const getLookUpRoles = async () => {
@@ -76,6 +76,14 @@ export default function UserList(props) {
       setLookUpRoles(response.data);
     }
   };
+
+  function addRole() {
+
+    console.log()
+    // UAPI.remove(id).then(() => {
+    //   setUsers((users) => users.filter((x) => x.id !== id));
+    // });
+  }
 
   function deleteUser(id) {
     setUsers(
@@ -190,7 +198,7 @@ export default function UserList(props) {
               getOptionSelected={(option, value) => value.name === option.name}
               getOptionLabel={(option) => option.name || ""}
               onChange={(e, newValue) => {
-                setRole(newValue ? newValue.name : "");
+                setRole(newValue ? newValue.id : "");
               }}
               renderInput={(params) => (
                 <TextField
@@ -206,7 +214,7 @@ export default function UserList(props) {
             <Button variant="outlined" onClick={handleClose} color="primary">
               ยกเลิก
             </Button>
-            <Button variant="outlined" onClick={handleClose} color="primary">
+            <Button variant="outlined" onClick={() => addRole()} color="primary">
               ตกลง
             </Button>
           </DialogActions>
