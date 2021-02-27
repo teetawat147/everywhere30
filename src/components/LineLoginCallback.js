@@ -7,15 +7,12 @@ import url from 'url';
 import jwt from 'jsonwebtoken';
 import { useHistory } from "react-router-dom";
 import Register from "./Register";
+import useGlobal from "../store";
 const LineLogin = (props) => {
   const redirect = useHistory();
-  // const currentUser = AuthService.getCurrentUser();
+  const [globalState, globalActions] = useGlobal();
   const [loginStatus, setLoginStatus] = useState(false);
   const isMountedRef = useRef(null);
-  // const [isRegist, setIsRegist] = useState(false)
-  // const [picture, setPicture] = useState(null);
-  // const [listThese, setListThese] = useState([]);
-  // const listShow = ['Name', 'Email', 'LineUserID'];
   let params = new URLSearchParams(document.location.search.substring(1));
   let code = params.get("code");
   const [{ fullname, email, password, picture }, setLineInfo] = useState({ fullname: '', email: '', password: '', picture: '' }); 
@@ -54,9 +51,11 @@ const LineLogin = (props) => {
             if(!response.isLoginError){
               // Login success then go to root page
               // console.log("userInfo : ", response.response);
-              setLoginStatus(true);
-              props.changeLoginStatus(true);
-              redirect.push("/");
+              // setLoginStatus(true);
+              // props.changeLoginStatus(true);
+              globalActions.changeLoginStatus(true);
+              globalActions.setCurrentUser(response.response);
+              redirect.push("/home");
             }else{
               // Set info for register page
               console.log("Unauthorized need to register first.");

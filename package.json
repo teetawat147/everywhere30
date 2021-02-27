@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@date-io/date-fns": "^2.10.8",
     "@devexpress/dx-react-chart": "^2.7.4",
     "@devexpress/dx-react-chart-material-ui": "^2.7.4",
     "@devexpress/dx-react-core": "^2.7.4",
@@ -33,6 +34,7 @@
     "react-uuid": "^1.0.2",
     "react-validation": "^3.0.7",
     "styled-components": "^5.2.1",
+    "use-global-hook": "^0.2.1",
     "use-mediaquery": "^1.0.1",
     "validator": "^13.5.2",
     "webpack": "^4.42.0",
