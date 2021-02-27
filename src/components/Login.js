@@ -67,10 +67,10 @@ const Login = () => {
     if (checkBtn.current.context._errors.length === 0) {
       try {
         let loginData = await login({ email: email, password: password });
-        // console.log(loginData);
         if (typeof loginData!=='undefined' && loginData.isLoginError===false) {
           setLoading(false);
           setMessage(loginData.err);
+          console.log("Simple Login UserInfo : ", loginData.response);
           globalActions.changeLoginStatus(true);
           globalActions.setCurrentUser(loginData.response);
           globalActions.setUserRole(getPermissions());

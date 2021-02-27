@@ -204,8 +204,9 @@ const App = () => {
         })}
       >
         <Toolbar>
-          {(globalState.loginStatus)&&(
-            <IconButton
+          {
+            (mobileView)?(
+              <IconButton
               color="inherit"
               aria-label="open drawer"
               onClick={handleDrawerOpen}
@@ -214,10 +215,23 @@ const App = () => {
             >
               <MenuIcon />
             </IconButton>
-          )}
+            ):(
+              (globalState.loginStatus)&&(
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={handleDrawerOpen}
+                  edge="start"
+                  className={clsx(classes.menuButton, open && classes.hide)}
+                >
+                  <MenuIcon />
+                </IconButton>
+              )
+            )
+          } 
           <img src={logo} alt="R8 Anywhere" className={classes.logo} />
           <Typography variant="h6" noWrap>
-            <Link to={"/"} className="navbar-brand">R8 | Anywhere</Link>
+            <Link to={"/"} className="navbar-brand">R8 Anywhere</Link>
           </Typography>
           
           {(globalState.loginStatus) ? (
@@ -293,49 +307,47 @@ const App = () => {
           </IconButton>
         </div>
         <Divider />
-        <List>
-          {(globalState.loginStatus) && (
-            sideBarRoute.map( (route, index) =>
-              (route.roles.includes(globalState.userRole))&&( // Create Sidebar menu via user role
-                <Link key={index} to={route.path} onClick={handleDrawerClose}>
-                  <ListItem button key={route.id}>
-                    <ListItemIcon>{route.icon}</ListItemIcon>
-                    <ListItemText primary={route.id} />
+          {(globalState.loginStatus) ? ( // Login แล้ว
+            <List>
+              {sideBarRoute.map( (route, index) =>
+                (route.roles.includes(globalState.userRole))&&( // Create Sidebar menu via user role
+                  <Link key={index} to={route.path} onClick={handleDrawerClose}>
+                    <ListItem button key={route.id}>
+                      <ListItemIcon>{route.icon}</ListItemIcon>
+                      <ListItemText primary={route.id} />
+                    </ListItem>
+                  </Link>
+                )
+              )}
+              <Divider />
+              {(mobileView)&&(  // แสดงเฉพาะ Mobile          
+                <Link to={"/logout"}>
+                  <ListItem button key="Logout">
+                    <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+                    <ListItemText primary="Logout" />
                   </ListItem>
                 </Link>
-              )
+              )}
+            </List>    
+          ):( // ยังไม่ Login
+            (mobileView)&&( // แสดงเฉพาะ Mobile
+              <List>
+                <Link to={"/login"} onClick={handleDrawerClose}>
+                  <ListItem button key="Login">
+                    <ListItemIcon><LockOpenIcon /></ListItemIcon>
+                    <ListItemText primary="Login" />
+                  </ListItem>
+                </Link>
+                <Link to={"/register"} onClick={handleDrawerClose}>
+                  <ListItem button key="Register">
+                    <ListItemIcon><PersonAddIcon /></ListItemIcon>
+                    <ListItemText primary="Register" />
+                  </ListItem>
+                </Link>
+              </List>
             )
           )}
-        </List>
-        {(mobileView)&&(<Divider />)}
-        {(mobileView)&&(
-          (!globalState.loginStatus) ? (
-            <List>
-              <Link to={"/login"} onClick={handleDrawerClose}>
-                <ListItem button key="Login">
-                  <ListItemIcon><LockOpenIcon /></ListItemIcon>
-                  <ListItemText primary="Login" />
-                </ListItem>
-              </Link>
-              <Link to={"/register"} onClick={handleDrawerClose}>
-                <ListItem button key="Register">
-                  <ListItemIcon><PersonAddIcon /></ListItemIcon>
-                  <ListItemText primary="Register" />
-                </ListItem>
-              </Link>
-            </List>
-          ):(
-            <List>
-              <Link to={"/logout"}>
-                <ListItem button key="Logout">
-                  <ListItemIcon><ExitToAppIcon /></ListItemIcon>
-                  <ListItemText primary="Logout" />
-                </ListItem>
-                </Link>
-            </List>
-          )
-          
-        )}
+        
       </Drawer>
       <ConfirmProvider>
         <main
