@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
 import Form from "react-validation/build/form";

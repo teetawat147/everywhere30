@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import UAPI from "../services/UniversalAPI";
@@ -47,6 +48,7 @@ export default function UserList(props) {
 
     let response = await UAPI.getAll(xParams, "teamusers");
     setUsers(response.data);
+    console.log(response.data)
   };
 
   useEffect(() => {
@@ -136,8 +138,6 @@ export default function UserList(props) {
   }
 
   function deleteUser(x) {
-    //   console.log(x.id)
-    //   console.log(x.RoleMapping[0].d)
     if (x.RoleMapping.length > 0) {
       UAPI.remove(x.RoleMapping[0].id, "rolemappings").then(
         (response) => {
@@ -188,12 +188,13 @@ export default function UserList(props) {
       <table className="table table-striped">
         <thead>
           <tr>
-            <th style={{ width: "30%" }}>ชื่อ-สกุล</th>
-            <th style={{ width: "30%" }}>Email</th>
-            <th style={{ width: "30%" }}>สิทธิการใช้งาน</th>
-            <th style={{ width: "30%" }}>จังหวัด</th>
-            <th style={{ width: "30%" }}>หน่วยงาน</th>
+            <th style={{ width: "20%" }}>ชื่อ-สกุล</th>
+            <th style={{ width: "20%" }}>Email</th>
+            <th style={{ width: "20%" }}>สิทธิการใช้งาน</th>
+            <th style={{ width: "20%" }}>จังหวัด</th>
+            <th style={{ width: "50%" }}>หน่วยงาน</th>
             <th style={{ width: "10%" }}></th>
+
           </tr>
         </thead>
         <tbody>
@@ -207,7 +208,10 @@ export default function UserList(props) {
                     ? user.RoleMapping[0].role.name
                     : ""}
                 </td>
-                <td>{user.mobile}</td>
+                <td>{user.changewat}</td>
+                <td>{typeof user.department !== 'undefined'
+                    ? user.department.hos_name
+                    : ""}</td>
                 <td style={{ whiteSpace: "nowrap" }}>
                   <button
                     variant="outlined"
