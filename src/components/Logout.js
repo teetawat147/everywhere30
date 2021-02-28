@@ -8,11 +8,15 @@ const Logout = () => {
   const [globalState,globalActions] = useGlobal();
   const redirect = useHistory();
   useEffect(() => {
-    logout();
-    globalActions.changeLoginStatus(false);
-    globalActions.setCurrentUser({});
-    globalActions.setUserRole('noRole');
-    redirect.push("/login");
+    let logoutStatus=logout();
+    if(logoutStatus){
+      globalActions.changeLoginStatus(false);
+      globalActions.setCurrentUser({});
+      globalActions.setUserRole('noRole');
+      redirect.push("/login");
+    }else{
+      console.log(logoutStatus);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
   return <></>; 

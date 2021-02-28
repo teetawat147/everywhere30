@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import axios from "axios";
-import { API_URL } from "../services/auth-header";
+import * as authHeader from "../services/auth-header";
+const API_URL = authHeader.API_URL;
 const register = (param) => {
   return axios.post(API_URL + "teamusers", param);
 };
@@ -22,8 +23,20 @@ const login = async (param, res) => {
     return { err, isLoginError: true };
   };
 }
-const logout = () => {
-  localStorage.removeItem("EW30");
+const logout = async () => {
+  let token = authHeader.getToken();
+  try {
+    await axios.post(API_URL+'teamusers/logout?access_token='+token.Authorization,{}, { headers: authHeader.getToken()})
+    .then(function (res) {
+      if(res.status===204){localStorage.removeItem("EW30")}
+      return true;
+    }).catch(function (err) {
+      console.error(err);
+    })
+  } catch (err) {
+    console.error(err);
+  }
+  return false;
 };
 const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("EW30"));
