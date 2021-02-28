@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import Form from "react-validation/build/form";
 import TextField from '@material-ui/core/TextField';
 import CheckButton from "react-validation/build/button";
-import { login,getPermissions } from "../services/auth.service";
+import { login, getPermissions } from "../services/auth.service";
 import uuid from 'react-uuid'
 import { LineLogin } from '../services/line-login/reactjs-line-login';
 import '../services/line-login/reactjs-line-login.css';
@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     '& ._RU-K2': {
       margin: '0',
-      width:'100%',
+      width: '100%',
       backgroundSize: 'contain'
     },
     '& .MuiInputLabel-outlined': {
@@ -67,10 +67,10 @@ const Login = () => {
     if (checkBtn.current.context._errors.length === 0) {
       try {
         let loginData = await login({ email: email, password: password });
-        if (typeof loginData!=='undefined' && loginData.isLoginError===false) {
+        if (typeof loginData !== 'undefined' && loginData.isLoginError === false) {
           setLoading(false);
           setMessage(loginData.err);
-          console.log("Simple Login UserInfo : ", loginData.response);
+          // console.log("Simple Login UserInfo : ", loginData.response);
           globalActions.changeLoginStatus(true);
           globalActions.setCurrentUser(loginData.response);
           globalActions.setUserRole(getPermissions());
@@ -81,7 +81,7 @@ const Login = () => {
           // redirect.push("/login");
         }
       } catch (err) {
-        console.log("เข้าสู่ระบบไม่สำเร็จ",err);
+        console.log("เข้าสู่ระบบไม่สำเร็จ", err);
         setLoading(false);
       }
     } else {
@@ -94,7 +94,7 @@ const Login = () => {
       <div className="card card-container">
         <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" alt="profile-img" className="profile-img-card" />
         <Form className={classes.root} onSubmit={handleLogin} ref={form}>
-          <div className="form-group" style={{marginTop:'40px'}}>
+          <div className="form-group" style={{ marginTop: '40px' }}>
             {/* <label htmlFor="email">Email</label> */}
             <TextField
               id="email"
@@ -109,7 +109,7 @@ const Login = () => {
               fullWidth
             />
           </div>
-          <div className="form-group" style={{marginTop:'20px'}}>
+          <div className="form-group" style={{ marginTop: '20px' }}>
             {/* <label htmlFor="password">Password</label> */}
             <TextField
               id="password"
@@ -124,7 +124,7 @@ const Login = () => {
               fullWidth
             />
           </div>
-          <div className="form-group" style={{marginTop:'40px'}}>
+          <div className="form-group" style={{ marginTop: '40px' }}>
             <button className="btn btn-primary btn-block" disabled={loading}>
               {loading && (
                 <span className="spinner-border spinner-border-sm"></span>
