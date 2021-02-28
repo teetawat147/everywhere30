@@ -38,7 +38,7 @@ export default function BoxReferout(props) {
   const [referout, setReferout] = useState({});
 
   useEffect(() => {
-    console.log(props.data);
+    // console.log(props.data);
     if (props.data) {
       if (Object.keys(props.data).length>0) {
         setReferout(props.data);

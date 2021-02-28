@@ -95,21 +95,44 @@ export default function SearchCID(props) {
   const [data, setData] = useState(null);
 
   const getData = async () => {
+    // let xParams = {
+    //   filter: {
+    //     where: {cid:{inq:['1471400120432','1479900187312','3470200241827']}},
+    //     include: {
+    //       relation: "intervention",
+    //       scope: {
+    //         include: {
+    //           relation: "hospital",
+    //         }
+    //       }
+    //     }
+    //   }
+    // };
+
+    // let response = await UAPI.getAll(xParams, 'people');
+    // if (response.status === 200) {
+    //   if (response.data) {
+    //     if (response.data.length>0) {
+    //       // console.log(response.data);
+    //       // let r=response.data[0];
+    //       // console.log(r);
+    //       setData(response.data);
+    //     }
+    //   }
+    // }
+
     let xParams = {
       filter: {
-        where: {cid:{inq:['1471400120432','1479900187312','3470200241827']}},
-        include: {
-          relation: "intervention",
-          scope: {
-            include: {
-              relation: "hospital",
-            }
-          }
-        }
+        limit:10,
+        // fields:["hcode","vn","an","activities"],
+        where:{
+          "activities.referout.refer_hospcode":"10711"
+        },
+        include:"person"
       }
     };
-  
-    let response = await UAPI.getAll(xParams, 'people');
+
+    let response = await UAPI.getAll(xParams, 'interventions');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length>0) {
@@ -130,40 +153,41 @@ export default function SearchCID(props) {
 
   const mkRows = () => {
     let r=[];
-    if (data) {
-      if (typeof data !== 'undefined') {
+    if (typeof data !== 'undefined') {
+      if (data) {
         if (data.length>0) {
+          let n=0;
           data.forEach(i => {
-            let refer;
-            let vn='';
-            let visit_date;
-            i.intervention.forEach(a => {
-              if (typeof a.activities.referout !== 'undefined') {
-                if (a.activities.referout.length>0) {
-                  // console.log(a);
-                  refer=a.activities.referout[0];
-                  vn=a.vn;
-                  visit_date=(typeof a.vstdate !== 'undefined'? a.vstdate : '');
+            n++;
+            let refer={};
+            let person={};
+            if (typeof i.activities !== 'undefined') {
+              if (typeof i.activities.referout !== 'undefined') {
+                if (i.activities.referout.length>0) {
+                  refer=i.activities.referout[0];
                 }
               }
-            });
-            // console.log(refer);
+            }
+            if (typeof i.person !== 'undefined') {
+              person=i.person;
+            }
             r.push(
               <tr key={i.id}>
                 <td className={classes.tcell} style={{paddingLeft: 10, paddingRight: 10}}>
-                  <IconButton key="btnEdit" variant="outlined" color="primary" onClick={(e)=>clickRow(e,visit_date,i.hcode,vn,i.cid)}>
+                  <IconButton key="btnEdit" variant="outlined" color="primary" onClick={(e)=>clickRow(e,i.vstdate,i.hcode,i.vn,i.cid)}>
                     <MdRemoveRedEye size={20} />
                   </IconButton>
                 </td>
+                <td className={classes.tcell}>{n}.</td>                
                 <td className={classes.tcell}>{typeof refer.refer_date !=='undefined'?thaiXSDate(refer.refer_date):thaiXSDate(refer.date)}</td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined'?refer.refer_number:''}</td>
                 <td className={classes.tcellWrap}>
                   {typeof refer.refer_hospcode !== 'undefined'?refer.refer_hospcode:''} {typeof refer.refer_hospital_name !== 'undefined'?refer.refer_hospital_name:''}
                 </td>
-                <td className={classes.tcell}>{i.hn}</td>
-                <td className={classes.tcell}>{i.fname} {i.lname}</td>
-                <td className={classes.tcell}>{i.cid}</td>
+                <td className={classes.tcell}>{person.hn}</td>
+                <td className={classes.tcell}>{person.fname} {person.lname}</td>
+                <td className={classes.tcell}>{person.cid}</td>
                 <td className={classes.tcellWrap}>{typeof refer.pttype_name !== 'undefined'?refer.pttype_name:''}</td>
                 <td className={classes.tcellWrap}>{typeof refer.diag_name !== 'undefined'?refer.diag_name:''}</td>
                 <td className={classes.tcell}>{typeof refer.depcode !== 'undefined'?refer.depcode:''}</td>
@@ -184,6 +208,7 @@ export default function SearchCID(props) {
       <table style={{height:500}}>
         <thead>
           <tr>
+            <td className={classes.thead}><br /></td>
             <td className={classes.thead}><br /></td>
             <td className={classes.thead}>วันที่ส่งตัว</td>
             <td className={classes.thead}>วันที่รับตัว</td>
@@ -212,6 +237,7 @@ export default function SearchCID(props) {
   }
 
   useEffect(() => {
+    alert('work list > search, pagination');
     getData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

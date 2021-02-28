@@ -12,6 +12,7 @@ import CallMissedOutgoingIcon from '@material-ui/icons/CallMissedOutgoing';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import DvrIcon from '@material-ui/icons/Dvr';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 // Pages Component
 import Home from "../components/Home";
@@ -27,6 +28,7 @@ import Referin from "../components/Referin";
 import UserList from "../components/UserList";
 import UserEdit from "../components/UserEdit";
 import Monitor from "../components/Monitor";
+import SystemSetting from "../components/SystemSetting";
 
 const root = {
   id: "Root",
@@ -126,6 +128,14 @@ const monitor = {
   roles:["AdminR8","AdminChangwat","AdminHospital"],
   component: Monitor
 };
+const systemsetting = {
+  id: "systemsetting",
+  path: "/systemsetting",
+  icon: <SettingsIcon/>,
+  roles:["AdminR8"],
+  component: SystemSetting
+};
+
 
 export const appBarRoute = [
   root,
@@ -141,7 +151,8 @@ export const sideBarRoute=[
   referout,
   consent,
   monitor,
-  userlist
+  userlist,
+  systemsetting
 ];
 export const mainRoute = [
   root,
@@ -157,5 +168,6 @@ export const mainRoute = [
   useredit,
   consent,
   profile,
-  monitor
+  monitor,
+  systemsetting
 ];
