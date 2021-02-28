@@ -8,7 +8,7 @@ import CheckButton from "react-validation/build/button";
 // import { isEmail } from "validator";
 import { useHistory } from "react-router-dom";
 import * as AuthService from "../services/auth.service";
-import UAPI from "../services/UniversalAPI";
+import { getAll } from "../services/UniversalAPI";
 const useStyles = makeStyles(theme => ({
   root: {
     '& .MuiTextField-root': {
@@ -79,10 +79,10 @@ const Register = (props) => {
   }, [props.lineInfo]);
 
   const [inputError, setInputError] = useState({
-    'fullname': false,'position': false, 'cid': false, 'mobile': false, 'email': false, 'username': false, 'password': false
+    'fullname': false, 'position': false, 'cid': false, 'mobile': false, 'email': false, 'username': false, 'password': false
   });
   const [inputHelperText, setInputHelperText] = useState({
-    fullname: '', position:'', cid: '', mobile: '', email: '',username:'', password: ''
+    fullname: '', position: '', cid: '', mobile: '', email: '', username: '', password: ''
   });
   const helperTextConfig = {
     'fullname': [
@@ -126,7 +126,7 @@ const Register = (props) => {
       case 'email': setEmail(value); break;
       // case 'username': setUsername(value); break;
       case 'password': setPassword(value); break;
-      default : break;
+      default: break;
     }
     // console.log(email);
     // if (required === true) {
@@ -145,17 +145,17 @@ const Register = (props) => {
     // }
   }
   const getChangewat = async () => {
-    let response = await UAPI.getAll({ filter: { "fields": { "changwatname": "true" }, "where": { "zonecode": "08" } } }, 'cchangwats');
+    let response = await getAll({ filter: { "fields": { "changwatname": "true" }, "where": { "zonecode": "08" } } }, 'cchangwats');
     setChangewats(response.data);
   }
   const getDepartment = async (cw) => {
-    let response = await UAPI.getAll({ filter: { "fields": { "hos_id":"true","hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
+    let response = await getAll({ filter: { "fields": { "hos_id": "true", "hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
     setDepartments(response.data);
   }
   useEffect(() => {
     getChangewat();
   }, []);
-  
+
   const simpleRegisterForm = () => {
     return < div >
       <div className="form-group">
@@ -282,7 +282,7 @@ const Register = (props) => {
           getOptionLabel={(option) => option.hos_name || ''}
           value={department}
           onChange={(_, newValue) => {
-            delete Object.assign(newValue, {'hcode': newValue['hos_id'] })['hos_id'];
+            delete Object.assign(newValue, { 'hcode': newValue['hos_id'] })['hos_id'];
             setDepartment((newValue !== null) ? newValue : '')
           }}
           renderInput={(params) => <TextField {...params} label="หน่วยงาน" variant="outlined" />}
@@ -302,9 +302,9 @@ const Register = (props) => {
     // setSuccessful(false);
     // form.current.validateAll();
     if (checkBtn.current.context._errors.length === 0) {
-      AuthService.register({ fullname,position, cid, mobile, email, password, changewat, department }).then(
+      AuthService.register({ fullname, position, cid, mobile, email, password, changewat, department }).then(
         (response) => {
-          if(response.status===200){
+          if (response.status === 200) {
             alert("ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน");
             redirect.push("/login");
           }
