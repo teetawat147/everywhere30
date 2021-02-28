@@ -373,7 +373,7 @@ export default function SearchCID(props) {
         x=i;
       }
     });
-    LOG.save('display service info --- DATE:'+date+' HCODE:'+hcode+' VN:'+vn+'AN:'+an+' CID:'+searchCID);
+    LOG.save('display service info --- DATE:'+date+' HCODE:'+hcode+' VN:'+vn+' AN:'+an+' CID:'+searchCID);
     setServiceData(x);
   }
 
