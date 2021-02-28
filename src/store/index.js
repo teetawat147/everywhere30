@@ -9,6 +9,13 @@ const initialState = {
   isLineLogin:false,
   anchorEl:null,
   loginMinutes: 0,
+  currentUser : {},
+  userRole : 'noRole',
+  loginStatus : false,
+  isLineLogin : false,
+  anchorEl : null,
+  drawerOpen : false,
+  mobileView : false
 };
 
 const useGlobal = useGlobalHook(React, initialState, actions);
