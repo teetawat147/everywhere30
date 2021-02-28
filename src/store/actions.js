@@ -14,6 +14,7 @@ const setLoginMinutes = (store,m) => {
   console.log('setLoginMinutes---');
   console.log(m);
   store.setState({ loginMinutes : m });
+};
 const setDrawerOpen = (store,open) => {
   store.setState({ drawerOpen : open });
 };
