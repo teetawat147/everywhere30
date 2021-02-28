@@ -160,8 +160,8 @@ const Appbar = () => {
               onClose={handleClose}
               className={classes.popupMenuLink}
             >
-              <Link to={"/profile"}><MenuItem onClick={handleClose}>ข้อมูลส่วนตัว</MenuItem></Link>
-              <Link to={"/logOut"}><MenuItem onClick={handleClose}>ออกจากระบบ</MenuItem></Link>
+              <Link to={"/profile"}><MenuItem onClick={handleClose}>Profile</MenuItem></Link>
+              <Link to={"/logOut"}><MenuItem onClick={handleClose}>Logout</MenuItem></Link>
             </Menu>
           </div>
         ):(
