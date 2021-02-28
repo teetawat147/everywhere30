@@ -14,6 +14,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import UAPI from "../services/UniversalAPI";
 import LOG from "../services/SaveLog";
+import useGlobal from "../store";
 
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
 import BoxServiceInfo from "./BoxServiceInfo";
@@ -136,7 +137,7 @@ export default function SearchCID(props) {
   const [serviceInfoData, setServiceInfoData] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedHCode, setSelectedHCode] = useState('all');
-
+  const [globalState, globalActions] = useGlobal();
 
   const onchangeSearchText = (e) => {
     let v=e.target.value;
@@ -574,6 +575,19 @@ export default function SearchCID(props) {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+
+  const updateLoginMinutes = () => {
+    let last_m=globalState.loginMinutes;
+    console.log('######### ',last_m);
+    globalActions.setLoginMinutes(last_m+2);
+    setTimeout(() => {
+      updateLoginMinutes();
+    }, 2000);
+  }
+
+  useEffect(() => {
+    updateLoginMinutes();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     mkYearShow();

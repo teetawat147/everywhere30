@@ -7,7 +7,8 @@ const initialState = {
   userRole:'noRole',
   loginStatus: false,
   isLineLogin:false,
-  anchorEl:null
+  anchorEl:null,
+  loginMinutes: 0,
 };
 
 const useGlobal = useGlobalHook(React, initialState, actions);

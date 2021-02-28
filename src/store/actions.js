@@ -10,9 +10,15 @@ const setCurrentUser = (store,userinfo) => {
 const setUserRole = (store,role) => {
   store.setState({ userRole : role });
 };
+const setLoginMinutes = (store,m) => {
+  console.log('setLoginMinutes---');
+  console.log(m);
+  store.setState({ loginMinutes : m });
+};
 export {
   changeLoginStatus,
   setIsLineLogin,
   setCurrentUser,
-  setUserRole
+  setUserRole,
+  setLoginMinutes,
 }
