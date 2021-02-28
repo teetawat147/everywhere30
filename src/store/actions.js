@@ -10,6 +10,11 @@ const setCurrentUser = (store,userinfo) => {
 const setUserRole = (store,role) => {
   store.setState({ userRole : role });
 };
+const setLoginMinutes = (store,m) => {
+  console.log('setLoginMinutes---');
+  console.log(m);
+  store.setState({ loginMinutes : m });
+};
 const setDrawerOpen = (store,open) => {
   store.setState({ drawerOpen : open });
 };
@@ -24,6 +29,7 @@ export {
   setIsLineLogin,
   setCurrentUser,
   setUserRole,
+  setLoginMinutes,
   setDrawerOpen,
   setAnchorEl,
   setMobileView
