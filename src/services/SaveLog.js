@@ -19,7 +19,7 @@ const addZero = (x, n) => {
   return r;
 }
 
-const save = (event_datail) => {
+const logSave = (event_datail) => {
   let d = new Date();
   let data = {
     date: d.getFullYear() + '-' + addZero(parseInt(d.getMonth()) + 1, 2) + '-' + addZero(d.getDate(), 2),
@@ -34,4 +34,4 @@ const save = (event_datail) => {
   return data;
 }
 
-export default save;
+export default logSave;

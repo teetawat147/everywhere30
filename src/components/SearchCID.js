@@ -13,7 +13,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import UListTable from "./UniversalListTable";
 
 import { getAll } from "../services/UniversalAPI";
-import LOG from "../services/SaveLog";
+import logSave from "../services/SaveLog";
 
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
 import BoxServiceInfo from "./BoxServiceInfo";
@@ -257,8 +257,8 @@ export default function SearchCID(props) {
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
-          LOG.save('search --- CID:' + cid);
-          // let l=LOG.save('search --- CID:'+c);
+          logSave('search --- CID:' + cid);
+          // let l=logSave('search --- CID:'+c);
           // console.log(JSON.stringify(l));
           // console.log(response.data);
           let r = response.data[0];
@@ -421,7 +421,7 @@ export default function SearchCID(props) {
         x = i;
       }
     });
-    LOG.save('display service info --- DATE:' + date + ' HCODE:' + hcode + ' VN:' + vn + ' AN:' + an + ' CID:' + searchCID);
+    logSave('display service info --- DATE:' + date + ' HCODE:' + hcode + ' VN:' + vn + ' AN:' + an + ' CID:' + searchCID);
     setServiceData(x);
   }
 
