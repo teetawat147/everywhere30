@@ -50,7 +50,11 @@ const getAuthorize = async (userinfo) => {
           headers: { Authorization: userinfo.id },
           params: { filter: { where: { "id": roleId } } }
         });
+        console.log("roleMapping : ",roleId);
+        console.log("role : ",role.data[0].name);
         auth = role.data[0].name;
+      }else{
+        auth = 'noRole';
       }
     }
   }else{

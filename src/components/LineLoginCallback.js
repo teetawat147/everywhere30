@@ -48,11 +48,12 @@ const LineLogin = (props) => {
             password: decodedIdToken.sub,
             picture: decodedIdToken.picture
           }).then((response) => {
+            console.log("Line Login UserInfo : ", response.response);
             if(!response.isLoginError){
               // Login success then go to root page
-              // console.log("userInfo : ", response.response);
-              // setLoginStatus(true);
-              // props.changeLoginStatus(true);
+              if(typeof response.response.user !=='undefined'){
+                globalActions.setUserRole(response.response.user.role);
+              }
               globalActions.changeLoginStatus(true);
               globalActions.setCurrentUser(response.response);
               redirect.push("/home");
