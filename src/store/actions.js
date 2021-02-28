@@ -10,9 +10,21 @@ const setCurrentUser = (store,userinfo) => {
 const setUserRole = (store,role) => {
   store.setState({ userRole : role });
 };
+const setDrawerOpen = (store,open) => {
+  store.setState({ drawerOpen : open });
+};
+const setAnchorEl = (store,open) => {
+  store.setState({ anchorEl : open });
+};
+const setMobileView = (store,view) => {
+  store.setState({ movileView : view });
+};
 export {
   changeLoginStatus,
   setIsLineLogin,
   setCurrentUser,
-  setUserRole
+  setUserRole,
+  setDrawerOpen,
+  setAnchorEl,
+  setMobileView
 }
