@@ -1,4 +1,4 @@
-import axios, * as others from 'axios'
+import axios from 'axios'
 import * as authHeader from "../services/auth-header";
 
 // const API_URL = "https://cloud1.r8way.moph.go.th:3099/api/";

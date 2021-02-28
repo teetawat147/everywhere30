@@ -1,41 +1,19 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
-import {  Route, Link, Switch } from 'react-router-dom';
+import React, { useEffect } from "react";
+import {  Route, Switch } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import clsx from 'clsx';
-import { makeStyles,useTheme  } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import HomeIcon from '@material-ui/icons/Home';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Avatar from '@material-ui/core/Avatar';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import Button from '@material-ui/core/Button';
-
+import { makeStyles } from '@material-ui/core/styles';
 import { getCurrentUser,getPermissions } from "./services/auth.service";
-import logo from "./images/logo192.png";
 import { ConfirmProvider } from 'material-ui-confirm';
-import {mainRoute,sideBarRoute} from './routes/index';
+import {mainRoute} from './routes/index';
 import useGlobal from "./store";
+import Appbar from './layout/Appbar';
+import Sidebar from './layout/Sidebar';
+
 const drawerWidth = 240;
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -149,24 +127,12 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
   const [globalState, globalActions] = useGlobal();
-  // const [role,setRole] = useState(getPermissions());
-  const [mobileView,setMobileView] = useState(false);
   const classes = useStyles();
-  const theme = useTheme();
-
-  // Sidebar State
-  const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const openMenu = Boolean(anchorEl);
-  const handleDrawerOpen = () => {setOpen(true)};
-  const handleDrawerClose = () => {setOpen(false)};
-  const handleMenu = (event) => {setAnchorEl(event.currentTarget)};
-  const handleClose = () => {setAnchorEl(null)};
 
   useEffect(() => {
     const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
     const mobile = Boolean(userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i));
-    setMobileView(mobile);
+    globalActions.setMobileView(mobile);
     if(Object.keys(globalState.currentUser).length===0){
       // กรณี refresh หน้าเว็บให้ไป get localstorage มาใส่ใน global state
       let CU = getCurrentUser();
@@ -196,169 +162,14 @@ const App = () => {
 
   return (
     <div className={classes.root}>
-      <AppBar 
-        position="fixed" 
-        color="secondary" 
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
-      >
-        <Toolbar>
-          {
-            (mobileView)?(
-              <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
-            ):(
-              (globalState.loginStatus)&&(
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={handleDrawerOpen}
-                  edge="start"
-                  className={clsx(classes.menuButton, open && classes.hide)}
-                >
-                  <MenuIcon />
-                </IconButton>
-              )
-            )
-          } 
-          <img src={logo} alt="R8 Anywhere" className={classes.logo} />
-          <Typography variant="h6" noWrap>
-            <Link to={"/"} className="navbar-brand">R8 Anywhere</Link>
-          </Typography>
-          
-          {(globalState.loginStatus) ? (
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                {(!globalState.isLineLogin)?(
-                  <AccountCircle />
-                ):(
-                  <Avatar className={classes.avatarSmall} src={(Object.keys(globalState.currentUser).length!==0)?globalState.currentUser.user.picture:''} />
-                )}
-                
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={openMenu}
-                onClose={handleClose}
-                className={classes.popupMenuLink}
-              >
-                <Link to={"/profile"}><MenuItem onClick={handleClose}>ข้อมูลส่วนตัว</MenuItem></Link>
-                <Link to={"/logOut"}><MenuItem onClick={handleClose}>ออกจากระบบ</MenuItem></Link>
-              </Menu>
-            </div>
-          ):(
-            (!mobileView)&&(
-              (!globalState.loginStatus) ? (
-                <div className="navMenu">
-                  <Link to={"/login"}>
-                    <Button color="inherit"><LockOpenIcon style={{marginRight:'5px'}}/> Login</Button>
-                  </Link>
-                  <Link to={"/register"}>
-                    <Button color="inherit"><PersonAddIcon style={{marginRight:'5px'}}/> Register</Button>
-                  </Link>
-                </div>
-              ):(
-                <div className="navMenu">
-                  <Link to={"/logOut"}>
-                    <Button color="inherit"><ExitToAppIcon style={{marginRight:'5px'}} /> Logout</Button>
-                  </Link>
-                </div>
-              )
-            )
-          )}
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </div>
-        <Divider />
-          {(globalState.loginStatus) ? ( // Login แล้ว
-            <List>
-              {sideBarRoute.map( (route, index) =>
-                (route.roles.includes(globalState.userRole))&&( // Create Sidebar menu via user role
-                  <Link key={index} to={route.path} onClick={handleDrawerClose}>
-                    <ListItem button key={route.id}>
-                      <ListItemIcon>{route.icon}</ListItemIcon>
-                      <ListItemText primary={route.id} />
-                    </ListItem>
-                  </Link>
-                )
-              )}
-              <Divider />
-              {(mobileView)&&(  // แสดงเฉพาะ Mobile          
-                <Link to={"/logout"}>
-                  <ListItem button key="Logout">
-                    <ListItemIcon><ExitToAppIcon /></ListItemIcon>
-                    <ListItemText primary="Logout" />
-                  </ListItem>
-                </Link>
-              )}
-            </List>    
-          ):( // ยังไม่ Login
-            (mobileView)&&( // แสดงเฉพาะ Mobile
-              <List>
-                <Link to={"/login"} onClick={handleDrawerClose}>
-                  <ListItem button key="Login">
-                    <ListItemIcon><LockOpenIcon /></ListItemIcon>
-                    <ListItemText primary="Login" />
-                  </ListItem>
-                </Link>
-                <Link to={"/register"} onClick={handleDrawerClose}>
-                  <ListItem button key="Register">
-                    <ListItemIcon><PersonAddIcon /></ListItemIcon>
-                    <ListItemText primary="Register" />
-                  </ListItem>
-                </Link>
-              </List>
-            )
-          )}
-        
-      </Drawer>
+      <Appbar/>
+      <Sidebar/>
       <ConfirmProvider>
-        <main
-          className={clsx(classes.content, {
-            [classes.contentShift]: open,
-          })}
-        >
+        <main className={clsx(classes.content, {[classes.contentShift]: globalState.drawerOpen,})}>
           <div className={classes.toolbar} />
           <Switch>
             {mainRoute.map( (route, index) => 
-              (route.roles.includes(globalState.userRole))&&( // Create route by user role
+              (route.roles.includes(globalState.userRole))&&(
                 <Route
                   key={index}
                   exact
