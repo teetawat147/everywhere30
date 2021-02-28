@@ -7,7 +7,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckButton from "react-validation/build/button";
 import { useHistory } from "react-router-dom";
-import UAPI from "../services/UniversalAPI";
+import { getAll, patch, create } from "../services/UniversalAPI";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -138,7 +138,7 @@ export default function UserEdit(props) {
   };
 
   const getChangewat = async () => {
-    let response = await UAPI.getAll(
+    let response = await getAll(
       {
         filter: { fields: { changwatname: "true" }, where: { zonecode: "08" } },
       },
@@ -155,7 +155,7 @@ export default function UserEdit(props) {
   };
 
   const getDepartment = async (cw) => {
-    let response = await UAPI.getAll(
+    let response = await getAll(
       {
         filter: {
           fields: { hos_id: "true", hos_name: "true", hos_fullname: "true" },
@@ -335,7 +335,7 @@ export default function UserEdit(props) {
             helperText={inputHelperText.password}
             error={inputError.password}
             disabled={disPassword}
-            // required
+          // required
           />
         </div>
         <div className="form-group">
@@ -402,7 +402,7 @@ export default function UserEdit(props) {
     e.preventDefault();
     if (checkBtn.current.context._errors.length === 0) {
       if (isAddMode === "newadd") {
-        UAPI.create(userData, "teamusers").then(
+        create(userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
               alert("สำเร็จ");
@@ -420,7 +420,7 @@ export default function UserEdit(props) {
           }
         );
       } else {
-        UAPI.patch(userData["id"], userData, "teamusers").then(
+        patch(userData["id"], userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
               alert("สำเร็จ");

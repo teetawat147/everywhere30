@@ -5,6 +5,4 @@ const getIP = async () => {
   return data;
 }
 
-export default {
-  getIP
-};
+export default getIP;

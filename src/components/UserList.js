@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import UAPI from "../services/UniversalAPI";
+import { getAll, patch, create, remove } from "../services/UniversalAPI";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -47,7 +47,7 @@ export default function UserList(props) {
       },
     };
 
-    let response = await UAPI.getAll(xParams, "teamusers");
+    let response = await getAll(xParams, "teamusers");
     setUsers(response.data);
     console.log(response.data)
   };
@@ -67,7 +67,7 @@ export default function UserList(props) {
   };
 
   const getLookUpRoles = async () => {
-    let response = await UAPI.getAll({}, "roles");
+    let response = await getAll({}, "roles");
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
@@ -89,7 +89,7 @@ export default function UserList(props) {
 
   function addRole() {
     if (typeof currentRoleMapping.id !== "undefined") {
-      UAPI.patch(
+      patch(
         currentRoleMapping.id,
         currentRoleMapping,
         "rolemappings"
@@ -110,7 +110,7 @@ export default function UserList(props) {
         }
       );
     } else {
-      UAPI.create(
+      create(
         {
           principalType: "USER",
           principalId: userroleid,
@@ -140,7 +140,7 @@ export default function UserList(props) {
 
   function deleteUser(x) {
     if (x.RoleMapping.length > 0) {
-      UAPI.remove(x.RoleMapping[0].id, "rolemappings").then(
+      remove(x.RoleMapping[0].id, "rolemappings").then(
         (response) => {
           if (response.status === 200) {
             alert("ลบสำเร็จ");
@@ -158,7 +158,7 @@ export default function UserList(props) {
       );
     }
 
-    UAPI.remove(x.id, "teamusers").then(
+    remove(x.id, "teamusers").then(
       (response) => {
         if (response.status === 200) {
           alert("ลบสำเร็จ");
@@ -211,8 +211,8 @@ export default function UserList(props) {
                 </td>
                 <td>{user.changewat}</td>
                 <td>{typeof user.department !== 'undefined'
-                    ? user.department.hos_name
-                    : ""}</td>
+                  ? user.department.hos_name
+                  : ""}</td>
                 <td style={{ whiteSpace: "nowrap" }}>
                   <button
                     variant="outlined"
@@ -236,8 +236,8 @@ export default function UserList(props) {
                     {user.isDeleting ? (
                       <span className="spinner-border spinner-border-sm"></span>
                     ) : (
-                      <span>ลบ</span>
-                    )}
+                        <span>ลบ</span>
+                      )}
                   </button>
                 </td>
               </tr>

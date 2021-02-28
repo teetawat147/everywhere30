@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 import UserService from "../services/user.service";
-import UAPI from "../services/UniversalAPI";
+import { getGroupBy } from "../services/UniversalAPI";
 
 import {
     Grid,
@@ -18,7 +18,7 @@ import {
     TableHead,
     TableRow,
     Typography
-  } from "@material-ui/core";
+} from "@material-ui/core";
 
 const Monitor = () => {
     const [data, setData] = useState(null);
@@ -30,7 +30,7 @@ const Monitor = () => {
             }
         };
 
-        let response = await UAPI.getGroupBy(xParams, 'people');
+        let response = await getGroupBy(xParams, 'people');
         if (response.status === 200) {
             if (response.data) {
                 if (response.data.length > 0) {
@@ -64,7 +64,7 @@ const Monitor = () => {
                 }
             }
         }
-        return(
+        return (
             <Table>
                 <TableHead>
                     <TableRow>
@@ -82,7 +82,7 @@ const Monitor = () => {
     }
 
     return (
-        <div style={{marginBottom:100, width: '100%' }}>
+        <div style={{ marginBottom: 100, width: '100%' }}>
             <div><h5>Monitor Data</h5></div>
             {mkRows()}
         </div>

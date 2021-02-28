@@ -1,9 +1,11 @@
 import React from "react";
+import homeImage from "../images/flow_01.jpg";
 const Home = () => {
+
   return (
     <div className="container">
       <header className="jumbotron">
-        <img src={require("../images/flow_01.jpg")} alt="" style={{width:'100%'}}/>
+        <img src={homeImage} alt="" style={{ width: '100%' }} />
       </header>
     </div>
   );

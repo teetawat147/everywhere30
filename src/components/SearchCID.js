@@ -12,7 +12,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import UCard from "./UniversalCard";
 // import UListTable from "./UniversalListTable";
 
-import UAPI from "../services/UniversalAPI";
+import { getAll } from "../services/UniversalAPI";
 import LOG from "../services/SaveLog";
 
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
@@ -213,7 +213,7 @@ export default function SearchCID(props) {
     };
 
     // console.log(xParams);
-    let response = await UAPI.getAll(xParams, 'people');
+    let response = await getAll(xParams, 'people');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
@@ -253,7 +253,7 @@ export default function SearchCID(props) {
       }
     };
     // console.log(xParams);
-    let response = await UAPI.getAll(xParams, 'people');
+    let response = await getAll(xParams, 'people');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
@@ -625,7 +625,7 @@ export default function SearchCID(props) {
 
   const getConsentSetting = async () => {
     let xParams = { filter: {where:{key: "emrRequiredConsent"}}};
-    let response = await UAPI.getAll(xParams, 'SystemSettings');
+    let response = await getAll(xParams, 'SystemSettings');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {

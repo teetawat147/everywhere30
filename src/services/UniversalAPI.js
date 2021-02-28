@@ -27,8 +27,8 @@ const get = (id, thisCollection) => {
 const create = (data, thisCollection) => {
   return axios.post(API_URL + thisCollection, data, { headers: authHeader.getToken() });
 };
-const uploadFile = (params,collection)=>{
-  return axios.post(API_URL + collection, params, { headers: authHeader.setHeader()});
+const uploadFile = (params, collection) => {
+  return axios.post(API_URL + collection, params, { headers: authHeader.setHeader() });
 }
 const update = (id, data, thisCollection) => {
   return axios.put(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
@@ -36,12 +36,12 @@ const update = (id, data, thisCollection) => {
 
 const update2 = (where, data, thisCollection) => {
   return axios.update(API_URL + thisCollection + "/" + where, data, { headers: authHeader.getToken() });
- 
+
 };
 
 const patch = (id, data, thisCollection) => {
   return axios.patch(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
- 
+
 };
 const remove = (id, thisCollection) => {
   return axios.delete(API_URL + thisCollection + "/" + id, { headers: authHeader.getToken() });
@@ -55,7 +55,7 @@ const findByTitle = (title, thisCollection) => {
   return axios.get(API_URL + thisCollection + "?filter[where][title][like]=" + title, { headers: authHeader.getToken() });
 };
 
-export default {
+export {
   getAll,
   getLimit,
   getCount,

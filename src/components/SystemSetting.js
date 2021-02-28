@@ -8,7 +8,7 @@ import {
 
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-import UAPI from "../services/UniversalAPI";
+import { getAll, patch } from "../services/UniversalAPI";
 import LOG from "../services/SaveLog";
 
 import {
@@ -85,7 +85,7 @@ export default function SystemSetting(props) {
   const [openDialog, setOpenDialog] = useState(false);
 
   const getSystemSettingData = async () => {
-    let response = await UAPI.getAll({}, 'SystemSettings');
+    let response = await getAll({}, 'SystemSettings');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
@@ -128,7 +128,7 @@ export default function SystemSetting(props) {
 
   const saveSS = async () => {
     let x=selectSSData;
-    let response = await UAPI.patch(x.id, x, 'SystemSettings');
+    let response = await patch(x.id, x, 'SystemSettings');
     if (response.status === 200) {
       // if (response.data) {
         // if (response.data.length > 0) {

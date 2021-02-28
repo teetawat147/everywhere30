@@ -14,7 +14,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import UCard from "./UniversalCard";
 // import UListTable from "./UniversalListTable";
 
-import UAPI from "../services/UniversalAPI";
+import { getAll } from "../services/UniversalAPI";
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
 import BoxServiceInfo from "./BoxServiceInfo";
 import BoxAssessment from "./BoxAssessment";
@@ -34,7 +34,7 @@ import {
   Tab,
   Paper,
   Box,
-  Tooltip, 
+  Tooltip,
   Typography,
   Dialog,
   DialogTitle,
@@ -57,7 +57,7 @@ const useStyles = makeStyles({
   helperText: {
     color: 'red'
   },
-  contentGroup:{
+  contentGroup: {
     display: 'inline',
   },
   contentTitle: {
@@ -99,7 +99,7 @@ export default function SearchCID(props) {
   const getData = async () => {
     let xParams = {
       filter: {
-        where: {cid:{inq:['1471400120432','1479900187312','3470200241827']}},
+        where: { cid: { inq: ['1471400120432', '1479900187312', '3470200241827'] } },
         include: {
           relation: "intervention",
           scope: {
@@ -110,11 +110,11 @@ export default function SearchCID(props) {
         }
       }
     };
-  
-    let response = await UAPI.getAll(xParams, 'people');
+
+    let response = await getAll(xParams, 'people');
     if (response.status === 200) {
       if (response.data) {
-        if (response.data.length>0) {
+        if (response.data.length > 0) {
           // console.log(response.data);
           // let r=response.data[0];
           // console.log(r);
@@ -125,52 +125,52 @@ export default function SearchCID(props) {
 
   }
 
-  const clickRow = (e,d,hcode,vn,cid) => {
+  const clickRow = (e, d, hcode, vn, cid) => {
     // console.log(d,hcode,vn,cid);
-    history.push({ pathname: '/emr', state: {date: d, hcode: hcode,vn: vn, cid: cid} });
+    history.push({ pathname: '/emr', state: { date: d, hcode: hcode, vn: vn, cid: cid } });
   }
 
   const mkRows = () => {
-    let r=[];
+    let r = [];
     if (data) {
       if (typeof data !== 'undefined') {
-        if (data.length>0) {
+        if (data.length > 0) {
           data.forEach(i => {
             let refer;
-            let vn='';
+            let vn = '';
             let visit_date;
             i.intervention.forEach(a => {
               if (typeof a.activities.referout !== 'undefined') {
-                if (a.activities.referout.length>0) {
+                if (a.activities.referout.length > 0) {
                   // console.log(a);
-                  refer=a.activities.referout[0];
-                  vn=a.vn;
-                  visit_date=(typeof a.vstdate !== 'undefined'? a.vstdate : '');
+                  refer = a.activities.referout[0];
+                  vn = a.vn;
+                  visit_date = (typeof a.vstdate !== 'undefined' ? a.vstdate : '');
                 }
               }
             });
             // console.log(refer);
             r.push(
               <tr key={i.id}>
-                <td className={classes.tcell} style={{paddingLeft: 10, paddingRight: 10}}>
-                  <IconButton key="btnEdit" variant="outlined" color="primary" onClick={(e)=>clickRow(e,visit_date,i.hcode,vn,i.cid)}>
+                <td className={classes.tcell} style={{ paddingLeft: 10, paddingRight: 10 }}>
+                  <IconButton key="btnEdit" variant="outlined" color="primary" onClick={(e) => clickRow(e, visit_date, i.hcode, vn, i.cid)}>
                     <MdRemoveRedEye size={20} />
                   </IconButton>
                 </td>
-                <td className={classes.tcell}>{typeof refer.refer_date !=='undefined'?refer.refer_date:refer.date}</td>
+                <td className={classes.tcell}>{typeof refer.refer_date !== 'undefined' ? refer.refer_date : refer.date}</td>
                 <td className={classes.tcell}></td>
-                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined'?refer.refer_number:''}</td>
+                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : ''}</td>
                 <td className={classes.tcell}>
-                  {typeof refer.refer_hospcode !== 'undefined'?refer.refer_hospcode:''} {typeof refer.refer_hospital_name !== 'undefined'?refer.refer_hospital_name:''}
+                  {typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}
                 </td>
                 <td className={classes.tcell}>{i.hn}</td>
                 <td className={classes.tcell}>{i.fname} {i.lname}</td>
                 <td className={classes.tcell}>{i.cid}</td>
                 <td className={classes.tcell}>{i.hcode}</td>
-                <td className={classes.tcell}>{typeof refer.pttype_name !== 'undefined'?refer.pttype_name:''}</td>
-                <td className={classes.tcell}>{typeof refer.depcode !== 'undefined'?refer.depcode:''}</td>
-                <td className={classes.tcell}>{typeof refer.department !== 'undefined'?refer.department:''}</td>
-                <td className={classes.tcell}>{typeof refer.refer_type_name !== 'undefined'?refer.refer_type_name:''}</td>
+                <td className={classes.tcell}>{typeof refer.pttype_name !== 'undefined' ? refer.pttype_name : ''}</td>
+                <td className={classes.tcell}>{typeof refer.depcode !== 'undefined' ? refer.depcode : ''}</td>
+                <td className={classes.tcell}>{typeof refer.department !== 'undefined' ? refer.department : ''}</td>
+                <td className={classes.tcell}>{typeof refer.refer_type_name !== 'undefined' ? refer.refer_type_name : ''}</td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}></td>
@@ -183,7 +183,7 @@ export default function SearchCID(props) {
       }
     }
     return (
-      <table style={{height:500}}>
+      <table style={{ height: 500 }}>
         <thead>
           <tr>
             <td className={classes.thead}><br /></td>
@@ -220,22 +220,22 @@ export default function SearchCID(props) {
   // useEffect(() => {
   //   extractServiceInfo();
   // }, [serviceData]); // eslint-disable-line react-hooks/exhaustive-deps
-  
-  
+
+
   return (
-    <div style={{marginBottom:100, width: '100%' }}>
+    <div style={{ marginBottom: 100, width: '100%' }}>
 
       <div><h5>REFERIN</h5></div>
-      <div style={{  borderRadius: 5, border:'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
-        <TextField style={{width: 120, marginRight: 5}} label="เลขที่ใบส่งตัว" variant="outlined" />
-        <TextField style={{width: 200, marginRight: 5}} label="สถานพยาบาลต้นทาง" variant="outlined" />
-        <TextField style={{width: 120, marginRight: 5}} label="HN"variant="outlined" />
-        <TextField style={{width: 120, marginRight: 5}} label="ชื่อสกุล" variant="outlined" />
-        <TextField style={{width: 120, marginRight: 5}} label="จากวันที่" variant="outlined" />
-        <TextField style={{width: 120, marginRight: 5}} label="ถึงวันที่" variant="outlined" />
+      <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
+        <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" />
+        <TextField style={{ width: 200, marginRight: 5 }} label="สถานพยาบาลต้นทาง" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="HN" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="ชื่อสกุล" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="จากวันที่" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="ถึงวันที่" variant="outlined" />
         <Button
           // onClick={handleClickSearch}
-          style={{height:55}}
+          style={{ height: 55 }}
           variant="contained"
           color="primary"
           startIcon={<MdSearch size={20} />}
@@ -243,7 +243,7 @@ export default function SearchCID(props) {
           ค้นหา
         </Button>
       </div>
-      <div style={{  borderRadius: 5, border:'solid 1px #dadada', padding: 10, marginTop: 10, overfloY: 'hidden', overflowX: 'scroll' }}>
+      <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, marginTop: 10, overfloY: 'hidden', overflowX: 'scroll' }}>
         {mkRows()}
       </div>
 

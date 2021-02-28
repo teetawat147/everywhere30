@@ -14,7 +14,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import UCard from "./UniversalCard";
 // import UListTable from "./UniversalListTable";
 
-import UAPI from "../services/UniversalAPI";
+import { getAll } from "../services/UniversalAPI";
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
 
 import {
@@ -27,7 +27,7 @@ import {
   Tab,
   Paper,
   Box,
-  Tooltip, 
+  Tooltip,
   Typography,
   Dialog,
   DialogTitle,
@@ -50,7 +50,7 @@ const useStyles = makeStyles({
   helperText: {
     color: 'red'
   },
-  contentGroup:{
+  contentGroup: {
     display: 'inline',
   },
   contentTitle: {
@@ -132,10 +132,10 @@ export default function SearchCID(props) {
       }
     };
 
-    let response = await UAPI.getAll(xParams, 'interventions');
+    let response = await getAll(xParams, 'interventions');
     if (response.status === 200) {
       if (response.data) {
-        if (response.data.length>0) {
+        if (response.data.length > 0) {
           // console.log(response.data);
           // let r=response.data[0];
           // console.log(r);
@@ -146,9 +146,9 @@ export default function SearchCID(props) {
 
   }
 
-  const clickRow = (e,d,hcode,vn,cid) => {
+  const clickRow = (e, d, hcode, vn, cid) => {
     // console.log(d,hcode,vn,cid);
-    history.push({ pathname: '/emr', state: {date: d, hcode: hcode,vn: vn, cid: cid} });
+    history.push({ pathname: '/emr', state: { date: d, hcode: hcode, vn: vn, cid: cid } });
   }
 
   const mkRows = () => {
@@ -181,9 +181,9 @@ export default function SearchCID(props) {
                 <td className={classes.tcell}>{n}.</td>                
                 <td className={classes.tcell}>{typeof refer.refer_date !=='undefined'?thaiXSDate(refer.refer_date):thaiXSDate(refer.date)}</td>
                 <td className={classes.tcell}></td>
-                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined'?refer.refer_number:''}</td>
+                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : ''}</td>
                 <td className={classes.tcellWrap}>
-                  {typeof refer.refer_hospcode !== 'undefined'?refer.refer_hospcode:''} {typeof refer.refer_hospital_name !== 'undefined'?refer.refer_hospital_name:''}
+                  {typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}
                 </td>
                 <td className={classes.tcell}>{person.hn}</td>
                 <td className={classes.tcell}>{person.fname} {person.lname}</td>
@@ -205,7 +205,7 @@ export default function SearchCID(props) {
       }
     }
     return (
-      <table style={{height:500}}>
+      <table style={{ height: 500 }}>
         <thead>
           <tr>
             <td className={classes.thead}><br /></td>
@@ -244,21 +244,21 @@ export default function SearchCID(props) {
   // useEffect(() => {
   //   extractServiceInfo();
   // }, [serviceData]); // eslint-disable-line react-hooks/exhaustive-deps
-  
+
   return (
-    <div style={{marginBottom:100, width: '100%' }}>
+    <div style={{ marginBottom: 100, width: '100%' }}>
 
       <div><h5>REFEROUT</h5></div>
-      <div style={{  borderRadius: 5, border:'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
-        <TextField style={{width: 120, marginRight: 5}} label="เลขที่ใบส่งตัว" variant="outlined" />
-        <TextField style={{width: 200, marginRight: 5}} label="สถานพยาบาลต้นทาง" variant="outlined" />
-        <TextField style={{width: 120, marginRight: 5}} label="HN"variant="outlined" />
-        <TextField style={{width: 120, marginRight: 5}} label="ชื่อสกุล" variant="outlined" />
-        <TextField style={{width: 120, marginRight: 5}} label="จากวันที่" variant="outlined" />
-        <TextField style={{width: 120, marginRight: 5}} label="ถึงวันที่" variant="outlined" />
+      <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
+        <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" />
+        <TextField style={{ width: 200, marginRight: 5 }} label="สถานพยาบาลต้นทาง" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="HN" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="ชื่อสกุล" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="จากวันที่" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="ถึงวันที่" variant="outlined" />
         <Button
           // onClick={handleClickSearch}
-          style={{height:55}}
+          style={{ height: 55 }}
           variant="contained"
           color="primary"
           startIcon={<MdSearch size={20} />}
@@ -266,7 +266,7 @@ export default function SearchCID(props) {
           ค้นหา
         </Button>
       </div>
-      <div style={{  borderRadius: 5, border:'solid 1px #dadada', padding: 10, marginTop: 10, overfloY: 'hidden', overflowX: 'scroll' }}>
+      <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, marginTop: 10, overfloY: 'hidden', overflowX: 'scroll' }}>
         {mkRows()}
       </div>
 
