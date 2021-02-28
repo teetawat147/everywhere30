@@ -337,7 +337,7 @@ export default function UserList(props) {
                 }
                 getOptionLabel={(option) => option.name || ""}
                 onChange={(e, newValue) => {
-                  console.log(newValue.id);
+                //   console.log(newValue.id);
                   let x = currentRoleMapping;
                   x["roleId"] = newValue.id;
                   setCurrentRoleMapping({ ...currentRoleMapping, ...x });
