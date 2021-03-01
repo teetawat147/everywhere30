@@ -55,7 +55,6 @@ const Monitor = () => {
                         r.push(
                             <TableRow key={ii}>
                                 <TableCell align="center">{ii++}</TableCell>
-                                <TableCell component="th" scope="row"></TableCell>
                                 <TableCell component="th" scope="row">{i.hname}</TableCell>
                                 <TableCell align="right">{i.count}</TableCell>
                             </TableRow>
@@ -69,7 +68,6 @@ const Monitor = () => {
                 <TableHead>
                     <TableRow>
                         <TableCell align="center">ลำดับ</TableCell>
-                        <TableCell>รหัสหน่วยบริการ</TableCell>
                         <TableCell>หน่วยบริการ</TableCell>
                         <TableCell align="right">จำนวน</TableCell>
                     </TableRow>
