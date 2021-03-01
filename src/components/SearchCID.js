@@ -90,6 +90,20 @@ const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+  },
+  boxHead: { 
+    marginTop: 0, 
+    marginBottom: 0, 
+    paddingLeft: 10, 
+    paddingBottom: 2, 
+    paddingTop: 2, 
+    backgroundColor: '#f7fafb',
+    borderRadius: 8
+  },
+  boxHeadContain: { 
+    border: 'solid 1px #A0A0A0', 
+    borderRadius: 7,
+    marginBottom: 10
   }
 }));
 
@@ -533,23 +547,49 @@ export default function SearchCID(props) {
     else {
       return (
         <div>
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Assessment</b></div>
-          {Object.keys(assessment).length > 0 && <BoxAssessment data={assessment} dataAll={assessmentListData} />}
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Diagnosis</b></div>
-          {diagnosis.length > 0 && <BoxDiagnosis data={diagnosis} currentView={currentView} />}
+          <div className={classes.boxHeadContain}>
+            <div className={classes.boxHead}><b>Assessment</b></div>
+            <div style={{padding: 10}}>
+              {Object.keys(assessment).length > 0 && <BoxAssessment data={assessment} dataAll={assessmentListData} />}
+            </div>
+          </div>
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Laboratory</b></div>
-          {laboratory.length > 0 && <BoxLaboratory data={laboratory} currentView={currentView} />}
+          <div className={classes.boxHeadContain}>
+            <div className={classes.boxHead}><b>Diagnosis</b></div>
+            <div style={{padding: 10}}>
+              {diagnosis.length > 0 && <BoxDiagnosis data={diagnosis} currentView={currentView} />}
+            </div>
+          </div>
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Radiology</b></div>
-          {radiology.length > 0 && <BoxRadiology data={radiology} currentView={currentView} />}
+          <div className={classes.boxHeadContain}>
+            <div className={classes.boxHead}><b>Laboratory</b></div>
+            <div style={{padding: 10}}>
+              {laboratory.length > 0 && <BoxLaboratory data={laboratory} currentView={currentView} />}
+            </div>
+          </div>
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Treatment</b></div>
-          {treatment.length > 0 && <BoxTreatment data={treatment} currentView={currentView} />}
+          <div className={classes.boxHeadContain}>
+            <div className={classes.boxHead}><b>Radiology</b></div>
+            <div style={{padding: 10}}>
+              {radiology.length > 0 && <BoxRadiology data={radiology} currentView={currentView} />}
+            </div>
+          </div>
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Refer Out</b></div>
-          {Object.keys(referout).length > 0 && <BoxReferout data={referout} />}
+          <div className={classes.boxHeadContain}>
+            <div className={classes.boxHead}><b>Treatment</b></div>
+            <div style={{padding: 10}}>
+              {treatment.length > 0 && <BoxTreatment data={treatment} currentView={currentView} />}
+            </div>
+          </div>
+
+          <div className={classes.boxHeadContain}>
+             <div className={classes.boxHead}><b>Refer Out</b></div>
+             <div style={{padding: 10}}>
+               {Object.keys(referout).length > 0 && <BoxReferout data={referout} />}
+             </div>
+           </div>
+
         </div>
       );
     }
