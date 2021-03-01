@@ -13,6 +13,7 @@ const Logout = () => {
       globalActions.changeLoginStatus(false);
       globalActions.setCurrentUser({});
       globalActions.setUserRole('noRole');
+      globalActions.setDrawerOpen(false);
       redirect.push("/login");
     }else{
       console.log(logoutStatus);

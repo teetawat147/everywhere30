@@ -94,7 +94,7 @@ const referout = {
   component: Referout
 };
 const userlist = {
-  id: "UserList",
+  id: "Users",
   path: "/userlist",
   icon: <SupervisorAccountIcon />,
   roles:["AdminR8","AdminChangwat","AdminHospital"],
@@ -115,21 +115,21 @@ const consent = {
   component: Consent
 };
 const profile = {
-  id: "profile",
+  id: "Profile",
   path: "/profile",
   icon: null,
   roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Member","noRole"],
   component: Profile
 };
 const monitor = {
-  id: "monitor",
+  id: "Monitor",
   path: "/monitor",
   icon: <DvrIcon/>,
   roles:["AdminR8","AdminChangwat","AdminHospital"],
   component: Monitor
 };
 const systemsetting = {
-  id: "systemsetting",
+  id: "Systemsetting",
   path: "/systemsetting",
   icon: <SettingsIcon/>,
   roles:["AdminR8"],

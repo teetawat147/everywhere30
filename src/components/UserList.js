@@ -11,15 +11,22 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { getCurrentUser } from "../services/auth.service";
+import { useConfirm } from "material-ui-confirm";
+
 
 export default function UserList(props) {
   const [users, setUsers] = useState(null);
   const history = useHistory();
   const [open, setOpen] = React.useState(false);
   const [lookuproles, setLookUpRoles] = useState([]);
+  const [lookuprolescurrent, setLookUpRolesCurrent] = useState([]);
   const [userroleid, setUserRoleId] = useState({});
   const [currentRoleId, setCurrentRoleId] = useState(null);
   const [currentRoleMapping, setCurrentRoleMapping] = useState({});
+  const [currentUser, setCurrentUser] = useState(getCurrentUser());
+  const confirm = useConfirm();
+  
 
   const handleClickRole = (x) => {
     setOpen(true);
@@ -30,12 +37,17 @@ export default function UserList(props) {
     setUserRoleId(x.id);
   };
 
+  //console.log( currentUser );
+  //console.log( currentUser.user );
+console.log(currentUser.user.changewat);
+
   const handleClose = () => {
     setOpen(false);
   };
   const getTeamuser = async () => {
     let xParams = {
       filter: {
+        where:{changewat:currentUser.user.changewat},
         include: {
           relation: "RoleMapping",
           scope: {
@@ -54,8 +66,9 @@ export default function UserList(props) {
 
   useEffect(() => {
     getTeamuser();
-
     getLookUpRoles();
+    getLookUpRolesCurrent();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const clickUserEditlink = (x) => {
@@ -66,12 +79,63 @@ export default function UserList(props) {
     }
   };
 
-  const getLookUpRoles = async () => {
+  const getLookUpRolesCurrent = async () => {
     let response = await getAll({}, "roles");
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
-          setLookUpRoles(response.data);
+          setLookUpRolesCurrent(response.data);
+          //console.log(response.data);
+        }
+      }
+    }
+  };
+
+  const getLookUpRoles = async () => {
+    if (currentUser.user.role === "AdminR8") {
+      let response = await getAll({}, "roles");
+      if (response.status === 200) {
+        if (response.data) {
+          if (response.data.length > 0) {
+            setLookUpRoles(response.data);
+            // console.log(response.data);
+          }
+        }
+      }
+    } else if (currentUser.user.role === "AdminChangWat") {
+      let response = await getAll(
+        {
+          filter: {
+            where: {
+              or: [
+                { name: "AdminChangewat" },
+                { name: "AdminHospital" },
+                { name: "Doctor" },
+                { name: "Member" },
+              ],
+            },
+          },
+        },
+        "roles"
+      );
+      if (response.status === 200) {
+        if (response.data) {
+          if (response.data.length > 0) {
+            setLookUpRoles(response.data);
+            // console.log(response.data);
+          }
+        }
+      }
+    } else if (currentUser.user.role === "AdminHospital") {
+      let response = await getAll(
+        { filter: { where: { or: [{ name: "Doctor" }, { name: "Member" }] } } },
+        "roles"
+      );
+      if (response.status === 200) {
+        if (response.data) {
+          if (response.data.length > 0) {
+            setLookUpRoles(response.data);
+          }
         }
       }
     }
@@ -79,7 +143,7 @@ export default function UserList(props) {
 
   const getAutoDefaultValueRole = (x) => {
     let r = null;
-    lookuproles.forEach((i) => {
+    lookuprolescurrent.forEach((i) => {
       if (i.id === x) {
         r = i;
       }
@@ -89,16 +153,14 @@ export default function UserList(props) {
 
   function addRole() {
     if (typeof currentRoleMapping.id !== "undefined") {
-      patch(
-        currentRoleMapping.id,
-        currentRoleMapping,
-        "rolemappings"
-      ).then(
+      patch(currentRoleMapping.id, currentRoleMapping, "rolemappings").then(
         (response) => {
           if (response.status === 200) {
-            alert("สำเร็จ");
+            // alert("สำเร็จ");
+            handleClose();
+            getTeamuser();
           }
-          console.log(response);
+          //console.log(response);
         },
         (error) => {
           const resMessage =
@@ -120,8 +182,9 @@ export default function UserList(props) {
       ).then(
         (response) => {
           if (response.status === 200) {
-            alert("สำเร็จ");
+            // alert("สำเร็จ");
             handleClose();
+            getTeamuser();
           }
         },
         (error) => {
@@ -134,47 +197,58 @@ export default function UserList(props) {
         }
       );
     }
-    handleClose();
-    getTeamuser();
   }
 
   function deleteUser(x) {
-    if (x.RoleMapping.length > 0) {
-      remove(x.RoleMapping[0].id, "rolemappings").then(
-        (response) => {
-          if (response.status === 200) {
-            alert("ลบสำเร็จ");
+      confirm({
+          title:'ลบข้อมูล',
+          description:("ท่านต้องการลบข้อมูลผู้ใช้งานจริงใช่ไหม"),
+          //description:(confirmConsent==='Y')?
+        //<span>ต้องการบันทึกข้อมูล<span style={{color:'green'}}>"ยินยอม"</span>ใช่หรือไม่</span>:
+         //<span>ต้องการบันทึกข้อมูล<span style={{color:'red'}}>"ไม่ยินยอม"</span>ใช่หรือไม่</span>:
+          confirmmationText:'ยืนยัน',
+          concellaText:'ยกเลิก'
+      }).then(async()=>{
+        //   console.log(x)
+        if (x.RoleMapping.length > 0) {
+            remove(x.RoleMapping[0].id, "rolemappings").then(
+              (response) => {
+                if (response.status === 200) {
+                //   alert("ลบสำเร็จ");
+                }
+                // console.log(response);
+              },
+              (error) => {
+                const resMessage =
+                  (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                  error.message ||
+                  error.toString();
+              }
+            );
           }
-          console.log(response);
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-        }
-      );
-    }
-
-    remove(x.id, "teamusers").then(
-      (response) => {
-        if (response.status === 200) {
-          alert("ลบสำเร็จ");
-        }
-        console.log(response);
-      },
-      (error) => {
-        const resMessage =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
-    getTeamuser();
+      
+          remove(x.id, "teamusers").then(
+            (response) => {
+              if (response.status === 200) {
+                // alert("ลบสำเร็จ");
+              }
+            //   console.log(response);
+              getTeamuser();
+            },
+            (error) => {
+              const resMessage =
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.message) ||
+                error.message ||
+                error.toString();
+            }
+          );
+      }).catch(()=>{});
+    
+    
   }
 
   return (
@@ -195,7 +269,6 @@ export default function UserList(props) {
             <th style={{ width: "20%" }}>จังหวัด</th>
             <th style={{ width: "50%" }}>หน่วยงาน</th>
             <th style={{ width: "10%" }}></th>
-
           </tr>
         </thead>
         <tbody>
@@ -210,9 +283,11 @@ export default function UserList(props) {
                     : ""}
                 </td>
                 <td>{user.changewat}</td>
-                <td>{typeof user.department !== 'undefined'
-                  ? user.department.hos_name
-                  : ""}</td>
+                <td>
+                  {typeof user.department !== "undefined"
+                    ? user.department.hos_name
+                    : ""}
+                </td>
                 <td style={{ whiteSpace: "nowrap" }}>
                   <button
                     variant="outlined"
@@ -236,8 +311,8 @@ export default function UserList(props) {
                     {user.isDeleting ? (
                       <span className="spinner-border spinner-border-sm"></span>
                     ) : (
-                        <span>ลบ</span>
-                      )}
+                      <span>ลบ</span>
+                    )}
                   </button>
                 </td>
               </tr>
@@ -280,7 +355,7 @@ export default function UserList(props) {
                 }
                 getOptionLabel={(option) => option.name || ""}
                 onChange={(e, newValue) => {
-                  console.log(newValue.id);
+                //   console.log(newValue.id);
                   let x = currentRoleMapping;
                   x["roleId"] = newValue.id;
                   setCurrentRoleMapping({ ...currentRoleMapping, ...x });
