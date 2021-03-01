@@ -12,6 +12,8 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getCurrentUser } from "../services/auth.service";
+import { useConfirm } from "material-ui-confirm";
+
 
 export default function UserList(props) {
   const [users, setUsers] = useState(null);
@@ -23,6 +25,8 @@ export default function UserList(props) {
   const [currentRoleId, setCurrentRoleId] = useState(null);
   const [currentRoleMapping, setCurrentRoleMapping] = useState({});
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
+  const confirm = useConfirm();
+  
 
   const handleClickRole = (x) => {
     setOpen(true);
@@ -35,7 +39,7 @@ export default function UserList(props) {
 
   //console.log( currentUser );
   //console.log( currentUser.user );
-    // console.log(currentUser.user.role);
+console.log(currentUser.user.changewat);
 
   const handleClose = () => {
     setOpen(false);
@@ -43,6 +47,7 @@ export default function UserList(props) {
   const getTeamuser = async () => {
     let xParams = {
       filter: {
+        where:{changewat:currentUser.user.changewat},
         include: {
           relation: "RoleMapping",
           scope: {
@@ -56,7 +61,7 @@ export default function UserList(props) {
 
     let response = await getAll(xParams, "teamusers");
     setUsers(response.data);
-    //console.log(response.data)
+    console.log(response.data)
   };
 
   useEffect(() => {
@@ -151,7 +156,7 @@ export default function UserList(props) {
       patch(currentRoleMapping.id, currentRoleMapping, "rolemappings").then(
         (response) => {
           if (response.status === 200) {
-            alert("สำเร็จ");
+            // alert("สำเร็จ");
             handleClose();
             getTeamuser();
           }
@@ -177,7 +182,7 @@ export default function UserList(props) {
       ).then(
         (response) => {
           if (response.status === 200) {
-            alert("สำเร็จ");
+            // alert("สำเร็จ");
             handleClose();
             getTeamuser();
           }
@@ -195,42 +200,55 @@ export default function UserList(props) {
   }
 
   function deleteUser(x) {
-    if (x.RoleMapping.length > 0) {
-      remove(x.RoleMapping[0].id, "rolemappings").then(
-        (response) => {
-          if (response.status === 200) {
-            alert("ลบสำเร็จ");
+      confirm({
+          title:'ลบข้อมูล',
+          description:("ท่านต้องการลบข้อมูลผู้ใช้งานจริงใช่ไหม"),
+          //description:(confirmConsent==='Y')?
+        //<span>ต้องการบันทึกข้อมูล<span style={{color:'green'}}>"ยินยอม"</span>ใช่หรือไม่</span>:
+         //<span>ต้องการบันทึกข้อมูล<span style={{color:'red'}}>"ไม่ยินยอม"</span>ใช่หรือไม่</span>:
+          confirmmationText:'ยืนยัน',
+          concellaText:'ยกเลิก'
+      }).then(async()=>{
+        //   console.log(x)
+        if (x.RoleMapping.length > 0) {
+            remove(x.RoleMapping[0].id, "rolemappings").then(
+              (response) => {
+                if (response.status === 200) {
+                //   alert("ลบสำเร็จ");
+                }
+                // console.log(response);
+              },
+              (error) => {
+                const resMessage =
+                  (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                  error.message ||
+                  error.toString();
+              }
+            );
           }
-          console.log(response);
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-        }
-      );
-    }
-
-    remove(x.id, "teamusers").then(
-      (response) => {
-        if (response.status === 200) {
-          alert("ลบสำเร็จ");
-        }
-        console.log(response);
-      },
-      (error) => {
-        const resMessage =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
-    getTeamuser();
+      
+          remove(x.id, "teamusers").then(
+            (response) => {
+              if (response.status === 200) {
+                // alert("ลบสำเร็จ");
+              }
+            //   console.log(response);
+              getTeamuser();
+            },
+            (error) => {
+              const resMessage =
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.message) ||
+                error.message ||
+                error.toString();
+            }
+          );
+      }).catch(()=>{});
+    
+    
   }
 
   return (

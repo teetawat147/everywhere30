@@ -405,7 +405,7 @@ export default function UserEdit(props) {
         create(userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
-              alert("สำเร็จ");
+              // alert("สำเร็จ");
               redirect.push("/userlist");
             }
           },
@@ -423,7 +423,7 @@ export default function UserEdit(props) {
         patch(userData["id"], userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
-              alert("สำเร็จ");
+              // alert("สำเร็จ");
               redirect.push("/userlist");
             }
 
