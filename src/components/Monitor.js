@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
+import {
+    makeStyles
+  } from '@material-ui/core/styles';
 
 import UserService from "../services/user.service";
 import { getGroupBy } from "../services/UniversalAPI";
@@ -17,13 +20,25 @@ import {
     TableCell,
     TableHead,
     TableRow,
-    Typography
+    Typography,
+    CircularProgress,
+    Backdrop
 } from "@material-ui/core";
 
+const useStyles = makeStyles((theme) => ({
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    }
+}));
+
 const Monitor = () => {
+    const classes = useStyles();
     const [data, setData] = useState(null);
+    const [openBackdrop, setOpenBackdrop] = useState(false);
 
     const getData = async () => {
+        setOpenBackdrop(true);
         let xParams = {
             filter: {
                 groupBy: "hname"
@@ -34,6 +49,7 @@ const Monitor = () => {
         if (response.status === 200) {
             if (response.data) {
                 if (response.data.length > 0) {
+                    setOpenBackdrop(false);
                     // console.log(response.data);
                     setData(response.data);
                 }
@@ -44,6 +60,10 @@ const Monitor = () => {
     useEffect(() => {
         getData();
     }, []);
+
+    const closeBackdrop = () => {
+        setOpenBackdrop(false);
+    }
 
     const mkRows = () => {
         let r = [];
@@ -67,9 +87,9 @@ const Monitor = () => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell align="center">ลำดับ</TableCell>
-                        <TableCell>หน่วยบริการ</TableCell>
-                        <TableCell align="right">จำนวน</TableCell>
+                        <TableCell align="center"><b>ลำดับ</b></TableCell>
+                        <TableCell><b>หน่วยบริการ</b></TableCell>
+                        <TableCell align="right"><b>จำนวน</b></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -81,7 +101,11 @@ const Monitor = () => {
 
     return (
         <div style={{ marginBottom: 100, width: '100%' }}>
-            <div><h5>Monitor Data</h5></div>
+            <Backdrop className={classes.backdrop} open={openBackdrop} onClick={closeBackdrop}>
+            {/* <Backdrop className={classes.backdrop} open={true}> */}
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            <div><h5>Monitor Person Data</h5></div>
             {mkRows()}
         </div>
     );

@@ -1,7 +1,7 @@
 import React from "react";
 import homeImage from "../images/flow_01.jpg";
-const Home = () => {
 
+const Home = () => {
   return (
     <div className="container">
       <header className="jumbotron">
