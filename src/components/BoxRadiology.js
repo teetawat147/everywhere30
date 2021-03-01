@@ -39,6 +39,9 @@ const useStyles = makeStyles({
   },
   OF_False: {
     height:'auto', 
+  },
+  rowHead: {
+    borderBottom: 'solid 1px #E2E2E2'
   }
 });
 
@@ -86,8 +89,8 @@ export default function BoxRadiology(props) {
           <table style={{width: '100%'}}>
             <thead>
               <tr>
-                <td style={{width:30}}><br /></td>
-                <td style={{width:'auto'}}>รายการ</td>
+                <td style={{width:30}} className={classes.rowHead}><br /></td>
+                <td style={{width:'auto'}} className={classes.rowHead}>รายการ</td>
               </tr>
             </thead>
           </table>

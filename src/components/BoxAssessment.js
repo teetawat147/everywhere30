@@ -78,38 +78,44 @@ export default function BoxAssessment(props) {
         <div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>น้ำหนัก</div>
-            <div className={classes.contentText}>{assessment.bw}</div>
+            <div className={classes.contentText}>{assessment.bw!==0 && assessment.bw!=='0' && assessment.bw!=='' && assessment.bw!==null?assessment.bw:'-'}</div>
           </div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>ส่วนสูง</div>
-            <div className={classes.contentText}>{assessment.height}</div>
+            <div className={classes.contentText}>{assessment.height!==0 && assessment.height!=='0' && assessment.height!=='' && assessment.height!==null?assessment.height:'-'}</div>
           </div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>BMI</div>
-            <div className={classes.contentText}>{assessment.bmi}</div>
+            <div className={classes.contentText}>{assessment.bmi!==0 && assessment.bmi!=='0' && assessment.bmi!=='' && assessment.bmi!==null?assessment.bmi:'-'}</div>
           </div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>รอบเอว</div>
-            <div className={classes.contentText}>{assessment.waist}</div>
+            <div className={classes.contentText}>{assessment.waist!==0 && assessment.waist!=='0' && assessment.waist!=='' && assessment.waist!==null?assessment.waist:'-'}</div>
           </div>
         </div>
 
         <div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>อุณหภูมิ</div>
-            <div className={classes.contentText}>{assessment.temperature}</div>
+            <div className={classes.contentText}>
+              {assessment.temperature!==0 && assessment.temperature!=='0' && assessment.temperature!=='' && assessment.temperature!==null?assessment.temperature:'-'}
+            </div>
           </div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>BP</div>
-            <div className={classes.contentText}>{assessment.bps}/{assessment.bpd}</div>
+            <div className={classes.contentText}>
+              {assessment.bps!==0 && assessment.bps!=='0' && assessment.bps!=='' && assessment.bps!==null?assessment.bps:'-'}
+              /
+              {assessment.bpd!==0 && assessment.bpd!=='0' && assessment.bpd!=='' && assessment.bpd!==null?assessment.bpd:'-'}
+            </div>
           </div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>pulse</div>
-            <div className={classes.contentText}>{assessment.pulse}</div>
+            <div className={classes.contentText}>{assessment.pulse!==0 && assessment.pulse!=='0' && assessment.pulse!=='' && assessment.pulse!==null?assessment.pulse:'-'}</div>
           </div>
           <div className={classes.contentGroup}>
             <div className={classes.contentTitle}>rr</div>
-            <div className={classes.contentText}>{assessment.rr}</div>
+            <div className={classes.contentText}>{assessment.rr!==0 && assessment.rr!=='0' && assessment.rr!=='' && assessment.rr!==null?assessment.rr:'-'}</div>
           </div>
         </div>
 

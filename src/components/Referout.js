@@ -38,6 +38,13 @@ import {
   Grid,
   IconButton,
 } from '@material-ui/core';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+
 
 import PropTypes from 'prop-types';
 
@@ -74,18 +81,19 @@ const useStyles = makeStyles({
   thead: {
     whiteSpace: 'nowrap',
     borderBottom: 'solid 1px #dadada',
-    padding: 5,
+    padding: 10,
     backgroundColor: '#E3E3E3',
   },
   tcell: {
+    verticalAlign: 'top',
     whiteSpace: 'nowrap',
     borderBottom: 'solid 1px #dadada',
-    padding: 5,
+    padding: 10,
   },
   tcellWrap: {
-    whiteSpace: 'auto',
+    verticalAlign: 'top',
     borderBottom: 'solid 1px #dadada',
-    padding: 5,
+    padding: 10,
   }
 });
 
@@ -93,42 +101,37 @@ export default function SearchCID(props) {
   const classes = useStyles();
   const history = useHistory();
   const [data, setData] = useState(null);
+  const [startDate, setStartDate] = React.useState(new Date('2021-02-02'));
+  const [endDate, setEndDate] = React.useState(new Date());
+
+  // const handleDateChange = (date) => {
+  //   setSelectedDate(date);
+  // };
+
+  const handleDateChange = (e,x) => {
+    console.log(x);
+    console.log(e);
+  }
 
   const getData = async () => {
-    // let xParams = {
-    //   filter: {
-    //     where: {cid:{inq:['1471400120432','1479900187312','3470200241827']}},
-    //     include: {
-    //       relation: "intervention",
-    //       scope: {
-    //         include: {
-    //           relation: "hospital",
-    //         }
-    //       }
-    //     }
-    //   }
-    // };
-
-    // let response = await UAPI.getAll(xParams, 'people');
-    // if (response.status === 200) {
-    //   if (response.data) {
-    //     if (response.data.length>0) {
-    //       // console.log(response.data);
-    //       // let r=response.data[0];
-    //       // console.log(r);
-    //       setData(response.data);
-    //     }
-    //   }
-    // }
 
     let xParams = {
       filter: {
-        limit:10,
+        limit: 10,
         // fields:["hcode","vn","an","activities"],
-        where:{
-          "activities.referout.refer_hospcode":"10711"
+        where: {
+          and: [
+            {"activities.referout.refer_hospcode": "10711"},
+            // {vstdate: {between: [startDate,endDate]}},
+            {vstdate: {gte: startDate}},
+            {vstdate: {lte: endDate}}
+          ]
         },
-        include:"person"
+        order: [
+          'vstdate ASC', 
+          'refer_hospcode DESC'
+        ],
+        include: "person"
       }
     };
 
@@ -152,47 +155,72 @@ export default function SearchCID(props) {
   }
 
   const mkRows = () => {
-    let r=[];
+    let r = [];
     if (typeof data !== 'undefined') {
       if (data) {
-        if (data.length>0) {
-          let n=0;
+        if (data.length > 0) {
+          let n = 0;
           data.forEach(i => {
+            // console.log(i);
             n++;
-            let refer={};
-            let person={};
+            let refer = {};
+            let person = {};
             if (typeof i.activities !== 'undefined') {
               if (typeof i.activities.referout !== 'undefined') {
-                if (i.activities.referout.length>0) {
-                  refer=i.activities.referout[0];
+                if (i.activities.referout.length > 0) {
+                  refer = i.activities.referout[0];
                 }
               }
             }
             if (typeof i.person !== 'undefined') {
-              person=i.person;
+              person = i.person;
             }
             r.push(
               <tr key={i.id}>
-                <td className={classes.tcell} style={{paddingLeft: 10, paddingRight: 10}}>
-                  <IconButton key="btnEdit" variant="outlined" color="primary" onClick={(e)=>clickRow(e,i.vstdate,i.hcode,i.vn,i.cid)}>
+                <td className={classes.tcell} style={{ paddingLeft: 10, paddingRight: 10 }}>
+                  <IconButton key="btnEdit" variant="outlined" color="primary" onClick={(e) => clickRow(e, i.vstdate, i.hcode, i.vn, i.cid)}>
                     <MdRemoveRedEye size={20} />
                   </IconButton>
                 </td>
-                <td className={classes.tcell}>{n}.</td>                
-                <td className={classes.tcell}>{typeof refer.refer_date !=='undefined'?thaiXSDate(refer.refer_date):thaiXSDate(refer.date)}</td>
-                <td className={classes.tcell}></td>
-                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : ''}</td>
+                <td className={classes.tcell}>{n}.</td>
+                <td className={classes.tcell}>{typeof refer.refer_date !== 'undefined' ? thaiXSDate(refer.refer_date) : thaiXSDate(refer.date)}</td>
+                <td className={classes.tcell}>-</td>
+                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : '-'}</td>
                 <td className={classes.tcellWrap}>
-                  {typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}
+                  <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}</span>} arrow={true} placement="top" >
+                    <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
+                      {typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}
+                    </div>
+                  </Tooltip>
                 </td>
                 <td className={classes.tcell}>{person.hn}</td>
                 <td className={classes.tcell}>{person.fname} {person.lname}</td>
-                <td className={classes.tcell}>{person.cid}</td>
-                <td className={classes.tcellWrap}>{typeof refer.pttype_name !== 'undefined'?refer.pttype_name:''}</td>
-                <td className={classes.tcellWrap}>{typeof refer.diag_name !== 'undefined'?refer.diag_name:''}</td>
-                <td className={classes.tcell}>{typeof refer.depcode !== 'undefined'?refer.depcode:''}</td>
-                <td className={classes.tcell}>{typeof refer.department !== 'undefined'?refer.department:''}</td>
-                <td className={classes.tcell}>{typeof refer.refer_type_name !== 'undefined'?refer.refer_type_name:''}</td>
+                <td className={classes.tcell}>
+                  <div>{person.cid}</div>
+                </td>
+                <td className={classes.tcellWrap}>
+                  <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.pttype_name !== 'undefined' ? refer.pttype_name : ''}</span>} arrow={true} placement="top" >
+                    <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
+                      {typeof refer.pttype_name !== 'undefined' ? refer.pttype_name : ''}
+                    </div>
+                  </Tooltip>
+                </td>
+                <td className={classes.tcellWrap}>
+                  <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.diag_name !== 'undefined' ? refer.diag_name : ''}</span>} arrow={true} placement="top" >
+                    <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
+                      {typeof refer.diag_name !== 'undefined' ? refer.diag_name : ''}
+                    </div>
+                  </Tooltip>
+                </td>
+                <td className={classes.tcell}>{typeof refer.refer_point !== 'undefined' ? refer.refer_point : ''}</td>
+                <td className={classes.tcellWrap}>
+                  <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.department !== 'undefined' ? refer.department : ''}</span>} arrow={true} placement="top" >
+                    <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
+                      {typeof refer.department !== 'undefined' ? refer.department : ''}
+                    </div>
+                  </Tooltip>
+                </td>
+                <td className={classes.tcell}>{typeof refer.refer_cause_name !== 'undefined' ? refer.refer_cause_name : ''}</td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}></td>
@@ -205,7 +233,7 @@ export default function SearchCID(props) {
       }
     }
     return (
-      <table style={{ height: 500 }}>
+      <table>
         <thead>
           <tr>
             <td className={classes.thead}><br /></td>
@@ -237,25 +265,51 @@ export default function SearchCID(props) {
   }
 
   useEffect(() => {
-    alert('work list > search, pagination');
+    // alert('work list > search, pagination');
     getData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // useEffect(() => {
-  //   extractServiceInfo();
-  // }, [serviceData]); // eslint-disable-line react-hooks/exhaustive-deps
+  //   console.log('startDate- ', startDate);
+  // }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ marginBottom: 100, width: '100%' }}>
 
       <div><h5>REFEROUT</h5></div>
       <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
-        <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" />
-        <TextField style={{ width: 200, marginRight: 5 }} label="สถานพยาบาลต้นทาง" variant="outlined" />
-        <TextField style={{ width: 120, marginRight: 5 }} label="HN" variant="outlined" />
-        <TextField style={{ width: 120, marginRight: 5 }} label="ชื่อสกุล" variant="outlined" />
-        <TextField style={{ width: 120, marginRight: 5 }} label="จากวันที่" variant="outlined" />
-        <TextField style={{ width: 120, marginRight: 5 }} label="ถึงวันที่" variant="outlined" />
+        <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" disabled={true} />
+        <TextField style={{ width: 200, marginRight: 5 }} label="สถานพยาบาลต้นทาง" variant="outlined" disabled={true} />
+        <TextField style={{ width: 120, marginRight: 5 }} label="HN" variant="outlined" disabled={true} />
+        <TextField style={{ width: 120, marginRight: 5 }} label="ชื่อสกุล" variant="outlined" disabled={true} />
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDatePicker
+            inputVariant="outlined"
+            // margin="normal"
+            // id="date-picker-dialog"
+            label="จากวันที่"
+            format="dd/MM/yyyy"
+            value={startDate}
+            onChange={(date)=>setStartDate(date)}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+            style={{width: 180, marginRight: 5}}
+          />
+          <KeyboardDatePicker
+            inputVariant="outlined"
+            // margin="normal"
+            // id="date-picker-dialog"
+            label="ถึงวันที่"
+            format="dd/MM/yyyy"
+            value={endDate}
+            onChange={(date)=>setEndDate(date)}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+            style={{width: 180}}
+          />
+        </MuiPickersUtilsProvider>
         <Button
           // onClick={handleClickSearch}
           style={{ height: 55 }}
