@@ -42,13 +42,16 @@ import {
   DialogContentText,
   DialogActions,
   Slide,
+  CircularProgress,
+  Backdrop,
 } from '@material-ui/core';
 
 import PropTypes from 'prop-types';
 
 import { MdSearch, MdSwapHoriz, MdSwapVert } from 'react-icons/md';
 
-const useStyles = makeStyles({
+// const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 700,
   },
@@ -83,8 +86,12 @@ const useStyles = makeStyles({
     '&:hover': {
       background: "#cdf1ff",
     },
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
   }
-});
+}));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -138,6 +145,7 @@ export default function SearchCID(props) {
   const [selectedHCode, setSelectedHCode] = useState('all');
   const [dialogText, setDialogText] = useState('');
   const [needConsent, setNeedConsent] = useState(2);
+  const [openBackdrop, setOpenBackdrop] = useState(false);
   
 
   const onchangeSearchText = (e) => {
@@ -161,6 +169,15 @@ export default function SearchCID(props) {
   }
 
   const handleClickSearch = async (e, cid) => {
+    setPatientData([]);
+    setinterventionData([]);
+    setServiceData({});
+    setYearShow({});
+    setAssessmentListData([]);
+    setHcodeData({});
+    setServiceInfoData({});
+    setSelectedHCode('all');
+
     let c = null;
     if (cid === null) {
       c = searchCID
@@ -170,19 +187,13 @@ export default function SearchCID(props) {
     }
     if (typeof c !== 'undefined') {
       if (c !== null) {
-        setPatientData([]);
-        setinterventionData([]);
-        setServiceData({});
-        setYearShow({});
-        setAssessmentListData([]);
-        setHcodeData({});
-        setServiceInfoData({});
         preGetPersonInfo(c);
       }
     }
   }
 
   const preGetPersonInfo = (cid) => {
+    setOpenBackdrop(true);
     let c = null;
     if (searchCID) {
       c = searchCID;
@@ -220,6 +231,7 @@ export default function SearchCID(props) {
           // console.log(response.data);
           // console.log(response.data[0].consent);
           if (typeof response.data[0].consent === 'undefined') {
+            setOpenBackdrop(false);
             setDialogText(<div><b>ผู้ป่วยยังไม่ยื่นเอกสาร Consent</b><br />กรุณาประสานงานให้ผู้ป่วยติดต่อยื่นเอกสาร Consent กับเจ้าหน้าที่ที่เกี่ยว เพื่อยืนยันการเปิดเผยข้อมูลประวัติการรักษาพยาบาลค่ะ</div>);
             setOpenDialog(true);
           }
@@ -228,6 +240,7 @@ export default function SearchCID(props) {
           }
         }
         else {
+          setOpenBackdrop(false);
           setDialogText('ไม่พบข้อมูลของ CID นี้');
           setOpenDialog(true);
         }
@@ -257,6 +270,7 @@ export default function SearchCID(props) {
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
+          setOpenBackdrop(false);
           logSave('search --- CID:' + cid);
           // let l=logSave('search --- CID:'+c);
           // console.log(JSON.stringify(l));
@@ -519,22 +533,22 @@ export default function SearchCID(props) {
     else {
       return (
         <div>
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0' }}><b>Assessment</b></div>
+          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Assessment</b></div>
           {Object.keys(assessment).length > 0 && <BoxAssessment data={assessment} dataAll={assessmentListData} />}
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0' }}><b>Diagnosis</b></div>
+          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Diagnosis</b></div>
           {diagnosis.length > 0 && <BoxDiagnosis data={diagnosis} currentView={currentView} />}
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0' }}><b>Laboratory</b></div>
+          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Laboratory</b></div>
           {laboratory.length > 0 && <BoxLaboratory data={laboratory} currentView={currentView} />}
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0' }}><b>Radiology</b></div>
+          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Radiology</b></div>
           {radiology.length > 0 && <BoxRadiology data={radiology} currentView={currentView} />}
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0' }}><b>Treatment</b></div>
+          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Treatment</b></div>
           {treatment.length > 0 && <BoxTreatment data={treatment} currentView={currentView} />}
 
-          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #E0E0E0' }}><b>Refer Out</b></div>
+          <div style={{ marginTop: 10, marginBottom: 10, paddingTop: 10, borderTop: 'solid 1px #A0A0A0' }}><b>Refer Out</b></div>
           {Object.keys(referout).length > 0 && <BoxReferout data={referout} />}
         </div>
       );
@@ -575,7 +589,7 @@ export default function SearchCID(props) {
       serviceInfo['hcode'] = serviceData['hcode'];
       serviceInfo['hos_name'] = (typeof serviceData['hospital'] !== 'undefined' ? serviceData['hospital']['hos_name'] : '');
       serviceInfo['an'] = (typeof serviceData['an'] !== 'undefined' ? serviceData['an'] : '');
-      serviceInfo['type_io'] = (typeof serviceData['an'] !== 'undefined' ? 'IPD' : 'OPD');
+      serviceInfo['type_io'] = (typeof serviceData['an'] === 'undefined' ? 'OPD' : (serviceData['an'] === null || serviceData['an'] === '' ? 'OPD' : 'IPD'));
       serviceInfo['regdate'] = (typeof serviceData['regdate'] !== 'undefined' ? serviceData['regdate'] : '');
       serviceInfo['dchdate'] = (typeof serviceData['dchdate'] !== 'undefined' ? serviceData['dchdate'] : '');
       setServiceInfoData(serviceInfo);
@@ -636,6 +650,10 @@ export default function SearchCID(props) {
     }
   }
 
+  const closeBackdrop = () => {
+    setOpenBackdrop(false);
+  }
+
   useEffect(() => {
     getConsentSetting();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -663,6 +681,12 @@ export default function SearchCID(props) {
 
   return (
     <div style={{ marginBottom: 100 }}>
+
+
+      <Backdrop className={classes.backdrop} open={openBackdrop} onClick={closeBackdrop}>
+      {/* <Backdrop className={classes.backdrop} open={true}> */}
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
       <div><h5>ค้นหาด้วยเลขบัตรประจำตัวประชาชน</h5></div>
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>

@@ -39,7 +39,10 @@ const useStyles = makeStyles({
   },
   OF_False: {
     height:'auto', 
-  }
+  },
+  rowHead: {
+    borderBottom: 'solid 1px #E2E2E2'
+  },
 });
 
 export default function BoxDiagnosis(props) {
@@ -72,10 +75,10 @@ export default function BoxDiagnosis(props) {
           <table style={{width: '100%'}}>
             <thead>
               <tr>
-                <td style={{width:30}}><br /></td>
-                <td style={{width:250}}>ประเภท</td>
-                <td style={{width:60}}>ICD10</td>
-                <td style={{width:'auto'}}>วินิจฉัย</td>
+                <td style={{width:30}} className={classes.rowHead}><br /></td>
+                <td style={{width:250}} className={classes.rowHead}>ประเภท</td>
+                <td style={{width:60}} className={classes.rowHead}>ICD10</td>
+                <td style={{width:'auto'}} className={classes.rowHead}>วินิจฉัย</td>
               </tr>
             </thead>
           </table>
