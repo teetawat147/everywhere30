@@ -14,7 +14,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getCurrentUser } from "../services/auth.service";
 import { useConfirm } from "material-ui-confirm";
 
-
 export default function UserList(props) {
   const [users, setUsers] = useState(null);
   const history = useHistory();
@@ -26,7 +25,6 @@ export default function UserList(props) {
   const [currentRoleMapping, setCurrentRoleMapping] = useState({});
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
   const confirm = useConfirm();
-  
 
   const handleClickRole = (x) => {
     setOpen(true);
@@ -39,36 +37,72 @@ export default function UserList(props) {
 
   //console.log( currentUser );
   //console.log( currentUser.user );
-console.log(currentUser.user.changewat);
+//   console.log(currentUser.user);
 
   const handleClose = () => {
     setOpen(false);
   };
   const getTeamuser = async () => {
-    let xParams = {
-      filter: {
-        where:{changewat:currentUser.user.changewat},
-        include: {
-          relation: "RoleMapping",
-          scope: {
-            include: {
-              relation: "role",
+    //  console.log(currentUser.user.department )
+     
+    if (currentUser.user.role === "AdminR8") {
+      let xParams = {
+        filter: {
+          include: {
+            relation: "RoleMapping",
+            scope: {
+              include: {
+                relation: "role",
+              },
             },
           },
         },
-      },
-    };
-
-    let response = await getAll(xParams, "teamusers");
-    setUsers(response.data);
-    console.log(response.data)
+      };
+      let response = await getAll(xParams, "teamusers");
+      setUsers(response.data);
+    //   console.log(response.data);
+    } else if (currentUser.user.role === "AdminChangWat") {
+      let xParams = {
+        filter: {
+          where: { "changewat": currentUser.user.changewat },
+          include: {
+            relation: "RoleMapping",
+            scope: {
+              include: {
+                relation: "role",
+              },
+            },
+          },
+        },
+      };
+      let response = await getAll(xParams, "teamusers");
+      setUsers(response.data);
+    //   console.log(currentUser.user.role);
+    } else if (currentUser.user.role === "AdminHospital") {
+      let xParams = {
+        filter: {
+          where: { "department.hcode": currentUser.user.department.hos_id },
+          include: {
+            relation: "RoleMapping",
+            scope: {
+              include: {
+                relation: "role",
+              },
+            },
+          },
+        },
+      };
+      let response = await getAll(xParams, "teamusers");
+      setUsers(response.data);
+    //   console.log(response.data);
+    }
   };
 
   useEffect(() => {
     getTeamuser();
     getLookUpRoles();
     getLookUpRolesCurrent();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const clickUserEditlink = (x) => {
@@ -200,42 +234,24 @@ console.log(currentUser.user.changewat);
   }
 
   function deleteUser(x) {
-      confirm({
-          title:'ลบข้อมูล',
-          description:("ท่านต้องการลบข้อมูลผู้ใช้งานจริงใช่ไหม"),
-          //description:(confirmConsent==='Y')?
-        //<span>ต้องการบันทึกข้อมูล<span style={{color:'green'}}>"ยินยอม"</span>ใช่หรือไม่</span>:
-         //<span>ต้องการบันทึกข้อมูล<span style={{color:'red'}}>"ไม่ยินยอม"</span>ใช่หรือไม่</span>:
-          confirmmationText:'ยืนยัน',
-          concellaText:'ยกเลิก'
-      }).then(async()=>{
+    confirm({
+      title: "ลบข้อมูล",
+      description: "ท่านต้องการลบข้อมูลผู้ใช้งานจริงใช่ไหม",
+      //description:(confirmConsent==='Y')?
+      //<span>ต้องการบันทึกข้อมูล<span style={{color:'green'}}>"ยินยอม"</span>ใช่หรือไม่</span>:
+      //<span>ต้องการบันทึกข้อมูล<span style={{color:'red'}}>"ไม่ยินยอม"</span>ใช่หรือไม่</span>:
+      confirmmationText: "ยืนยัน",
+      concellaText: "ยกเลิก",
+    })
+      .then(async () => {
         //   console.log(x)
         if (x.RoleMapping.length > 0) {
-            remove(x.RoleMapping[0].id, "rolemappings").then(
-              (response) => {
-                if (response.status === 200) {
-                //   alert("ลบสำเร็จ");
-                }
-                // console.log(response);
-              },
-              (error) => {
-                const resMessage =
-                  (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                  error.message ||
-                  error.toString();
-              }
-            );
-          }
-      
-          remove(x.id, "teamusers").then(
+          remove(x.RoleMapping[0].id, "rolemappings").then(
             (response) => {
               if (response.status === 200) {
-                // alert("ลบสำเร็จ");
+                //   alert("ลบสำเร็จ");
               }
-            //   console.log(response);
-              getTeamuser();
+              // console.log(response);
             },
             (error) => {
               const resMessage =
@@ -246,9 +262,27 @@ console.log(currentUser.user.changewat);
                 error.toString();
             }
           );
-      }).catch(()=>{});
-    
-    
+        }
+
+        remove(x.id, "teamusers").then(
+          (response) => {
+            if (response.status === 200) {
+              // alert("ลบสำเร็จ");
+            }
+            //   console.log(response);
+            getTeamuser();
+          },
+          (error) => {
+            const resMessage =
+              (error.response &&
+                error.response.data &&
+                error.response.data.message) ||
+              error.message ||
+              error.toString();
+          }
+        );
+      })
+      .catch(() => {});
   }
 
   return (
@@ -355,7 +389,7 @@ console.log(currentUser.user.changewat);
                 }
                 getOptionLabel={(option) => option.name || ""}
                 onChange={(e, newValue) => {
-                //   console.log(newValue.id);
+                  //   console.log(newValue.id);
                   let x = currentRoleMapping;
                   x["roleId"] = newValue.id;
                   setCurrentRoleMapping({ ...currentRoleMapping, ...x });

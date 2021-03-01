@@ -110,8 +110,8 @@ export default function UserEdit(props) {
     let name = e.target.name;
     let value = e.target.value;
     let x = userData;
-    console.log(userData);
-    console.log(x);
+    // console.log(userData);
+    // console.log(x);
     switch (name) {
       case "fullname":
         x["fullname"] = value;
