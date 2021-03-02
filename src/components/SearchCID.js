@@ -281,6 +281,7 @@ export default function SearchCID(props) {
     };
     // console.log(xParams);
     let response = await getAll(xParams, 'people');
+    // console.log(response);
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
@@ -333,6 +334,8 @@ export default function SearchCID(props) {
           }
         }
         else {
+          setOpenBackdrop(false);
+          setDialogText('ไม่พบข้อมูลของ CID นี้');
           setOpenDialog(true);
         }
       }
