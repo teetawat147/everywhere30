@@ -217,24 +217,7 @@ export default function UserEdit(props) {
     return r;
   };
 
-  const getAutoDefaultValueDepartment = (x) => {
-    let r = null;
-    if (typeof x !== "undefined") {
-      if (x) {
-        if (lookupdepartments.length > 0) {
-          // console.log(x)
-          // console.log(lookupdepartments)
-          lookupdepartments.forEach((i) => {
-            if (i.hos_name === x.hos_name) {
-              r = i;
-              // console.log(i)
-            }
-          });
-        }
-      }
-    }
-    return r;
-  };
+
 
   const simpleRegisterForm = () => {
     return (
@@ -382,6 +365,7 @@ export default function UserEdit(props) {
               getOptionLabel={(option) => option.hos_name || ""}
               value={userData["department"]}
               onChange={(_, newValue) => {
+                delete Object.assign(newValue, { 'hcode': newValue['hos_id'] })['hos_id'];
                 let x = userData;
                 x["department"] = newValue;
                 setUserData({ ...userData, ...x });
@@ -405,7 +389,7 @@ export default function UserEdit(props) {
         create(userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
-              // alert("สำเร็จ");
+              alert("สำเร็จ");
               redirect.push("/userlist");
             }
           },
@@ -420,10 +404,11 @@ export default function UserEdit(props) {
           }
         );
       } else {
+        // console.log(userData)
         patch(userData["id"], userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
-              // alert("สำเร็จ");
+              alert("สำเร็จ");
               redirect.push("/userlist");
             }
 
