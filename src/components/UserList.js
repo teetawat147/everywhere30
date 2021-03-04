@@ -74,20 +74,22 @@ export default function UserList(props) {
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
-          where: { "changwat": currentUser.user.changwat },
+          where: { "changwat": currentUser.user.changwat } ,
           include: {
             relation: "RoleMapping",
             scope: {
               include: {
                 relation: "role",
               },
+              // where: { "name":"AdminR8"},
             },
           },
         },
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-      //   console.log(currentUser.user.role);
+      // "where":{"ampurCode":21}
+        //  console.log(response.data);
     } else if (currentUser.user.role === "AdminHospital") {
       let xParams = {
         filter: {
