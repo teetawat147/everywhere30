@@ -21,7 +21,8 @@ const useStyles = makeStyles(theme => ({
     },
     '& .MuiInputLabel-shrink': {
       transform: 'translate(15px, -18px) scale(0.75)',
-    }
+    },
+    '& .Mui-error .MuiInputBase-input': { color: '#f44336' }
   },
   alertDanger: {
     color: '#ec0016',
@@ -51,12 +52,12 @@ const Register = (props) => {
   const classes = useStyles();
   const form = useRef();
   const checkBtn = useRef();
-  const [fullname, setFullname] = useState('');
-  const [position, setPosition] = useState('');
-  const [cid, setCid] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [fullname, setFullname] = useState('');
+  // const [position, setPosition] = useState('');
+  // const [cid, setCid] = useState('');
+  // const [mobile, setMobile] = useState('');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
   const [changwats, setChangwats] = useState([]);
   const [changwat, setChangwat] = useState('');
   const [departments, setDepartments] = useState([]);
@@ -68,14 +69,17 @@ const Register = (props) => {
     const setLineInfo = () => {
       if (typeof props.lineInfo !== 'undefined') {
         if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
-          setFullname(props.lineInfo.fullname);
-          setEmail(props.lineInfo.email);
-          setPassword(props.lineInfo.password);
+          let formInit = { ...validator.formElements };
+          formInit.fullname.value = props.lineInfo.fullname;
+          formInit.email.value = props.lineInfo.email;
+          formInit.password.value = props.lineInfo.password;
+          setValidator({ ...validator, formElements: formInit, formValid: true });
           setDisabledState({ disEmail: true, disPassword: true });
         }
       }
     }
     setLineInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.lineInfo]);
 
   const [validator, setValidator] = useState({
@@ -340,7 +344,7 @@ const Register = (props) => {
         onElementChange(input);
       }
     });
-    if (validator.formElements.formValid) {
+    if (validator.formValid) {
       let param = {
         fullname: validator.formElements.fullname.value,
         position: validator.formElements.position.value,
