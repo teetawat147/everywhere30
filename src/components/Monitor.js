@@ -71,7 +71,9 @@ const Monitor = () => {
             if (typeof data !== 'undefined') {
                 if (data.length > 0) {
                     let ii = 1;
+                    let total_person = 0;
                     data.forEach(i => {
+                        total_person += i.count;
                         r.push(
                             <TableRow key={ii}>
                                 <TableCell align="center">{ii++}</TableCell>
@@ -80,6 +82,13 @@ const Monitor = () => {
                             </TableRow>
                         );
                     });
+                    r.push(
+                        <TableRow>
+                            <TableCell align="center"></TableCell>
+                            <TableCell component="th" scope="row">รวมทั้งสิ้น</TableCell>
+                            <TableCell align="right">{total_person}</TableCell>
+                        </TableRow>
+                    );
                 }
             }
         }

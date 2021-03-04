@@ -74,7 +74,7 @@ export default function UserList(props) {
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
-          where: { "changewat": currentUser.user.changewat },
+          where: { "changwat": currentUser.user.changwat },
           include: {
             relation: "RoleMapping",
             scope: {
@@ -336,7 +336,7 @@ export default function UserList(props) {
                     ? user.RoleMapping[0].role.name
                     : ""}
                 </td>
-                <td>{user.changewat}</td>
+                <td>{user.changwat}</td>
                 <td>
                   {typeof user.department !== "undefined"
                     ? user.department.hos_name
