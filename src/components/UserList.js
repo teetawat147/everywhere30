@@ -55,8 +55,6 @@ export default function UserList(props) {
     setOpen(false);
   };
   const getTeamuser = async () => {
-    //  console.log(currentUser.user.department )
-
     if (currentUser.user.role === "AdminR8") {
       let xParams = {
         filter: {
@@ -73,7 +71,7 @@ export default function UserList(props) {
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       //   console.log(response.data);
-    } else if (currentUser.user.role === "AdminChangWat") {
+    } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
           where: { "changewat": currentUser.user.changewat },
@@ -106,7 +104,7 @@ export default function UserList(props) {
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-      //   console.log(response.data);
+      // console.log(response.data);
     }
   };
 
@@ -159,7 +157,7 @@ export default function UserList(props) {
           }
         }
       }
-    } else if (currentUser.user.role === "AdminChangWat") {
+    } else if (currentUser.user.role === "AdminChangwat") {
       let response = await getAll(
         {
           filter: {
@@ -406,7 +404,7 @@ export default function UserList(props) {
                 fullWidth
                 required
                 options={lookuproles}
-                defaultValue={getAutoDefaultValueRole(currentRoleId)}
+                value={getAutoDefaultValueRole(currentRoleId)}
                 getOptionSelected={(option, value) =>
                   value.name === option.name
                 }

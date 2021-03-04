@@ -57,8 +57,8 @@ const Register = (props) => {
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [changewats, setChangewats] = useState([]);
-  const [changewat, setChangewat] = useState('');
+  const [changwats, setChangwats] = useState([]);
+  const [changwat, setChangwat] = useState('');
   const [departments, setDepartments] = useState([]);
   const [department, setDepartment] = useState('');
   const [departmentI, setDepartmentI] = useState('');
@@ -78,85 +78,122 @@ const Register = (props) => {
     setLineInfo();
   }, [props.lineInfo]);
 
-  const [inputError, setInputError] = useState({
-    'fullname': false, 'position': false, 'cid': false, 'mobile': false, 'email': false, 'username': false, 'password': false
+  const [validator, setValidator] = useState({
+    formElements: {
+      fullname: {
+        type: 'text',
+        value: '',
+        validator: { required: true, minLength: 5 },
+        error: { status: false, message: '' }
+      },
+      position: {
+        type: 'text',
+        value: '',
+        validator: { required: true, minLength: 5 },
+        error: { status: false, message: '' }
+      },
+      cid: {
+        type: 'text',
+        value: '',
+        validator: { required: true, stringLength: 13 },
+        error: { status: false, message: '' }
+      },
+      email: {
+        type: 'email',
+        value: '',
+        validator: { required: true, pattern: 'email' },
+        error: { status: false, message: '' }
+      },
+      password: {
+        type: 'text',
+        value: '',
+        validator: { required: true, minLength: 5 },
+        error: { status: false, message: '' }
+      },
+      mobile: {
+        type: 'text',
+        value: '',
+        validator: { required: true, stringLength: 10 },
+        error: { status: false, message: '' }
+      },
+      changwat: {
+        type: 'text',
+        value: '',
+        validator: { required: true },
+        error: { status: false, message: '' }
+      }
+    },
+    formValid: true
   });
-  const [inputHelperText, setInputHelperText] = useState({
-    fullname: '', position: '', cid: '', mobile: '', email: '', username: '', password: ''
-  });
-  const helperTextConfig = {
-    'fullname': [
-      { required: true, helperText: 'กรุณาระบุ ชื่อ-สกุล' }
-    ],
-    'cid': [
-      { required: true, helperText: 'กรุณาระบุเลขบัตรประชาชน' },
-      { length: true, minLength: 13, helperText: 'ความยาวอย่างน้อย 13 ตัวอักษร' }
-    ],
-    // 'mobile': [
-    //   { required: true, helperText: 'กรุณาระบุข้อมูลเบอร์โทรศัพท์' }
-    // ],
-    // 'email': [
-    //   { required: true, helperText: 'กรุณาระบุอีเมลล์' }
-    // ],
-    // 'password': [
-    //   { required: true, helperText: 'กรุณาระบุรหัสผ่าน' }
-    // ]
-  }
-  const helperText = (validate, name, enable) => {
-    let config = { ...helperTextConfig };
-    Object.keys(config).forEach(function (key) {
-      console.log(key);
-      Object.keys(config[key]).forEach(function (k) {
-        console.log(config[key][k]);
-        if (Object.keys(config[key][k])[0]) {
-          console.log(Object.keys(config[key][k])[0]);
+  const onElementChange = (e) => {
+    const name = (typeof e.target !== 'undefined') ? e.target.name : e.name;
+    const value = (typeof e.target !== 'undefined') ? e.target.value : e.value;
+    let updateForm = { ...validator.formElements };
+    if (typeof updateForm[name] !== 'undefined') {
+      updateForm[name].value = value;
+      updateForm[name].touched = true;
+      const validatorObject = checkValidator(value, updateForm[name].validator);
+      updateForm[name].error = {
+        status: validatorObject.status,
+        message: validatorObject.message
+      }
+      let formStatus = true;
+      for (let name in updateForm) {
+        if (updateForm[name].validator.required === true) {
+          formStatus = (!updateForm[name].error.status) ? formStatus : false;
         }
-      });
-    });
-    // setInputHelperText(config);
-  }
-  const handleInputChange = (e, validate) => {
-    let name = e.target.name;
-    let value = e.target.value;
-    switch (name) {
-      case 'fullname': setFullname(value); break;
-      case 'position': setPosition(value); break;
-      case 'cid': setCid(value); break;
-      case 'mobile': setMobile(value); break;
-      case 'email': setEmail(value); break;
-      // case 'username': setUsername(value); break;
-      case 'password': setPassword(value); break;
-      default: break;
+      }
+      setValidator({ ...validator, formElements: updateForm, formValid: formStatus });
     }
-    // console.log(email);
-    // if (required === true) {
-    //   let inputErr = { ...inputError }
-    //   if (value === "") {
-    //     eval('inputErr.' + name + '=true');
-    //     setInputError(inputErr);
-    //     helperText(validate, name, true);
-    //     // setInputHelperText('กรุณาระบุข้อมูล');
-    //   } else {
-    //     eval('inputErr.' + name + '=false');
-    //     setInputError(inputErr);
-    //     helperText(validate, name, false);
-    //     // setInputHelperText('');
-    //   }
-    // }
   }
-  const getChangewat = async () => {
+  const checkValidator = (value, rule) => {
+    let valid = true;
+    let message = '';
+    // ห้ามว่าง
+    if (rule.required) {
+      if (value.trim().length === 0) {
+        valid = false;
+        message = 'กรุณากรอกข้อมูล';
+      }
+    }
+    // ความยาวต้องเท่ากับ
+    if (typeof rule.stringLength !== 'undefined' && value.length !== rule.stringLength && valid) {
+      valid = false;
+      message = `ความยาว ${rule.stringLength} ตัวอักษร`;
+    }
+    // ความยาวอย่างน้อย
+    if (typeof rule.minLength !== 'undefined' && value.length < rule.minLength && valid) {
+      valid = false;
+      message = `กรุณากรอกข้อมูลอยางน้อย ${rule.minLength} ตัวอักษร`;
+    }
+    // ความยาวต้องไม่มากกว่า
+    if (typeof rule.maxLength !== 'undefined' && value.length > rule.maxLength && valid) {
+      valid = false;
+      message = `กรุณากรอกข้อมูลไม่เกิน ${rule.maxLength} ตัวอักษร`;
+    }
+    // รูปแบบอีเมลล์
+    if (typeof rule.pattern !== 'undefined' && rule.pattern === 'email' && valid) {
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) === false) {
+        valid = false;
+        message = `อีเมลล์ไม่ถูกต้อง`;
+      }
+    }
+    return { status: !valid, message: message };
+  }
+
+  const getChangwat = async () => {
     let response = await getAll({ filter: { "fields": { "changwatname": "true" }, "where": { "zonecode": "08" } } }, 'cchangwats');
-    setChangewats(response.data);
+    setChangwats(response.data);
   }
   const getDepartment = async (cw) => {
     let response = await getAll({ filter: { "fields": { "hos_id": "true", "hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
     setDepartments(response.data);
   }
   useEffect(() => {
-    getChangewat();
+    getChangwat();
   }, []);
 
-  const simpleRegisterForm = () => {
+  const registerForm = () => {
     return < div >
       <div className="form-group">
         <TextField
@@ -166,11 +203,10 @@ const Register = (props) => {
           type="text"
           size="small"
           variant="outlined"
-          value={fullname}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.fullname}
-          error={inputError.fullname}
-          required
+          onChange={(e) => onElementChange(e)}
+          value={validator.formElements.fullname.value}
+          error={validator.formElements.fullname.error.status}
+          helperText={validator.formElements.fullname.error.message}
         />
       </div>
       <div className="form-group">
@@ -181,11 +217,10 @@ const Register = (props) => {
           type="text"
           size="small"
           variant="outlined"
-          value={position}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.position}
-          error={inputError.position}
-          required
+          onChange={(e) => onElementChange(e)}
+          value={validator.formElements.position.value}
+          error={validator.formElements.position.error.status}
+          helperText={validator.formElements.position.error.message}
         />
       </div>
       <div className="form-group">
@@ -196,11 +231,10 @@ const Register = (props) => {
           type="text"
           size="small"
           variant="outlined"
-          defaultValue={cid}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.cid}
-          error={inputError.cid}
-          required
+          onChange={(e) => onElementChange(e)}
+          value={validator.formElements.cid.value}
+          error={validator.formElements.cid.error.status}
+          helperText={validator.formElements.cid.error.message}
         />
       </div>
       <div className="form-group">
@@ -211,11 +245,10 @@ const Register = (props) => {
           type="text"
           size="small"
           variant="outlined"
-          defaultValue={mobile}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.mobile}
-          error={inputError.mobile}
-          required
+          onChange={(e) => onElementChange(e)}
+          value={validator.formElements.mobile.value}
+          error={validator.formElements.mobile.error.status}
+          helperText={validator.formElements.mobile.error.message}
         />
       </div>
       <div className="form-group">
@@ -227,12 +260,11 @@ const Register = (props) => {
           size="small"
           variant="outlined"
           autoComplete='new-password'
-          value={email}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.email}
-          error={inputError.email}
+          onChange={(e) => onElementChange(e)}
+          value={validator.formElements.email.value}
+          error={validator.formElements.email.error.status}
+          helperText={validator.formElements.email.error.message}
           disabled={disEmail}
-          required
         />
       </div>
       <div className="form-group">
@@ -244,29 +276,36 @@ const Register = (props) => {
           size="small"
           variant="outlined"
           autoComplete='new-password'
-          value={password}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.password}
-          error={inputError.password}
+          onChange={(e) => onElementChange(e)}
+          value={validator.formElements.password.value}
+          error={validator.formElements.password.error.status}
+          helperText={validator.formElements.password.error.message}
           disabled={disPassword}
-          required
         />
       </div>
       <div className="form-group">
         <Autocomplete
-          id="changewat"
+          id="changwat"
           size="small"
           fullWidth
           required
-          options={changewats}
+          options={changwats}
           getOptionSelected={(option, value) => value.changwatname === option.changwatname}
           getOptionLabel={(option) => option.changwatname || ''}
           onChange={(e, newValue) => {
-            setChangewat((newValue) ? newValue.changwatname : '');
+            setChangwat((newValue) ? newValue.changwatname : '');
             setDepartment('');
             if (newValue !== null) { getDepartment(newValue.changwatname) }
           }}
-          renderInput={(params) => <TextField {...params} label="จังหวัด" variant="outlined" />}
+          renderInput={(params) =>
+            <TextField {...params}
+              label="จังหวัด"
+              variant="outlined"
+              onChange={(e) => onElementChange(e)}
+              error={validator.formElements.changwat.error.status}
+              helperText={validator.formElements.changwat.error.message}
+            />
+          }
         />
       </div>
       <div className="form-group">
@@ -289,40 +328,37 @@ const Register = (props) => {
         />
       </div>
       <div className="form-group">
-        <button className="btn btn-primary btn-block">ลงทะเบียน</button>
+        <button className="btn btn-primary btn-block" disabled={!validator.formValid}>ลงทะเบียน</button>
       </div>
     </div >
   }
-  const lineRegisterForm = () => {
 
-  }
-  const handleRegister = (e) => {
-    e.preventDefault();
-    // setMessage("");
-    // setSuccessful(false);
-    // form.current.validateAll();
-    if (checkBtn.current.context._errors.length === 0) {
-      AuthService.register({ fullname, position, cid, mobile, email, password, changewat, department }).then(
+  const onFormSubmit = (event) => {
+    event.preventDefault();
+    Object.entries(event.target.elements).forEach(([name, input]) => {
+      if (input.type !== 'submit' && (input.type === 'text' || input.type === 'password')) {
+        onElementChange(input);
+      }
+    });
+    if (validator.formElements.formValid) {
+      let param = {
+        fullname: validator.formElements.fullname.value,
+        position: validator.formElements.position.value,
+        cid: validator.formElements.cid.value,
+        mobile: validator.formElements.mobile.value,
+        email: validator.formElements.email.value,
+        password: validator.formElements.password.value,
+        changwat: changwat,
+        department: department
+      }
+      AuthService.register(param).then(
         (response) => {
           if (response.status === 200) {
             alert("ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน");
             redirect.push("/login");
           }
-          console.log(response);
-          // setMessage(response.data.message);
-          // setSuccessful(true);
         },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
-          // setMessage(resMessage);
-          // setSuccessful(false);
-        }
+        (error) => { console.log(error) }
       );
     }
   };
@@ -333,8 +369,8 @@ const Register = (props) => {
         <label htmlFor="caption" style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h3>ลงทะเบียน</h3>
         </label>
-        <Form className={classes.root} onSubmit={handleRegister} ref={form} autoComplete="new-password">
-          {simpleRegisterForm()}
+        <Form className={classes.root} onSubmit={onFormSubmit} ref={form} autoComplete="new-password">
+          {registerForm()}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
       </div>
