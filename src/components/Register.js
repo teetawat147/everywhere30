@@ -1,14 +1,20 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
-import { makeStyles } from '@material-ui/core';
+import {
+  Button,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  makeStyles
+} from "@material-ui/core";
+import { useDialog } from "../services/dialog/DialogProvider.tsx";
 import Form from "react-validation/build/form";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import CheckButton from "react-validation/build/button";
-// import { isEmail } from "validator";
 import { useHistory } from "react-router-dom";
-import * as AuthService from "../services/auth.service";
+import { register } from "../services/auth.service";
 import { getAll } from "../services/UniversalAPI";
+import validation from "../services/validation";
 const useStyles = makeStyles(theme => ({
   root: {
     '& .MuiTextField-root': {
@@ -21,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     },
     '& .MuiInputLabel-shrink': {
       transform: 'translate(15px, -18px) scale(0.75)',
-    }
+    },
+    '& .Mui-error .MuiInputBase-input': { color: '#f44336' }
   },
   alertDanger: {
     color: '#ec0016',
@@ -50,113 +57,148 @@ const Register = (props) => {
   const redirect = useHistory();
   const classes = useStyles();
   const form = useRef();
-  const checkBtn = useRef();
-  const [fullname, setFullname] = useState('');
-  const [position, setPosition] = useState('');
-  const [cid, setCid] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [changewats, setChangewats] = useState([]);
-  const [changewat, setChangewat] = useState('');
+  const [openDialog, closeDialog] = useDialog();
+  const [changwats, setChangwats] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [department, setDepartment] = useState('');
-  const [departmentI, setDepartmentI] = useState('');
   const [{ disEmail, disPassword }, setDisabledState] = useState({ disEmail: false, disPassword: false });
 
   useEffect(() => {
     const setLineInfo = () => {
       if (typeof props.lineInfo !== 'undefined') {
         if (props.lineInfo.email !== '' && props.lineInfo.password !== '') {
-          setFullname(props.lineInfo.fullname);
-          setEmail(props.lineInfo.email);
-          setPassword(props.lineInfo.password);
+          setFormdata({
+            ...formData,
+            fullname: props.lineInfo.fullname,
+            email: props.lineInfo.email,
+            password: props.lineInfo.password
+          });
           setDisabledState({ disEmail: true, disPassword: true });
         }
       }
     }
     setLineInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.lineInfo]);
-
-  const [inputError, setInputError] = useState({
-    'fullname': false, 'position': false, 'cid': false, 'mobile': false, 'email': false, 'username': false, 'password': false
+  useEffect(() => {
+    getChangwat();
+  }, []);
+  const [formData, setFormdata] = useState({
+    fullname: '',
+    position: '',
+    cid: '',
+    email: '',
+    mobile: '',
+    password: '',
+    changwat: '',
+    department: ''
   });
-  const [inputHelperText, setInputHelperText] = useState({
-    fullname: '', position: '', cid: '', mobile: '', email: '', username: '', password: ''
+  const [validator, setValidator] = useState({
+    formElements: {
+      fullname: {
+        validator: { required: true, minLength: 5 },
+        error: { status: false, message: '' }
+      },
+      position: {
+        validator: { required: true, minLength: 5 },
+        error: { status: false, message: '' }
+      },
+      cid: {
+        validator: { required: true, number: true, stringLength: 13, pattern: 'mod13' },
+        error: { status: false, message: '' }
+      },
+      email: {
+        validator: { required: true, pattern: 'email' },
+        error: { status: false, message: '' }
+      },
+      password: {
+        validator: { required: true, minLength: 5 },
+        error: { status: false, message: '' }
+      },
+      mobile: {
+        validator: { required: true, stringLength: 10 },
+        error: { status: false, message: '' }
+      },
+      changwat: {
+        validator: { required: true },
+        error: { status: false, message: '' }
+      },
+      department: {
+        validator: { required: true },
+        error: { status: false, message: '' }
+      }
+    },
+    formValid: true
   });
-  const helperTextConfig = {
-    'fullname': [
-      { required: true, helperText: 'กรุณาระบุ ชื่อ-สกุล' }
-    ],
-    'cid': [
-      { required: true, helperText: 'กรุณาระบุเลขบัตรประชาชน' },
-      { length: true, minLength: 13, helperText: 'ความยาวอย่างน้อย 13 ตัวอักษร' }
-    ],
-    // 'mobile': [
-    //   { required: true, helperText: 'กรุณาระบุข้อมูลเบอร์โทรศัพท์' }
-    // ],
-    // 'email': [
-    //   { required: true, helperText: 'กรุณาระบุอีเมลล์' }
-    // ],
-    // 'password': [
-    //   { required: true, helperText: 'กรุณาระบุรหัสผ่าน' }
-    // ]
-  }
-  const helperText = (validate, name, enable) => {
-    let config = { ...helperTextConfig };
-    Object.keys(config).forEach(function (key) {
-      console.log(key);
-      Object.keys(config[key]).forEach(function (k) {
-        console.log(config[key][k]);
-        if (Object.keys(config[key][k])[0]) {
-          console.log(Object.keys(config[key][k])[0]);
-        }
-      });
-    });
-    // setInputHelperText(config);
-  }
-  const handleInputChange = (e, validate) => {
-    let name = e.target.name;
-    let value = e.target.value;
-    switch (name) {
-      case 'fullname': setFullname(value); break;
-      case 'position': setPosition(value); break;
-      case 'cid': setCid(value); break;
-      case 'mobile': setMobile(value); break;
-      case 'email': setEmail(value); break;
-      // case 'username': setUsername(value); break;
-      case 'password': setPassword(value); break;
-      default: break;
+  const onElementChange = (e) => {
+    let result = validation(validator, e);
+    if (typeof result !== 'undefined') {
+      const name = (typeof e.target !== 'undefined') ? e.target.name : e.key;
+      const value = (typeof e.target !== 'undefined') ? e.target.value : e.val;
+      setFormdata({ ...formData, [name]: value });
+      setValidator({ ...validator, formElements: result.formElements, formValid: result.formValid });
     }
-    // console.log(email);
-    // if (required === true) {
-    //   let inputErr = { ...inputError }
-    //   if (value === "") {
-    //     eval('inputErr.' + name + '=true');
-    //     setInputError(inputErr);
-    //     helperText(validate, name, true);
-    //     // setInputHelperText('กรุณาระบุข้อมูล');
-    //   } else {
-    //     eval('inputErr.' + name + '=false');
-    //     setInputError(inputErr);
-    //     helperText(validate, name, false);
-    //     // setInputHelperText('');
-    //   }
-    // }
   }
-  const getChangewat = async () => {
+  const getChangwat = async () => {
     let response = await getAll({ filter: { "fields": { "changwatname": "true" }, "where": { "zonecode": "08" } } }, 'cchangwats');
-    setChangewats(response.data);
+    setChangwats(response.data);
   }
   const getDepartment = async (cw) => {
     let response = await getAll({ filter: { "fields": { "hos_id": "true", "hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
     setDepartments(response.data);
   }
-  useEffect(() => {
-    getChangewat();
-  }, []);
-
-  const simpleRegisterForm = () => {
+  const onFormSubmit = (event) => {
+    event.preventDefault();
+    // Validate all element in form 
+    if (validator.formValid) {
+      Object.entries(formData).forEach(([k, v]) => {
+        onElementChange({ key: k, val: v });
+      })
+    }
+    let formStatus = true;
+    let form = { ...validator.formElements };
+    for (let name in form) {
+      if (form[name].validator.required === true) {
+        formStatus = (!form[name].error.status) ? formStatus : false;
+      }
+    }
+    if (formStatus) {
+      setValidator({ ...validator, formValid: false });
+      register(formData).then((response) => {
+        if (response.status === 200) {
+          // alert("ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน");
+          customDialog({
+            title: 'ผลการลงทะเบียน',
+            contentWidth: '400px',
+            content: <span style={{ color: "green" }}>ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน</span>,
+            onClick: () => { closeDialog(); redirect.push("/login"); }
+          });
+        } else if (response.status === 422) {
+          // alert('อีเมลล์นี้ถูกใช้ลงทะเบียนไปแล้ว กรุณาใช้อีเมลล์อื่น');
+          // setValidator({ ...validator, formValid: true });
+          customDialog({
+            title: 'ผลการลงทะเบียน',
+            contentWidth: '400px',
+            content: <span style={{ color: "red" }}>อีเมลล์นี้ถูกใช้ลงทะเบียนไปแล้ว กรุณาใช้อีเมลล์อื่น</span>,
+            onClick: () => { setValidator({ ...validator, formValid: true }); closeDialog(); }
+          });
+        }
+      });
+    }
+  };
+  const customDialog = (data) => {
+    openDialog({
+      children: (
+        <>
+          <DialogTitle style={{ padding: '30px 24px 0 24px' }}>{data.title}</DialogTitle>
+          <DialogContent style={{ width: data.contentWidth, padding: '24px', textAlign: 'center' }}>{data.content}</DialogContent>
+          <DialogActions style={{ padding: '0 24px 24px 24px' }}>
+            <Button color="primary" onClick={data.onClick}>ปิด</Button>
+          </DialogActions>
+        </>
+      )
+    });
+  };
+  const registerForm = () => {
     return < div >
       <div className="form-group">
         <TextField
@@ -166,11 +208,10 @@ const Register = (props) => {
           type="text"
           size="small"
           variant="outlined"
-          value={fullname}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.fullname}
-          error={inputError.fullname}
-          required
+          onChange={(e) => onElementChange(e)}
+          value={formData.fullname}
+          error={validator.formElements.fullname.error.status}
+          helperText={validator.formElements.fullname.error.message}
         />
       </div>
       <div className="form-group">
@@ -181,11 +222,10 @@ const Register = (props) => {
           type="text"
           size="small"
           variant="outlined"
-          value={position}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.position}
-          error={inputError.position}
-          required
+          onChange={(e) => onElementChange(e)}
+          value={formData.position}
+          error={validator.formElements.position.error.status}
+          helperText={validator.formElements.position.error.message}
         />
       </div>
       <div className="form-group">
@@ -196,11 +236,10 @@ const Register = (props) => {
           type="text"
           size="small"
           variant="outlined"
-          defaultValue={cid}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.cid}
-          error={inputError.cid}
-          required
+          onChange={(e) => onElementChange(e)}
+          value={formData.cid}
+          error={validator.formElements.cid.error.status}
+          helperText={validator.formElements.cid.error.message}
         />
       </div>
       <div className="form-group">
@@ -211,11 +250,10 @@ const Register = (props) => {
           type="text"
           size="small"
           variant="outlined"
-          defaultValue={mobile}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.mobile}
-          error={inputError.mobile}
-          required
+          onChange={(e) => onElementChange(e)}
+          value={formData.value}
+          error={validator.formElements.mobile.error.status}
+          helperText={validator.formElements.mobile.error.message}
         />
       </div>
       <div className="form-group">
@@ -227,12 +265,11 @@ const Register = (props) => {
           size="small"
           variant="outlined"
           autoComplete='new-password'
-          value={email}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.email}
-          error={inputError.email}
+          onChange={(e) => onElementChange(e)}
+          value={formData.email}
+          error={validator.formElements.email.error.status}
+          helperText={validator.formElements.email.error.message}
           disabled={disEmail}
-          required
         />
       </div>
       <div className="form-group">
@@ -244,29 +281,42 @@ const Register = (props) => {
           size="small"
           variant="outlined"
           autoComplete='new-password'
-          value={password}
-          onChange={(e) => handleInputChange(e, ['required', 'length'])}
-          helperText={inputHelperText.password}
-          error={inputError.password}
+          onChange={(e) => onElementChange(e)}
+          value={formData.value}
+          error={validator.formElements.password.error.status}
+          helperText={validator.formElements.password.error.message}
           disabled={disPassword}
-          required
         />
       </div>
       <div className="form-group">
         <Autocomplete
-          id="changewat"
+          id="changwat"
           size="small"
           fullWidth
-          required
-          options={changewats}
+          options={changwats}
           getOptionSelected={(option, value) => value.changwatname === option.changwatname}
           getOptionLabel={(option) => option.changwatname || ''}
           onChange={(e, newValue) => {
-            setChangewat((newValue) ? newValue.changwatname : '');
-            setDepartment('');
-            if (newValue !== null) { getDepartment(newValue.changwatname) }
+            let changwatName = (newValue != null) ? newValue.changwatname : '';
+            setFormdata({
+              ...formData,
+              changwat: changwatName,
+              department: ''
+            });
+            onElementChange({ key: 'changwat', val: changwatName });
+            if (changwatName !== '') { getDepartment(changwatName) }
           }}
-          renderInput={(params) => <TextField {...params} label="จังหวัด" variant="outlined" />}
+          renderInput={(params) =>
+            <TextField {...params}
+              id="changwat_texfield"
+              name="changwat"
+              label="จังหวัด"
+              variant="outlined"
+              onChange={(e) => onElementChange(e)}
+              error={validator.formElements.changwat.error.status}
+              helperText={validator.formElements.changwat.error.message}
+            />
+          }
         />
       </div>
       <div className="form-group">
@@ -274,58 +324,31 @@ const Register = (props) => {
           id="department"
           size="small"
           fullWidth
-          required
           options={departments}
           getOptionSelected={(option, value) => {
             return value === option
           }}
           getOptionLabel={(option) => option.hos_name || ''}
-          value={department}
+          value={formData.department}
           onChange={(_, newValue) => {
             delete Object.assign(newValue, { 'hcode': newValue['hos_id'] })['hos_id'];
-            setDepartment((newValue !== null) ? newValue : '')
+            setFormdata({ ...formData, department: (newValue !== null) ? newValue : '' });
+            onElementChange({ key: 'department', val: (newValue !== null) ? newValue : '' });
           }}
-          renderInput={(params) => <TextField {...params} label="หน่วยงาน" variant="outlined" />}
+          renderInput={(params) => <TextField {...params}
+            label="หน่วยงาน"
+            variant="outlined"
+            onChange={(e) => onElementChange(e)}
+            error={validator.formElements.department.error.status}
+            helperText={validator.formElements.department.error.message}
+          />}
         />
       </div>
       <div className="form-group">
-        <button className="btn btn-primary btn-block">ลงทะเบียน</button>
+        <button className="btn btn-primary btn-block" disabled={!validator.formValid}>ลงทะเบียน</button>
       </div>
-    </div >
+    </div>
   }
-  const lineRegisterForm = () => {
-
-  }
-  const handleRegister = (e) => {
-    e.preventDefault();
-    // setMessage("");
-    // setSuccessful(false);
-    // form.current.validateAll();
-    if (checkBtn.current.context._errors.length === 0) {
-      AuthService.register({ fullname, position, cid, mobile, email, password, changewat, department }).then(
-        (response) => {
-          if (response.status === 200) {
-            alert("ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน");
-            redirect.push("/login");
-          }
-          console.log(response);
-          // setMessage(response.data.message);
-          // setSuccessful(true);
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
-          // setMessage(resMessage);
-          // setSuccessful(false);
-        }
-      );
-    }
-  };
 
   return (
     <div className="col-md-12">
@@ -333,9 +356,8 @@ const Register = (props) => {
         <label htmlFor="caption" style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h3>ลงทะเบียน</h3>
         </label>
-        <Form className={classes.root} onSubmit={handleRegister} ref={form} autoComplete="new-password">
-          {simpleRegisterForm()}
-          <CheckButton style={{ display: "none" }} ref={checkBtn} />
+        <Form className={classes.root} onSubmit={onFormSubmit} ref={form} autoComplete="new-password">
+          {registerForm()}
         </Form>
       </div>
     </div>
