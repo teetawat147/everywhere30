@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { makeStyles } from '@material-ui/core';
 import { getAll, patch, create, remove } from "../services/UniversalAPI";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -13,10 +14,25 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getCurrentUser } from "../services/auth.service";
 import { useConfirm } from "material-ui-confirm";
-
+const useStyles = makeStyles(theme => ({
+  dialog: {
+    '& .MuiTextField-root': {
+      width: '100%',
+    },
+    '& .MuiInputLabel-outlined': {
+      zIndex: 1,
+      transform: 'translate(15px, 4px) scale(1)',
+      pointerEvents: 'none'
+    },
+    '& .MuiInputLabel-shrink': {
+      transform: 'translate(15px, -16px) scale(0.75)',
+    }
+  }
+}));
 export default function UserList(props) {
   const [users, setUsers] = useState(null);
   const history = useHistory();
+  const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [lookuproles, setLookUpRoles] = useState([]);
   const [lookuprolescurrent, setLookUpRolesCurrent] = useState([]);
@@ -35,16 +51,12 @@ export default function UserList(props) {
     setUserRoleId(x.id);
   };
 
-  //console.log( currentUser );
-  //console.log( currentUser.user );
-//   console.log(currentUser.user);
-
   const handleClose = () => {
     setOpen(false);
   };
   const getTeamuser = async () => {
     //  console.log(currentUser.user.department )
-     
+
     if (currentUser.user.role === "AdminR8") {
       let xParams = {
         filter: {
@@ -60,7 +72,7 @@ export default function UserList(props) {
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-    //   console.log(response.data);
+      //   console.log(response.data);
     } else if (currentUser.user.role === "AdminChangWat") {
       let xParams = {
         filter: {
@@ -77,7 +89,7 @@ export default function UserList(props) {
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-    //   console.log(currentUser.user.role);
+      //   console.log(currentUser.user.role);
     } else if (currentUser.user.role === "AdminHospital") {
       let xParams = {
         filter: {
@@ -94,7 +106,7 @@ export default function UserList(props) {
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-    //   console.log(response.data);
+      //   console.log(response.data);
     }
   };
 
@@ -127,7 +139,18 @@ export default function UserList(props) {
 
   const getLookUpRoles = async () => {
     if (currentUser.user.role === "AdminR8") {
-      let response = await getAll({}, "roles");
+      let response = await getAll({
+        filter: {
+          where: {
+            or: [
+              { name: "AdminR8" },
+              { name: "AdminChangwat" },
+              { name: "AdminHospital" },
+              { name: "Doctor" }
+            ],
+          },
+        },
+      }, "roles");
       if (response.status === 200) {
         if (response.data) {
           if (response.data.length > 0) {
@@ -142,10 +165,9 @@ export default function UserList(props) {
           filter: {
             where: {
               or: [
-                { name: "AdminChangewat" },
+                { name: "AdminChangwat" },
                 { name: "AdminHospital" },
-                { name: "Doctor" },
-                { name: "Member" },
+                { name: "Doctor" }
               ],
             },
           },
@@ -162,7 +184,7 @@ export default function UserList(props) {
       }
     } else if (currentUser.user.role === "AdminHospital") {
       let response = await getAll(
-        { filter: { where: { or: [{ name: "Doctor" }, { name: "Member" }] } } },
+        { filter: { where: { name: "Doctor" } } },
         "roles"
       );
       if (response.status === 200) {
@@ -282,11 +304,11 @@ export default function UserList(props) {
           }
         );
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   return (
-    <div>
+    <div >
       <h1>Users</h1>
       <button
         onClick={() => clickUserEditlink("newadd")}
@@ -345,8 +367,8 @@ export default function UserList(props) {
                     {user.isDeleting ? (
                       <span className="spinner-border spinner-border-sm"></span>
                     ) : (
-                      <span>ลบ</span>
-                    )}
+                        <span>ลบ</span>
+                      )}
                   </button>
                 </td>
               </tr>
@@ -371,14 +393,15 @@ export default function UserList(props) {
         <Dialog
           open={open}
           onClose={handleClose}
+          maxWidth='md'
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">กำหนดสิทธิใช้งาน</DialogTitle>
-          <DialogContent>
-            <DialogContentText>กำหนดสิทธิใช้งาน</DialogContentText>
-            <div className="form-group">
+          <DialogTitle id="form-dialog-title" style={{ paddingTop: '24px' }}>กำหนดสิทธิใช้งาน</DialogTitle>
+          <DialogContent style={{ width: '400px', height: '90px' }}>
+            <DialogContentText></DialogContentText>
+            <div className={"form-group " + classes.dialog}>
               <Autocomplete
-                id="changewat"
+                id="roleType"
                 size="small"
                 fullWidth
                 required
@@ -395,13 +418,12 @@ export default function UserList(props) {
                   setCurrentRoleMapping({ ...currentRoleMapping, ...x });
                 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="จังหวัด" variant="outlined" />
+                  <TextField {...params} label="สิทธิ์การใช้งาน" variant="outlined" />
                 )}
               />
             </div>
           </DialogContent>
-
-          <DialogActions>
+          <DialogActions style={{ padding: '0px 24px 24px 24px' }}>
             <Button variant="outlined" onClick={handleClose} color="primary">
               ยกเลิก
             </Button>
