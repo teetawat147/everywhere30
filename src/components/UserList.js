@@ -55,8 +55,6 @@ export default function UserList(props) {
     setOpen(false);
   };
   const getTeamuser = async () => {
-    //  console.log(currentUser.user.department )
-
     if (currentUser.user.role === "AdminR8") {
       let xParams = {
         filter: {
@@ -73,10 +71,10 @@ export default function UserList(props) {
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       //   console.log(response.data);
-    } else if (currentUser.user.role === "AdminChangWat") {
+    } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
-          where: { "changewat": currentUser.user.changewat },
+          where: { "changwat": currentUser.user.changwat },
           include: {
             relation: "RoleMapping",
             scope: {
@@ -106,7 +104,7 @@ export default function UserList(props) {
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-      //   console.log(response.data);
+      // console.log(response.data);
     }
   };
 
@@ -114,6 +112,7 @@ export default function UserList(props) {
     getTeamuser();
     getLookUpRoles();
     getLookUpRolesCurrent();
+    console.log(currentUser.user.role)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -159,7 +158,7 @@ export default function UserList(props) {
           }
         }
       }
-    } else if (currentUser.user.role === "AdminChangWat") {
+    } else if (currentUser.user.role === "AdminChangwat") {
       let response = await getAll(
         {
           filter: {
@@ -338,7 +337,7 @@ export default function UserList(props) {
                     ? user.RoleMapping[0].role.name
                     : ""}
                 </td>
-                <td>{user.changewat}</td>
+                <td>{user.changwat}</td>
                 <td>
                   {typeof user.department !== "undefined"
                     ? user.department.hos_name
@@ -406,7 +405,7 @@ export default function UserList(props) {
                 fullWidth
                 required
                 options={lookuproles}
-                defaultValue={getAutoDefaultValueRole(currentRoleId)}
+                value={getAutoDefaultValueRole(currentRoleId)}
                 getOptionSelected={(option, value) =>
                   value.name === option.name
                 }
