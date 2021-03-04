@@ -216,9 +216,6 @@ export default function UserEdit(props) {
     });
     return r;
   };
-
-
-
   const simpleRegisterForm = () => {
     return (
       <div>
