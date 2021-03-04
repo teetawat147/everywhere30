@@ -112,7 +112,7 @@ export default function UserList(props) {
     getTeamuser();
     getLookUpRoles();
     getLookUpRolesCurrent();
-    console.log(currentUser.user.role)
+    // console.log(currentUser.user.role)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

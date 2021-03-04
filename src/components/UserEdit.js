@@ -405,7 +405,7 @@ export default function UserEdit(props) {
           }
         );
       } else {
-         console.log(userData)
+        //  console.log(userData)
         patch(userData["id"], userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
