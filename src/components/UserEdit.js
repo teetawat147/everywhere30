@@ -336,7 +336,6 @@ export default function UserEdit(props) {
               }
               getOptionLabel={(option) => option.changwatname || ""}
               onChange={(e, newValue) => {
-                delete Object['changewat'];
                 let x = userData;
                 x["department"] = null;
                 setUserData({ ...userData, ...x });
