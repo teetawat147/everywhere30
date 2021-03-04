@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { getCurrentUser, getPermissions } from "./services/auth.service";
 import { ConfirmProvider } from 'material-ui-confirm';
-import DialogProvider from "./services/dialog/DialogProvider.tsx";
+import DialogProvider from "./services/dialog/DialogProvider";
 import { mainRoute } from './routes/index';
 import useGlobal from "./store";
 import Appbar from './layout/Appbar';
