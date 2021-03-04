@@ -81,13 +81,15 @@ export default function UserList(props) {
               include: {
                 relation: "role",
               },
+              // where: { "name":"AdminR8"},
             },
           },
         },
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-      //   console.log(currentUser.user.role);
+      // "where":{"ampurCode":21}
+        //  console.log(response.data);
     } else if (currentUser.user.role === "AdminHospital") {
       let xParams = {
         filter: {
@@ -112,6 +114,7 @@ export default function UserList(props) {
     getTeamuser();
     getLookUpRoles();
     getLookUpRolesCurrent();
+    // console.log(currentUser.user.role)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
