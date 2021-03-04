@@ -2,8 +2,16 @@
 import axios from "axios";
 import * as authHeader from "../services/auth-header";
 const API_URL = authHeader.API_URL;
-const register = (param) => {
-  return axios.post(API_URL + "teamusers", param);
+const register = async (param) => {
+  let res = {};
+  await axios.post(API_URL + "teamusers", param).then((response) => {
+    res = response;
+  }).catch(function (error) {
+    if (error.response) {
+      res = { status: error.response.status, message: error.response.data.error.message }
+    }
+  });
+  return res;
 };
 const login = async (param, res) => {
   let _returnData = {};
