@@ -7,7 +7,7 @@ import {
   DialogActions,
   makeStyles
 } from "@material-ui/core";
-import { useDialog } from "../services/dialog/DialogProvider.tsx";
+import { useDialog } from "../services/dialog/DialogProvider";
 import Form from "react-validation/build/form";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
