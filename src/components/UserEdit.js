@@ -148,38 +148,25 @@ export default function UserEdit(props) {
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
+          // console.log(response.data)
           setLookUpchangwats(response.data);
         }
       }
     }
   };
 
-  const getDepartment = async (cw) => {
-    let response = await getAll(
-      {
-        filter: {
-          fields: { hos_id: "true", hos_name: "true", hos_fullname: "true" },
-          where: { province_name: cw },
-        },
-      },
-      "hospitals"
-    );
-
-    if (response.status === 200) {
-      if (response.data) {
-        if (response.data.length > 0) {
-          setLookUpDepartments(response.data);
-        }
-      }
-    }
+    const getDepartment = async (cw) => {
+    let response = await getAll({ filter: { "fields": { "hos_id": "true", "hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
+    setLookUpDepartments(response.data);
   };
+
   useEffect(() => {
     getchangwat();
   }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   useEffect(() => {
 
-
+// console.log(props.location.state)
     if (typeof props.location.state !== "undefined") {
       if (typeof props.location.state.status !== "undefined") {
         if (
@@ -324,7 +311,6 @@ export default function UserEdit(props) {
               id="changwat"
               size="small"
               fullWidth
-              required
               options={lookupchangwats}
               defaultValue={getAutoDefaultValueChangwat(userData["changwat"])}
               getOptionSelected={(option, value) =>
@@ -333,13 +319,14 @@ export default function UserEdit(props) {
               }
               getOptionLabel={(option) => option.changwatname || ""}
               onChange={(e, newValue) => {
+                let changwatName = (newValue != null) ? newValue.changwatname : '';
                 let x = userData;
                 x["department"] = null;
                 setUserData({ ...userData, ...x });
 
-                if (newValue !== null) {
-                  getDepartment(newValue.changwatname);
-                  x["changwat"] = newValue.changwatname;
+                if (changwatName !== '') {
+                  getDepartment(changwatName);
+                  x["changwat"] = changwatName;
                   setUserData({ ...userData, ...x });
                 }
               }}
@@ -350,15 +337,15 @@ export default function UserEdit(props) {
           )}
         </div>
         <div className="form-group">
+          {/* {console.log(lookupdepartments)} */}
           {lookupdepartments.length > 0 && (
             <Autocomplete
               id="department"
               size="small"
               fullWidth
-              required
               options={lookupdepartments}
               getOptionSelected={(option, value) => {
-                return value === option;
+                return value === option
               }}
               getOptionLabel={(option) => option.hos_name || ""}
               value={userData["department"]}
@@ -372,7 +359,7 @@ export default function UserEdit(props) {
                 <TextField {...params} label="หน่วยงาน" variant="outlined" />
               )}
             />
-          )}
+      )} 
         </div>
         <div className="form-group">
           <button className="btn btn-primary btn-block">แก้ไข</button>
