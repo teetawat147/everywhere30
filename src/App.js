@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Route, Switch } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -16,7 +17,7 @@ import { useIdleTimer } from 'react-idle-timer';
 import { useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
-
+const theme = createMuiTheme();
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -188,27 +189,29 @@ const App = () => {
     <div className={classes.root}>
       <Appbar />
       <Sidebar />
-      <DialogProvider>
-        <ConfirmProvider>
-          <main className={clsx(classes.content, { [classes.contentShift]: globalState.drawerOpen, })}>
-            <div className={classes.toolbar} />
-            <Switch>
-              {mainRoute.map((route, index) =>
-                (route.roles.includes(globalState.userRole)) && (
-                  <Route
-                    key={index}
-                    exact
-                    path={route.path}
-                    render={props => (
-                      <route.component {...props} />
-                    )}
-                  />
-                )
-              )}
-            </Switch>
-          </main>
-        </ConfirmProvider>
-      </DialogProvider>
+      <ThemeProvider theme={theme}>
+        <DialogProvider>
+          <ConfirmProvider>
+            <main className={clsx(classes.content, { [classes.contentShift]: globalState.drawerOpen, })}>
+              <div className={classes.toolbar} />
+              <Switch>
+                {mainRoute.map((route, index) =>
+                  (route.roles.includes(globalState.userRole)) && (
+                    <Route
+                      key={index}
+                      exact
+                      path={route.path}
+                      render={props => (
+                        <route.component {...props} />
+                      )}
+                    />
+                  )
+                )}
+              </Switch>
+            </main>
+          </ConfirmProvider>
+        </DialogProvider>
+      </ThemeProvider>
     </div >
   );
 };
