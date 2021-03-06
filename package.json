@@ -26,6 +26,7 @@
     "material-ui-confirm": "^2.1.1",
     "moment": "^2.29.1",
     "npm": "^7.6.0",
+    "perf_hooks": "^0.0.1",
     "react": "^16.14.0",
     "react-async-component": "^2.0.0",
     "react-datepicker": "^3.4.1",
