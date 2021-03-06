@@ -1,20 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Button,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  makeStyles
-} from "@material-ui/core";
-import { useDialog } from "../services/dialog/DialogProvider";
+import { makeStyles } from "@material-ui/core";
 import Form from "react-validation/build/form";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useHistory } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
 import { register } from "../services/auth.service";
 import { getAll } from "../services/UniversalAPI";
 import validation from "../services/validation";
+import { useDialog } from '../services/dialog/ModalProvider';
 const useStyles = makeStyles(theme => ({
   root: {
     '& .MuiTextField-root': {
@@ -54,10 +48,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Register = (props) => {
-  const redirect = useHistory();
+  // const redirect = useHistory();
   const classes = useStyles();
   const form = useRef();
-  const [openDialog, closeDialog] = useDialog();
+  const { setDialog } = useDialog();
   const [changwats, setChangwats] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [{ disEmail, disPassword }, setDisabledState] = useState({ disEmail: false, disPassword: false });
@@ -165,38 +159,29 @@ const Register = (props) => {
       setValidator({ ...validator, formValid: false });
       register(formData).then((response) => {
         if (response.status === 200) {
-          // alert("ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน");
-          customDialog({
+          setDialog({
             title: 'ผลการลงทะเบียน',
-            contentWidth: '400px',
-            content: <span style={{ color: "green" }}>ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน</span>,
-            onClick: () => { closeDialog(); redirect.push("/login"); }
+            content: 'ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน',
+            contentStyle: { width: '400px', textAlign: 'center', color: 'green' },
+            button: {
+              confirm: { enable: false, text: '' },
+              cancel: { enable: true, text: 'ปิด', redirect: '/login' },
+            }
           });
         } else if (response.status === 422) {
-          // alert('อีเมลล์นี้ถูกใช้ลงทะเบียนไปแล้ว กรุณาใช้อีเมลล์อื่น');
-          // setValidator({ ...validator, formValid: true });
-          customDialog({
+          setValidator({ ...validator, formValid: true });
+          setDialog({
             title: 'ผลการลงทะเบียน',
-            contentWidth: '400px',
-            content: <span style={{ color: "red" }}>อีเมลล์นี้ถูกใช้ลงทะเบียนไปแล้ว กรุณาใช้อีเมลล์อื่น</span>,
-            onClick: () => { setValidator({ ...validator, formValid: true }); closeDialog(); }
+            content: 'อีเมลล์นี้ถูกใช้ลงทะเบียนไปแล้ว กรุณาใช้อีเมลล์อื่น',
+            contentStyle: { width: '400px', textAlign: 'center', color: 'red' },
+            button: {
+              confirm: { enable: false, text: '' },
+              cancel: { enable: true, text: 'ปิด' },
+            }
           });
         }
       });
     }
-  };
-  const customDialog = (data) => {
-    openDialog({
-      children: (
-        <>
-          <DialogTitle style={{ padding: '30px 24px 0 24px' }}>{data.title}</DialogTitle>
-          <DialogContent style={{ width: data.contentWidth, padding: '24px', textAlign: 'center' }}>{data.content}</DialogContent>
-          <DialogActions style={{ padding: '0 24px 24px 24px' }}>
-            <Button color="primary" onClick={data.onClick}>ปิด</Button>
-          </DialogActions>
-        </>
-      )
-    });
   };
   const registerForm = () => {
     return < div >
