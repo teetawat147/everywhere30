@@ -53,7 +53,7 @@ const Sidebar = () => {
           {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </div>
-      <Divider />{console.log(globalState)}
+      <Divider />
       {(globalState.loginStatus) ? ( // Login แล้ว
         <List>
           {sideBarRoute.map((route, index) =>
