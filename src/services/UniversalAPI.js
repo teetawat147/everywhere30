@@ -16,6 +16,10 @@ const getCount = (params, thisCollection) => {
   return axios.get(API_URL + thisCollection + "/count", { headers: authHeader.getToken(), params: params });
 };
 
+const countPerson = (hos_id, params, thisCollection) => {
+  return axios.get(API_URL + thisCollection + "/" + hos_id + "/person/count", { headers: authHeader.getToken(), params: params });
+};
+
 const getGroupBy = (params, thisCollection) => {
   return axios.get(API_URL + thisCollection + "/groupBy", { headers: authHeader.getToken(), params: params });
 };
@@ -68,5 +72,6 @@ export {
   uploadFile,
   getGroupBy,
   update2,
-  patch
+  patch,
+  countPerson
 };
