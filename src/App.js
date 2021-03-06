@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { getCurrentUser, getPermissions } from "./services/auth.service";
 import { ConfirmProvider } from 'material-ui-confirm';
-import DialogProvider from "./services/dialog/DialogProvider";
+import { DialogProvider } from './services/dialog/ModalProvider'
 import { mainRoute } from './routes/index';
 import useGlobal from "./store";
 import Appbar from './layout/Appbar';
@@ -165,11 +165,9 @@ const App = () => {
   useEffect(() => {
     // ถ้า login ให้เริ่มการทำงานเฝ้าดูการทำงานของ user idle timeout
     if (globalState.loginStatus) {
-      // console.log('start timer');
       resume();
       reset();
     } else {
-      // console.log('stop timer');
       pause();
     }
     if (globalState.currentUser != null) {
