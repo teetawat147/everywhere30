@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import DvrIcon from '@material-ui/icons/Dvr';
 import { sideBarRoute } from '../routes/index';
 import useGlobal from "../store";
 
@@ -79,6 +80,12 @@ const Sidebar = () => {
       ) : ( // ยังไม่ Login
           (globalState.mobileView) && ( // แสดงเฉพาะ Mobile
             <List>
+              <Link to={"/monitor"} onClick={handleDrawerClose}>
+                <ListItem button key="Monitor">
+                  <ListItemIcon><DvrIcon /></ListItemIcon>
+                  <ListItemText primary="Monitor" />
+                </ListItem>
+              </Link>
               <Link to={"/login"} onClick={handleDrawerClose}>
                 <ListItem button key="Login">
                   <ListItemIcon><LockOpenIcon /></ListItemIcon>
