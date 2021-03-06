@@ -74,16 +74,19 @@ export default function UserList(props) {
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
-          where: { "changwat": currentUser.user.changwat },
           include: {
             relation: "RoleMapping",
             scope: {
               include: {
                 relation: "role",
+                // scope:{
+                //   where:{"name":{"neq":"AdminR8"}},
+                // },
               },
               // where: { "name":"AdminR8"},
             },
           },
+          where: { "changwat": currentUser.user.changwat },
         },
       };
       let response = await getAll(xParams, "teamusers");
