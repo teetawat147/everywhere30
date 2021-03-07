@@ -11,7 +11,7 @@ import {
   Backdrop,
   Grid,
 } from "@material-ui/core";
-import { Pagination } from '@material-ui/lab';
+// import { Pagination } from '@material-ui/lab';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -19,7 +19,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import TableContainer from '@material-ui/core/TableContainer';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { getAll, getCount, countPerson } from "../services/UniversalAPI";
+import { getAll } from "../services/UniversalAPI";
 import { getCurrentUser } from "../services/auth.service";
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -93,7 +93,7 @@ const Monitor = () => {
   const [changwat, setChangwat] = useState((currentUser != null) ? currentUser.user.changwat : '');
   const [hostype, setHostype] = useState('hospital');
   const rowsPerpage = 7;
-  const [allPages, setAllPages] = useState(0);
+  // const [allPages, setAllPages] = useState(0);
   const [currPage, setCurrPage] = useState(1);
   useEffect(() => {
     // setOpenBackdrop(true);
@@ -127,6 +127,8 @@ const Monitor = () => {
     getData(currPage, rowsPerpage).then((result) => {
       if (Object.keys(result).length > 0) {
         MakeRows(result);
+      } else {
+        setOpenBackdrop(false);
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -204,18 +206,18 @@ const Monitor = () => {
     setRows(row);
     setOpenBackdrop(false);
   }
-  const totalPage = (totalCount) => {
-    setAllPages(parseInt(Math.ceil(parseInt(totalCount) / parseInt(rowsPerpage))));
-  }
-  const onClickPage = (e, page) => {
-    e.preventDefault();
-    getData(page, rowsPerpage).then((result) => {
-      if (Object.keys(result).length > 0) {
-        MakeRows(result);
-        setCurrPage(page);
-      }
-    });
-  }
+  // const totalPage = (totalCount) => {
+  //   setAllPages(parseInt(Math.ceil(parseInt(totalCount) / parseInt(rowsPerpage))));
+  // }
+  // const onClickPage = (e, page) => {
+  //   e.preventDefault();
+  //   getData(page, rowsPerpage).then((result) => {
+  //     if (Object.keys(result).length > 0) {
+  //       MakeRows(result);
+  //       setCurrPage(page);
+  //     }
+  //   });
+  // }
   return (
     <div className={classes.root} style={{ marginBottom: 100, width: '100%', maxWidth: "100%" }}>
       <Grid>
@@ -230,8 +232,8 @@ const Monitor = () => {
                   label="จังหวัด"
                   value={changwat}
                   onChange={(e) => {
-                    setCurrPage(1);
-                    setAllPages(0);
+                    // setCurrPage(1);
+                    // setAllPages(0);
                     setChangwat(e.target.value);
                   }}
                   inputProps={{
@@ -253,8 +255,8 @@ const Monitor = () => {
                   label="ประเภทหน่วยงาน"
                   value={hostype}
                   onChange={(e) => {
-                    setCurrPage(1);
-                    setAllPages(0);
+                    // setCurrPage(1);
+                    // setAllPages(0);
                     setHostype(e.target.value);
                   }}
                   inputProps={{
