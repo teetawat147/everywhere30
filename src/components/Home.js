@@ -42,7 +42,7 @@ const Home = () => {
 
   useEffect(() => {
     const getCountPerson = async () => {
-      let response = await axios.get(process.env.REACT_APP_API_URL + "people/count", { headers: { Authorization: process.env.REACT_APP_TOKEN_LB }});
+      let response = await axios.get(process.env.REACT_APP_API_URL + "people/count");
       if (response.status === 200) {
         if (response.data) {
           setTotalPerson(response.data);
@@ -54,7 +54,7 @@ const Home = () => {
 
   useEffect(() => {
     const getCountIntervention = async () => {
-      let response = await axios.get(process.env.REACT_APP_API_URL + "interventions/count", { headers: { Authorization: process.env.REACT_APP_TOKEN_LB }});
+      let response = await axios.get(process.env.REACT_APP_API_URL + "interventions/count");
       if (response.status === 200) {
         if (response.data) {
           setTotalIntervention(response.data);
