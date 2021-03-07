@@ -50,7 +50,7 @@ const Home = () => {
       }
     }
     getCountPerson();
-  }, [totalPerson]);
+  }, []);
 
   useEffect(() => {
     const getCountIntervention = async () => {
@@ -62,7 +62,7 @@ const Home = () => {
       }
     }
     getCountIntervention();
-  }, [totalIntervention]);
+  }, []);
 
   return (
     <div className="container">
