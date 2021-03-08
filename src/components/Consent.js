@@ -121,7 +121,8 @@ function ConsentArea() {
             <span>ต้องการบันทึกข้อมูล <span style={{ color: 'green' }}>"ยินยอม"</span> ใช่หรือไม่</span> :
             <span>ต้องการบันทึกข้อมูล <span style={{ color: 'red' }}>"ไม่ยินยอม"</span> ใช่หรือไม่</span>,
           confirmationText: 'ยืนยัน',
-          cancellationText: 'ยกเลิก'
+          cancellationText: 'ยกเลิก',
+          onClose: () => { console.log("close") }
         }).then(async () => {
           let extension = consentFile.type.replace('///g', '');
           switch (extension) {

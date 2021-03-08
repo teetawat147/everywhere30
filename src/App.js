@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Route, Switch } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -7,6 +8,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { getCurrentUser, getPermissions } from "./services/auth.service";
 import { ConfirmProvider } from 'material-ui-confirm';
+import { DialogProvider } from './services/dialog/ModalProvider'
 import { mainRoute } from './routes/index';
 import useGlobal from "./store";
 import Appbar from './layout/Appbar';
@@ -15,7 +17,7 @@ import { useIdleTimer } from 'react-idle-timer';
 import { useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
-
+const theme = createMuiTheme();
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -164,11 +166,9 @@ const App = () => {
   useEffect(() => {
     // ถ้า login ให้เริ่มการทำงานเฝ้าดูการทำงานของ user idle timeout
     if (globalState.loginStatus) {
-      // console.log('start timer');
       resume();
       reset();
     } else {
-      // console.log('stop timer');
       pause();
     }
     if (globalState.currentUser != null) {
@@ -189,25 +189,29 @@ const App = () => {
     <div className={classes.root}>
       <Appbar />
       <Sidebar />
-      <ConfirmProvider>
-        <main className={clsx(classes.content, { [classes.contentShift]: globalState.drawerOpen, })}>
-          <div className={classes.toolbar} />
-          <Switch>
-            {mainRoute.map((route, index) =>
-              (route.roles.includes(globalState.userRole)) && (
-                <Route
-                  key={index}
-                  exact
-                  path={route.path}
-                  render={props => (
-                    <route.component {...props} />
-                  )}
-                />
-              )
-            )}
-          </Switch>
-        </main>
-      </ConfirmProvider>
+      <ThemeProvider theme={theme}>
+        <DialogProvider>
+          <ConfirmProvider>
+            <main className={clsx(classes.content, { [classes.contentShift]: globalState.drawerOpen, })}>
+              <div className={classes.toolbar} />
+              <Switch>
+                {mainRoute.map((route, index) =>
+                  (route.roles.includes(globalState.userRole)) && (
+                    <Route
+                      key={index}
+                      exact
+                      path={route.path}
+                      render={props => (
+                        <route.component {...props} />
+                      )}
+                    />
+                  )
+                )}
+              </Switch>
+            </main>
+          </ConfirmProvider>
+        </DialogProvider>
+      </ThemeProvider>
     </div >
   );
 };

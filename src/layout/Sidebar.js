@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from 'react-router-dom';
-import { makeStyles,useTheme  } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -13,7 +13,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import {sideBarRoute} from '../routes/index';
+import DvrIcon from '@material-ui/icons/Dvr';
+import { sideBarRoute } from '../routes/index';
 import useGlobal from "../store";
 
 const drawerWidth = 240;
@@ -37,27 +38,27 @@ const Sidebar = () => {
   const [globalState, globalActions] = useGlobal();
   const classes = useStyles();
   const theme = useTheme();
-  const handleDrawerClose = () => {globalActions.setDrawerOpen(false)};
+  const handleDrawerClose = () => { globalActions.setDrawerOpen(false) };
   return (
     <Drawer
-    className={classes.drawer}
-    variant="persistent"
-    anchor="left"
-    open={globalState.drawerOpen}
-    classes={{
-      paper: classes.drawerPaper,
-    }}
-  >
-    <div className={classes.drawerHeader}>
-      <IconButton onClick={handleDrawerClose}>
-        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-      </IconButton>
-    </div>
-    <Divider />
+      className={classes.drawer}
+      variant="persistent"
+      anchor="left"
+      open={globalState.drawerOpen}
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+    >
+      <div className={classes.drawerHeader}>
+        <IconButton onClick={handleDrawerClose}>
+          {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+        </IconButton>
+      </div>
+      <Divider />
       {(globalState.loginStatus) ? ( // Login แล้ว
         <List>
-          {sideBarRoute.map( (route, index) =>
-            (route.roles.includes(globalState.userRole))&&( // Create Sidebar menu via user role
+          {sideBarRoute.map((route, index) =>
+            (route.roles.includes(globalState.userRole)) && ( // Create Sidebar menu via user role
               <Link key={index} to={route.path} onClick={handleDrawerClose}>
                 <ListItem button key={route.id}>
                   <ListItemIcon>{route.icon}</ListItemIcon>
@@ -67,7 +68,7 @@ const Sidebar = () => {
             )
           )}
           <Divider />
-          {(globalState.mobileView)&&(  // แสดงเฉพาะ Mobile          
+          {(globalState.mobileView) && (  // แสดงเฉพาะ Mobile          
             <Link to={"/logout"}>
               <ListItem button key="Logout">
                 <ListItemIcon><ExitToAppIcon /></ListItemIcon>
@@ -75,27 +76,33 @@ const Sidebar = () => {
               </ListItem>
             </Link>
           )}
-        </List>    
-      ):( // ยังไม่ Login
-        (globalState.mobileView)&&( // แสดงเฉพาะ Mobile
-          <List>
-            <Link to={"/login"} onClick={handleDrawerClose}>
-              <ListItem button key="Login">
-                <ListItemIcon><LockOpenIcon /></ListItemIcon>
-                <ListItemText primary="Login" />
-              </ListItem>
-            </Link>
-            <Link to={"/register"} onClick={handleDrawerClose}>
-              <ListItem button key="Register">
-                <ListItemIcon><PersonAddIcon /></ListItemIcon>
-                <ListItemText primary="Register" />
-              </ListItem>
-            </Link>
-          </List>
-        )
-      )}
-    
-  </Drawer>
+        </List>
+      ) : ( // ยังไม่ Login
+          (globalState.mobileView) && ( // แสดงเฉพาะ Mobile
+            <List>
+              <Link to={"/monitor"} onClick={handleDrawerClose}>
+                <ListItem button key="Monitor">
+                  <ListItemIcon><DvrIcon /></ListItemIcon>
+                  <ListItemText primary="Monitor" />
+                </ListItem>
+              </Link>
+              <Link to={"/login"} onClick={handleDrawerClose}>
+                <ListItem button key="Login">
+                  <ListItemIcon><LockOpenIcon /></ListItemIcon>
+                  <ListItemText primary="Login" />
+                </ListItem>
+              </Link>
+              <Link to={"/register"} onClick={handleDrawerClose}>
+                <ListItem button key="Register">
+                  <ListItemIcon><PersonAddIcon /></ListItemIcon>
+                  <ListItemText primary="Register" />
+                </ListItem>
+              </Link>
+            </List>
+          )
+        )}
+
+    </Drawer>
   )
 };
-export default  Sidebar;
+export default Sidebar;

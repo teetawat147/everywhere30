@@ -34,105 +34,105 @@ const root = {
   id: "Root",
   path: "/",
   icon: <HomeIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim","Member","noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
   component: Home
 };
 const home = {
   id: "Home",
   path: "/home",
   icon: <HomeIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim","Member","noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
   component: Home
 };
 const register = {
   id: "register",
   path: "/register",
   icon: <PersonAddIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim","Member","noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
   component: Register
 };
 const linelogin = {
   id: "linelogin",
   path: "/linelogin",
   icon: null,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim","Member","noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
   component: LineLogin
 };
 const login = {
   id: "Login",
   path: "/login",
   icon: <LockOpenIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim","Member","noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
   component: Login
 };
 const logout = {
   id: "Logout",
   path: "/logout",
   icon: <ExitToAppIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim","Member","noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
   component: Logout
 };
 const emr = {
   id: "EMR",
   path: "/emr",
   icon: <WcIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
   component: Emr
 };
 const referin = {
   id: "Referin",
   path: "/referin",
   icon: <GetAppIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
   component: Referin
 };
 const referout = {
   id: "Referout",
   path: "/referout",
   icon: <CallMissedOutgoingIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Claim"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
   component: Referout
 };
 const userlist = {
   id: "Users",
   path: "/userlist",
   icon: <SupervisorAccountIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital"],
   component: UserList
 };
 const useredit = {
   id: "useredit",
   path: "/useredit",
   icon: <SupervisorAccountIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital"],
   component: UserEdit
 };
 const consent = {
   id: "Consent",
   path: "/consent",
   icon: <AssignmentIcon />,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor"],
   component: Consent
 };
 const profile = {
   id: "Profile",
   path: "/profile",
   icon: null,
-  roles:["AdminR8","AdminChangwat","AdminHospital","Doctor","Member","noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole"],
   component: Profile
 };
 const monitor = {
   id: "Monitor",
   path: "/monitor",
-  icon: <DvrIcon/>,
-  roles:["AdminR8","AdminChangwat","AdminHospital"],
+  icon: <DvrIcon />,
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "noRole"],
   component: Monitor
 };
 const systemsetting = {
   id: "Systemsetting",
   path: "/systemsetting",
-  icon: <SettingsIcon/>,
-  roles:["AdminR8"],
+  icon: <SettingsIcon />,
+  roles: ["AdminR8"],
   component: SystemSetting
 };
 
@@ -144,7 +144,7 @@ export const appBarRoute = [
   login,
   logout
 ];
-export const sideBarRoute=[
+export const sideBarRoute = [
   home,
   emr,
   referin,

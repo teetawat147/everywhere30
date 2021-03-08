@@ -1,23 +1,23 @@
-const changeLoginStatus = (store,status) => {
+const changeLoginStatus = (store, status) => {
   store.setState({ loginStatus: status });
 };
-const setIsLineLogin = (store,status) => {
+const setIsLineLogin = (store, status) => {
   store.setState({ isLineLogin: status });
 };
-const setCurrentUser = (store,userinfo) => {
-  store.setState({ currentUser : userinfo });
+const setCurrentUser = (store, userinfo) => {
+  store.setState({ currentUser: userinfo });
 };
-const setUserRole = (store,role) => {
-  store.setState({ userRole : role });
+const setUserRole = (store, role) => {
+  store.setState({ userRole: role });
 };
-const setDrawerOpen = (store,open) => {
-  store.setState({ drawerOpen : open });
+const setDrawerOpen = (store, open) => {
+  store.setState({ drawerOpen: open });
 };
-const setAnchorEl = (store,open) => {
-  store.setState({ anchorEl : open });
+const setAnchorEl = (store, open) => {
+  store.setState({ anchorEl: open });
 };
-const setMobileView = (store,view) => {
-  store.setState({ movileView : view });
+const setMobileView = (store, view) => {
+  store.setState({ mobileView: view });
 };
 export {
   changeLoginStatus,
