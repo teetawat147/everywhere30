@@ -225,7 +225,14 @@ export default function SearchCID(props) {
   return (
     <div style={{ marginBottom: 100, width: '100%' }}>
 
-      <div><h5>REFERIN</h5></div>
+
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center'}}>
+        <div style={{border: 'solid 1px #E2E2E2', padding: 30, borderRadius: 10, backgroundColor: '#EFEFEF', marginTop: 50}}>
+          ขออภัยค่ะ อยู่ระหว่างการปรับปรุง
+        </div>
+      </div>
+
+      {/* <div><h5>REFERIN</h5></div>
       <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
         <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" />
         <TextField style={{ width: 200, marginRight: 5 }} label="สถานพยาบาลต้นทาง" variant="outlined" />
@@ -245,7 +252,7 @@ export default function SearchCID(props) {
       </div>
       <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, marginTop: 10, overfloY: 'hidden', overflowX: 'scroll' }}>
         {mkRows()}
-      </div>
+      </div> */}
 
     </div>
   )
