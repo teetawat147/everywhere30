@@ -70,7 +70,7 @@ export default function UserList(props) {
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-      //   console.log(response.data);
+        //  console.log(response.data);
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
@@ -92,11 +92,12 @@ export default function UserList(props) {
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       // "where":{"ampurCode":21}
+     
           // console.log(response.data[0].RoleMapping[0].role.name);
     } else if (currentUser.user.role === "AdminHospital") {
       let xParams = {
         filter: {
-          where: { "department.hcode": currentUser.user.department.hos_id },
+          where: { "department.hcode": currentUser.user.department.hcode },
           include: {
             relation: "RoleMapping",
             scope: {

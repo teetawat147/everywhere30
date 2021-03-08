@@ -8,6 +8,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckButton from "react-validation/build/button";
 import { useHistory } from "react-router-dom";
 import { getAll, patch, create } from "../services/UniversalAPI";
+import { getCurrentUser } from "../services/auth.service";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,7 +56,12 @@ export default function UserEdit(props) {
   const [lookupchangwats, setLookUpchangwats] = useState([]);
   const [lookupdepartments, setLookUpDepartments] = useState([]);
   const [userData, setUserData] = useState({});
-  const [{ disEmail, disPassword }, setDisabledState] = useState({ disEmail: false, disPassword: false });
+  const [{ disEmail, disPassword }, setDisabledState] = useState({
+    disEmail: false,
+    disPassword: false,
+  });
+  const [currentUser, setCurrentUser] = useState(getCurrentUser());
+  const [getAmpur, setgetAmpur] = useState();
 
   const [inputError, setInputError] = useState({
     fullname: false,
@@ -138,35 +144,133 @@ export default function UserEdit(props) {
   };
 
   const getchangwat = async () => {
-    let response = await getAll(
-      {
-        filter: { fields: { changwatname: "true" }, where: { zonecode: "08" } },
-      },
-      "cchangwats"
-    );
-
-    if (response.status === 200) {
-      if (response.data) {
-        if (response.data.length > 0) {
-          // console.log(response.data)
-          setLookUpchangwats(response.data);
+    if (currentUser.user.role === "AdminR8") {
+      let response = await getAll(
+        {
+          filter: {
+            fields: { changwatname: "true" },
+            where: { zonecode: "08" },
+          },
+          // filter: { fields: { changwatname: "true" }, where:{and: [{ zonecode: "08" },{ changwatname: currentUser.user.changwat }] }},
+        },
+        "cchangwats"
+      );
+      if (response.status === 200) {
+        if (response.data) {
+          if (response.data.length > 0) {
+            // console.log(response.data)
+            setLookUpchangwats(response.data);
+          }
+        }
+      }
+    } else {
+      let response = await getAll(
+        {
+          // filter: { fields: { changwatname: "true" }, where: { zonecode: "08" } },
+          filter: {
+            fields: { changwatname: "true" },
+            where: {
+              and: [
+                { zonecode: "08" },
+                { changwatname: currentUser.user.changwat },
+              ],
+            },
+          },
+        },
+        "cchangwats"
+      );
+      if (response.status === 200) {
+        if (response.data) {
+          if (response.data.length > 0) {
+            // console.log(response.data)
+            setLookUpchangwats(response.data);
+          }
         }
       }
     }
   };
 
-    const getDepartment = async (cw) => {
-    let response = await getAll({ filter: { "fields": { "hos_id": "true", "hos_name": "true", "hos_fullname": "true" }, "where": { "province_name": cw } } }, 'hospitals');
-    setLookUpDepartments(response.data);
+  const getDepartment = async (cw) => {
+    if (currentUser.user.role === "AdminR8") {
+      let response = await getAll(
+        {
+          filter: {
+            fields: { hos_id: "true", hos_name: "true", hos_fullname: "true" },
+            where: {
+              and: [{ province_name: cw }],
+            },
+          },
+        },
+        "hospitals"
+      );
+      setLookUpDepartments(response.data);
+    } else if (currentUser.user.role === "AdminChangwat") {
+      let response = await getAll(
+        {
+          filter: {
+            fields: { hos_id: "true", hos_name: "true", hos_fullname: "true" },
+            where: {
+              and: [
+                { province_name: currentUser.user.changwat },
+                { hos_type_id: { neq: "5" } },
+              ],
+            },
+          },
+        },
+        "hospitals"
+      );
+      setLookUpDepartments(response.data);
+    } else if (currentUser.user.role === "AdminHospital") {
+      let response = await getAll(
+        {
+          filter: {
+            fields: { hos_id: "true", hos_name: "true", hos_fullname: "true" },
+            where: {
+              and: [
+                { province_name: currentUser.user.changwat },
+                { hos_ampid: getAmpur },
+                { hos_type_id: { neq: "1" } },
+                { hos_type_id: { neq: "5" } },
+              ],
+            },
+          },
+        },
+        "hospitals"
+      );
+      setLookUpDepartments(response.data);
+    }
+  };
+
+  const userAmpur = async () => {
+    let response = await getAll(
+      {
+        filter: {
+          fields: {
+            hos_id: "true",
+            hos_name: "true",
+            hos_fullname: "true",
+            hos_ampid: "true",
+          },
+          where: {
+            and: [
+              { province_name: currentUser.user.changwat },
+              { hos_id: currentUser.user.department.hcode },
+            ],
+          },
+        },
+      },
+      "hospitals"
+    );
+    setgetAmpur(response.data[0].hos_ampid);
   };
 
   useEffect(() => {
     getchangwat();
+    userAmpur();
   }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-
-// console.log(props.location.state)
+    // console.log(props.location.state)
     if (typeof props.location.state !== "undefined") {
       if (typeof props.location.state.status !== "undefined") {
         if (
@@ -302,7 +406,7 @@ export default function UserEdit(props) {
             helperText={inputHelperText.password}
             error={inputError.password}
             disabled={disPassword}
-          // required
+            // required
           />
         </div>
         <div className="form-group">
@@ -314,17 +418,17 @@ export default function UserEdit(props) {
               options={lookupchangwats}
               defaultValue={getAutoDefaultValueChangwat(userData["changwat"])}
               getOptionSelected={(option, value) =>
-                
                 value.changwatname === option.changwatname
               }
               getOptionLabel={(option) => option.changwatname || ""}
               onChange={(e, newValue) => {
-                let changwatName = (newValue != null) ? newValue.changwatname : '';
+                let changwatName =
+                  newValue != null ? newValue.changwatname : "";
                 let x = userData;
                 x["department"] = null;
                 setUserData({ ...userData, ...x });
 
-                if (changwatName !== '') {
+                if (changwatName !== "") {
                   getDepartment(changwatName);
                   x["changwat"] = changwatName;
                   setUserData({ ...userData, ...x });
@@ -345,12 +449,14 @@ export default function UserEdit(props) {
               fullWidth
               options={lookupdepartments}
               getOptionSelected={(option, value) => {
-                return value === option
+                return value === option;
               }}
-              getOptionLabel={(option) => option.hos_name || ""}
+              getOptionLabel={(option) => option.hos_name|| ""}
               value={userData["department"]}
               onChange={(_, newValue) => {
-                delete Object.assign(newValue, { 'hcode': newValue['hos_id'] })['hos_id'];
+                delete Object.assign(newValue, { hcode: newValue["hos_id"] })[
+                  "hos_id"
+                ];
                 let x = userData;
                 x["department"] = newValue;
                 setUserData({ ...userData, ...x });
@@ -359,7 +465,7 @@ export default function UserEdit(props) {
                 <TextField {...params} label="หน่วยงาน" variant="outlined" />
               )}
             />
-      )} 
+          )}
         </div>
         <div className="form-group">
           <button className="btn btn-primary btn-block">แก้ไข</button>
@@ -385,7 +491,6 @@ export default function UserEdit(props) {
                 error.response.data.message) ||
               error.message ||
               error.toString();
-
           }
         );
       } else {
@@ -396,7 +501,6 @@ export default function UserEdit(props) {
               alert("สำเร็จ");
               redirect.push("/userlist");
             }
-
           },
           (error) => {
             const resMessage =
@@ -405,8 +509,6 @@ export default function UserEdit(props) {
                 error.response.data.message) ||
               error.message ||
               error.toString();
-
-
           }
         );
       }
@@ -420,7 +522,9 @@ export default function UserEdit(props) {
           htmlFor="caption"
           style={{ textAlign: "center", marginBottom: "20px" }}
         >
-          <h3>{isAddMode === "newadd" ? "เพิ่มผู้ใช้งาน" : "แก้ไขผู้ใช้งาน"}</h3>
+          <h3>
+            {isAddMode === "newadd" ? "เพิ่มผู้ใช้งาน" : "แก้ไขผู้ใช้งาน"}
+          </h3>
         </label>
         <Form
           className={classes.root}
