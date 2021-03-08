@@ -197,7 +197,7 @@ export default function UserEdit(props) {
           filter: {
             fields: { hos_id: "true", hos_name: "true", hos_fullname: "true" },
             where: {
-              and: [{ province_name: cw }],
+              and: [{ province_name: cw }, { hos_type_id: { neq: "5" } }],
             },
           },
         },
@@ -451,7 +451,7 @@ export default function UserEdit(props) {
               getOptionSelected={(option, value) => {
                 return value === option;
               }}
-              getOptionLabel={(option) => option.hos_name|| ""}
+              getOptionLabel={(option) => option.hos_name || ""}
               value={userData["department"]}
               onChange={(_, newValue) => {
                 delete Object.assign(newValue, { hcode: newValue["hos_id"] })[
