@@ -9,7 +9,12 @@ import CheckButton from "react-validation/build/button";
 import { useHistory } from "react-router-dom";
 import { getAll, patch, create } from "../services/UniversalAPI";
 import { getCurrentUser } from "../services/auth.service";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiTextField-root": {
@@ -62,6 +67,8 @@ export default function UserEdit(props) {
   });
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
   const [getAmpur, setgetAmpur] = useState();
+
+  const [open, setOpen] = React.useState(false);
 
   const [inputError, setInputError] = useState({
     fullname: false,
@@ -307,6 +314,15 @@ export default function UserEdit(props) {
     });
     return r;
   };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+    redirect.push("/userlist");
+  };
+
   const simpleRegisterForm = () => {
     return (
       <div>
@@ -494,12 +510,13 @@ export default function UserEdit(props) {
           }
         );
       } else {
-        //  console.log(userData)
+        // console.log(userData);
         patch(userData["id"], userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
-              alert("สำเร็จ");
-              redirect.push("/userlist");
+              setOpen(true);
+              // alert("สำเร็จ");
+              // redirect.push("/userlist");
             }
           },
           (error) => {
@@ -535,6 +552,13 @@ export default function UserEdit(props) {
           {simpleRegisterForm()}
           <CheckButton style={{ display: "none" }} ref={checkBtn} />
         </Form>
+      </div>
+      <div className={classes.root}>
+        <Snackbar open={open} autoHideDuration={1500} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="success">
+            บันทึกเสร็จ
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );
