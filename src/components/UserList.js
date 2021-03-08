@@ -294,7 +294,7 @@ export default function UserList(props) {
         remove(x.id, "teamusers").then(
           (response) => {
             if (response.status === 200) {
-              // alert("ลบสำเร็จ");
+               alert("ลบสำเร็จ");
             }
             //   console.log(response);
             getTeamuser();
