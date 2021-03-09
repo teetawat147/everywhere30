@@ -9,6 +9,8 @@ import { register } from "../services/auth.service";
 import { getAll } from "../services/UniversalAPI";
 import validation from "../services/validation";
 import { useDialog } from '../services/dialog/ModalProvider';
+import RegisterGuide from "./RegisterGuide";
+
 const useStyles = makeStyles(theme => ({
   root: {
     '& .MuiTextField-root': {
@@ -337,6 +339,7 @@ const Register = (props) => {
 
   return (
     <div className="col-md-12">
+      <RegisterGuide/>
       <div className={"card " + classes.containerCard}>
         <label htmlFor="caption" style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h3>ลงทะเบียน</h3>

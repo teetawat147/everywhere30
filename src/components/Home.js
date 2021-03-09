@@ -6,6 +6,7 @@ import {
   Button,
 } from "@material-ui/core";
 import homeImage from "../images/flow_01.jpg";
+import RegisterGuide from "./RegisterGuide";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,6 +72,8 @@ const Home = () => {
         <MyButton color="blue">ประวัติการรักษาทั้งหมด &nbsp;&nbsp;<b>{typeof totalIntervention.count !== "undefined" ? totalIntervention.count.toLocaleString() : totalIntervention.count}</b>&nbsp;&nbsp; รายการ</MyButton>
       </React.Fragment>
       <br/><br/>
+      <RegisterGuide/>
+      <br/>
       <header className="jumbotron">
         <img src={homeImage} alt="" style={{ width: '100%' }} />
       </header>
