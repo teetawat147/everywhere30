@@ -193,14 +193,14 @@ const Monitor = () => {
       row.push(<StyledTableRow key={key++}>
         <TableCell align="center">{hos.hcode}</TableCell>
         <TableCell component="th" scope="row">{hos.hosname}</TableCell>
-        <TableCell align="right">{hos.count}</TableCell>
+        <TableCell align="right">{typeof total_person !== "undefined" ? hos.count.toLocaleString() : hos.count}</TableCell>
       </StyledTableRow>);
     });
     row.push(
       <StyledTableRow key="total">
         <TableCell align="center"></TableCell>
-        <TableCell component="th" scope="row">รวมทั้งสิ้น</TableCell>
-        <TableCell align="right">{total_person}</TableCell>
+        <TableCell component="th" scope="row"><b>รวมทั้งสิ้น</b></TableCell>
+        <TableCell align="right"><b>{typeof total_person !== "undefined" ? total_person.toLocaleString() : total_person}</b></TableCell>
       </StyledTableRow>
     );
     setRows(row);
