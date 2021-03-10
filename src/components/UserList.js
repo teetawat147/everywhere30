@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from "@material-ui/core";
 import { getAll, patch, create, remove } from "../services/UniversalAPI";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -14,20 +14,20 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getCurrentUser } from "../services/auth.service";
 import { useConfirm } from "material-ui-confirm";
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   dialog: {
-    '& .MuiTextField-root': {
-      width: '100%',
+    "& .MuiTextField-root": {
+      width: "100%",
     },
-    '& .MuiInputLabel-outlined': {
+    "& .MuiInputLabel-outlined": {
       zIndex: 1,
-      transform: 'translate(15px, 4px) scale(1)',
-      pointerEvents: 'none'
+      transform: "translate(15px, 4px) scale(1)",
+      pointerEvents: "none",
     },
-    '& .MuiInputLabel-shrink': {
-      transform: 'translate(15px, -16px) scale(0.75)',
-    }
-  }
+    "& .MuiInputLabel-shrink": {
+      transform: "translate(15px, -16px) scale(0.75)",
+    },
+  },
 }));
 export default function UserList(props) {
   const [users, setUsers] = useState(null);
@@ -70,7 +70,7 @@ export default function UserList(props) {
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
-        //  console.log(response.data);
+      //  console.log(response.data);
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
@@ -86,14 +86,14 @@ export default function UserList(props) {
               // where: { "name":"AdminR8"},
             },
           },
-          where: { "changwat": currentUser.user.changwat },
+          where: { changwat: currentUser.user.changwat },
         },
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       // "where":{"ampurCode":21}
-     
-          // console.log(response.data[0].RoleMapping[0].role.name);
+
+      // console.log(response.data[0].RoleMapping[0].role.name);
     } else if (currentUser.user.role === "AdminHospital") {
       let xParams = {
         filter: {
@@ -144,18 +144,21 @@ export default function UserList(props) {
 
   const getLookUpRoles = async () => {
     if (currentUser.user.role === "AdminR8") {
-      let response = await getAll({
-        filter: {
-          where: {
-            or: [
-              { name: "AdminR8" },
-              { name: "AdminChangwat" },
-              { name: "AdminHospital" },
-              { name: "Doctor" }
-            ],
+      let response = await getAll(
+        {
+          filter: {
+            where: {
+              or: [
+                { name: "AdminR8" },
+                { name: "AdminChangwat" },
+                { name: "AdminHospital" },
+                { name: "Doctor" },
+              ],
+            },
           },
         },
-      }, "roles");
+        "roles"
+      );
       if (response.status === 200) {
         if (response.data) {
           if (response.data.length > 0) {
@@ -172,7 +175,7 @@ export default function UserList(props) {
               or: [
                 { name: "AdminChangwat" },
                 { name: "AdminHospital" },
-                { name: "Doctor" }
+                { name: "Doctor" },
               ],
             },
           },
@@ -213,6 +216,7 @@ export default function UserList(props) {
   };
 
   function addRole() {
+    // console.log(currentRoleMapping)
     if (typeof currentRoleMapping.id !== "undefined") {
       patch(currentRoleMapping.id, currentRoleMapping, "rolemappings").then(
         (response) => {
@@ -271,7 +275,7 @@ export default function UserList(props) {
       concellaText: "ยกเลิก",
     })
       .then(async () => {
-        //   console.log(x)
+        //console.log(x)
         if (x.RoleMapping.length > 0) {
           remove(x.RoleMapping[0].id, "rolemappings").then(
             (response) => {
@@ -294,7 +298,7 @@ export default function UserList(props) {
         remove(x.id, "teamusers").then(
           (response) => {
             if (response.status === 200) {
-               alert("ลบสำเร็จ");
+              alert("ลบสำเร็จ");
             }
             //   console.log(response);
             getTeamuser();
@@ -309,11 +313,50 @@ export default function UserList(props) {
           }
         );
       })
-      .catch(() => { });
+      .catch(() => {});
+  }
+
+  function delRole(x) {
+    confirm({
+      title: "ลบสิทธิ",
+      description: "ท่านต้องการยกเลิกสิทธิการใช้งานใช่ไหม",
+      //description:(confirmConsent==='Y')?
+      //<span>ต้องการบันทึกข้อมูล<span style={{color:'green'}}>"ยินยอม"</span>ใช่หรือไม่</span>:
+      //<span>ต้องการบันทึกข้อมูล<span style={{color:'red'}}>"ไม่ยินยอม"</span>ใช่หรือไม่</span>:
+      confirmmationText: "ยืนยัน",
+      concellaText: "ยกเลิก",
+    })
+      .then(async () => {
+        //  console.log(x)
+        if (x.length > 0) {
+          remove(x, "rolemappings").then(
+            (response) => {
+              if (response.status === 200) {
+                handleClose();
+                setCurrentRoleId(null);
+                setCurrentRoleMapping({});
+                // alert("ลบสำเร็จ");
+              }
+
+              getTeamuser();
+              //  console.log(response);
+            },
+            (error) => {
+              const resMessage =
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.message) ||
+                error.message ||
+                error.toString();
+            }
+          );
+        }
+      })
+      .catch(() => {});
   }
 
   return (
-    <div >
+    <div>
       <h1>Users</h1>
       <button
         onClick={() => clickUserEditlink("newadd")}
@@ -372,8 +415,8 @@ export default function UserList(props) {
                     {user.isDeleting ? (
                       <span className="spinner-border spinner-border-sm"></span>
                     ) : (
-                        <span>ลบ</span>
-                      )}
+                      <span>ลบ</span>
+                    )}
                   </button>
                 </td>
               </tr>
@@ -398,11 +441,13 @@ export default function UserList(props) {
         <Dialog
           open={open}
           onClose={handleClose}
-          maxWidth='md'
+          maxWidth="md"
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title" style={{ paddingTop: '24px' }}>กำหนดสิทธิใช้งาน</DialogTitle>
-          <DialogContent style={{ width: '400px', height: '90px' }}>
+          <DialogTitle id="form-dialog-title" style={{ paddingTop: "24px" }}>
+            กำหนดสิทธิใช้งาน
+          </DialogTitle>
+          <DialogContent style={{ width: "400px", height: "90px" }}>
             <DialogContentText></DialogContentText>
             <div className={"form-group " + classes.dialog}>
               <Autocomplete
@@ -417,20 +462,32 @@ export default function UserList(props) {
                 }
                 getOptionLabel={(option) => option.name || ""}
                 onChange={(e, newValue) => {
-                  //   console.log(newValue.id);
+                  //  console.log(newValue.id);
+                  //  console.log(currentRoleMapping)
                   let x = currentRoleMapping;
                   x["roleId"] = newValue.id;
                   setCurrentRoleMapping({ ...currentRoleMapping, ...x });
                 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="สิทธิ์การใช้งาน" variant="outlined" />
+                  <TextField
+                    {...params}
+                    label="สิทธิ์การใช้งาน"
+                    variant="outlined"
+                  />
                 )}
               />
             </div>
           </DialogContent>
-          <DialogActions style={{ padding: '0px 24px 24px 24px' }}>
-            <Button variant="outlined" onClick={handleClose} color="primary">
+          <DialogActions style={{ padding: "0px 24px 24px 24px" }}>
+            <Button variant="outlined" onClick={handleClose} >
               ยกเลิก
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => delRole(currentRoleMapping.id)}
+              color="secondary"
+            >
+              ลบสิทธิ
             </Button>
             <Button
               variant="outlined"
