@@ -26,7 +26,7 @@ import {
 import { Autocomplete, Pagination } from "@material-ui/lab";
 import { getCurrentUser } from "../services/auth.service";
 import { useConfirm } from "material-ui-confirm";
-import * as ICONS from 'react-icons/md';
+import * as ICONS from "react-icons/md";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -419,7 +419,10 @@ export default function UserList(props) {
   };
   const handleChangePage = (event, newPage) => {
     setPaginationSkip((newPage - 1) * rowsPerPage);
-    setPaginationSkipBack((newPage - 1) * rowsPerPage);
+    // setPaginationSkipBack((newPage - 1) * rowsPerPage);
+    if (newPage === 1) {
+      setPaginationSkipBack(0);
+    }
   };
 
   useEffect(() => {
@@ -430,33 +433,38 @@ export default function UserList(props) {
     getTeamuser();
   }, [rowsPerPage]);
 
-  useEffect(() => {
-    getTeamuser();
-  }, [rowsPerPage]);
-
-
-
   const onChangeRowsPerPage = (e) => {
     setRowsPerPage(e.target.value);
     setPaginationLimit(e.target.value);
   };
 
   const keyPress = (e) => {
-    if(e.keyCode === 13){
-      if (searchName==="") {
-        setPaginationSkip(paginationSkipBack);
-
-      }else{
+    if (e.keyCode === 13) {
+      // console.log('paginationSkip---'+paginationSkip)
+      // console.log('paginationSkipBack---'+paginationSkipBack)
+      // console.log(searchName)
+      if (searchName !== "" && paginationSkip !== 0) {
+        // console.log('wwwwwwww')
+        setPaginationSkipBack(paginationSkip);
+        setPaginationSkip(0);
+        // setPaginationSkip(paginationSkipBack);
+      } else if (
+        searchName === "" &&
+        paginationSkip === 0 &&
+        paginationSkipBack > 0
+      ) {
         // console.log( "sdkjfndkjdf");
-        setPaginationSkipBack(paginationSkipBack);
-         //getTeamuser();
-         setPaginationSkip(0);
+        setPaginationSkip(paginationSkipBack);
+      } else if (paginationSkip === 0 && paginationSkipBack === 0) {
+        //getTeamuser();
+        //setPaginationSkip(0);
+        console.log("kkkkkkkk");
+        getTeamuser();
       }
-     
-      // put the login here
-   }
-  };
 
+      // put the login here
+    }
+  };
 
   return (
     <div>
@@ -470,13 +478,13 @@ export default function UserList(props) {
           justifyContent: "space-between",
         }}
       >
-        <div style={{ width: "100%"}}>
+        <div style={{ width: "100%" }}>
           <TextField
             type="text"
             className="form-control"
             placeholder="ค้นหาชื่อ"
             variant="outlined"
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
             value={searchName}
             onChange={handleChangeSearchName}
             onKeyDown={keyPress}
@@ -650,21 +658,22 @@ export default function UserList(props) {
           </DialogActions>
         </Dialog>
       </div>
-      <div className={classes.pagina } style={{
+      <div
+        className={classes.pagina}
+        style={{
           marginBottom: 5,
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
-        }}>
+        }}
+      >
         <Pagination
           count={rowsCount}
           onChange={handleChangePage}
           variant="outlined"
           color="primary"
           size="large"
-          
         />
-        
       </div>
     </div>
   );
