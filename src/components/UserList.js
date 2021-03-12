@@ -14,6 +14,7 @@ import {
   FormControl,
   Select,
   MenuItem,
+  InputAdornment,
 } from "@material-ui/core";
 import {
   getAll,
@@ -25,6 +26,7 @@ import {
 import { Autocomplete, Pagination } from "@material-ui/lab";
 import { getCurrentUser } from "../services/auth.service";
 import { useConfirm } from "material-ui-confirm";
+import * as ICONS from 'react-icons/md';
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -439,6 +441,14 @@ export default function UserList(props) {
       // put the login here
    }
   };
+  const DynIcon = (props) => {
+    const X = ICONS[props.icon];
+    return (
+      <span style={{ marginRight: 5 }}>
+        <X size={20} />
+      </span>
+    );
+  }
 
   return (
     <div>
@@ -460,6 +470,11 @@ export default function UserList(props) {
             value={searchName}
             onChange={handleChangeSearchName}
             onKeyDown={keyPress}
+            startAdornment={
+              <InputAdornment position="start">
+                <DynIcon icon="MdSearch" />
+              </InputAdornment>
+            }
           />
         </div>
         
