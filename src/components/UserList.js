@@ -62,6 +62,7 @@ export default function UserList(props) {
   const confirm = useConfirm();
 
   const [paginationSkip, setPaginationSkip] = useState(0);
+  const [paginationSkipBack, setPaginationSkipBack] = useState(0);
   const [paginationLimit, setPaginationLimit] = useState(10);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [rowsCount, setRowsCount] = useState(0);
@@ -418,6 +419,7 @@ export default function UserList(props) {
   };
   const handleChangePage = (event, newPage) => {
     setPaginationSkip((newPage - 1) * rowsPerPage);
+    setPaginationSkipBack((newPage - 1) * rowsPerPage);
   };
 
   useEffect(() => {
@@ -428,6 +430,11 @@ export default function UserList(props) {
     getTeamuser();
   }, [rowsPerPage]);
 
+  useEffect(() => {
+    getTeamuser();
+  }, [rowsPerPage]);
+
+
 
   const onChangeRowsPerPage = (e) => {
     setRowsPerPage(e.target.value);
@@ -436,20 +443,20 @@ export default function UserList(props) {
 
   const keyPress = (e) => {
     if(e.keyCode === 13){
-      // console.log( e.target.value);
-      getTeamuser();
-      setPaginationSkip(0);
+      if (searchName==="") {
+        setPaginationSkip(paginationSkipBack);
+
+      }else{
+        // console.log( "sdkjfndkjdf");
+        setPaginationSkipBack(paginationSkipBack);
+         //getTeamuser();
+         setPaginationSkip(0);
+      }
+     
       // put the login here
    }
   };
-  const DynIcon = (props) => {
-    const X = ICONS[props.icon];
-    return (
-      <span style={{ marginRight: 5 }}>
-        <X size={20} />
-      </span>
-    );
-  }
+
 
   return (
     <div>
@@ -473,11 +480,6 @@ export default function UserList(props) {
             value={searchName}
             onChange={handleChangeSearchName}
             onKeyDown={keyPress}
-            startAdornment={
-              <InputAdornment position="start">
-                <DynIcon icon="MdSearch" />
-              </InputAdornment>
-            }
           />
         </div>
         <div style={{ whiteSpace: "nowrap", marginLeft: 10 }}>
