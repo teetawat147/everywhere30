@@ -458,7 +458,7 @@ export default function UserList(props) {
       } else if (paginationSkip === 0 && paginationSkipBack === 0) {
         //getTeamuser();
         //setPaginationSkip(0);
-        console.log("kkkkkkkk");
+        // console.log("kkkkkkkk");
         getTeamuser();
       }
 
