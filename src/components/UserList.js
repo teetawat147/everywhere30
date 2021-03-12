@@ -62,8 +62,8 @@ export default function UserList(props) {
   const confirm = useConfirm();
 
   const [paginationSkip, setPaginationSkip] = useState(0);
-  const [paginationSkipBack, setPaginationSkipBack] = useState(0);
   const [paginationLimit, setPaginationLimit] = useState(10);
+  const [paginationSkipBack, setPaginationSkipBack] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [rowsCount, setRowsCount] = useState(0);
   const [searchName, setSearchName] = useState("");
