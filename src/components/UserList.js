@@ -2,18 +2,30 @@
 
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core";
-import { getAll, patch, create, remove } from "../services/UniversalAPI";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import {
+  makeStyles,
+  TextField,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  Dialog,
+  FormControl,
+  Select,
+  MenuItem,
+} from "@material-ui/core";
+import {
+  getAll,
+  patch,
+  create,
+  remove,
+  getCount,
+} from "../services/UniversalAPI";
+import { Autocomplete, Pagination } from "@material-ui/lab";
 import { getCurrentUser } from "../services/auth.service";
 import { useConfirm } from "material-ui-confirm";
+
 const useStyles = makeStyles((theme) => ({
   dialog: {
     "& .MuiTextField-root": {
@@ -26,6 +38,11 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiInputLabel-shrink": {
       transform: "translate(15px, -16px) scale(0.75)",
+    },
+  },
+  pagina: {
+    "& > *": {
+      marginTop: theme.spacing(2),
     },
   },
 }));
@@ -42,6 +59,12 @@ export default function UserList(props) {
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
   const confirm = useConfirm();
 
+  const [paginationSkip, setPaginationSkip] = useState(0);
+  const [paginationLimit, setPaginationLimit] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsCount, setRowsCount] = useState(0);
+  const [searchName, setSearchName] = useState("");
+
   const handleClickRole = (x) => {
     setOpen(true);
     if (x.RoleMapping.length > 0) {
@@ -54,10 +77,14 @@ export default function UserList(props) {
   const handleClose = () => {
     setOpen(false);
   };
+
   const getTeamuser = async () => {
     if (currentUser.user.role === "AdminR8") {
       let xParams = {
         filter: {
+          skip: paginationSkip,
+          limit: paginationLimit,
+          order: "id ASC",
           include: {
             relation: "RoleMapping",
             scope: {
@@ -66,14 +93,23 @@ export default function UserList(props) {
               },
             },
           },
+          where: { fullname: { like: searchName } },
         },
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
+
+      let rowcount = await getCount(xParams, "teamusers");
+      //  console.log(rowcount.data.count);
+      setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
+      // setRowsCount(rowcount.data.count);
+
       //  console.log(response.data);
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
+          skip: paginationSkip,
+          limit: paginationLimit,
           include: {
             relation: "RoleMapping",
             scope: {
@@ -86,18 +122,28 @@ export default function UserList(props) {
               // where: { "name":"AdminR8"},
             },
           },
-          where: { changwat: currentUser.user.changwat },
+          where: {
+            and: [
+              { changwat: currentUser.user.changwat },
+              { fullname: { like: searchName } },
+            ],
+          },
         },
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       // "where":{"ampurCode":21}
+      let rowcount = await getCount(xParams, "teamusers");
+      //  console.log(rowcount.data.count);
+      setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
+      // setRowsCount(rowcount.data.count);
 
       // console.log(response.data[0].RoleMapping[0].role.name);
     } else if (currentUser.user.role === "AdminHospital") {
       let xParams = {
         filter: {
-          where: { "department.hcode": currentUser.user.department.hcode },
+          skip: paginationSkip,
+          limit: paginationLimit,
           include: {
             relation: "RoleMapping",
             scope: {
@@ -106,11 +152,21 @@ export default function UserList(props) {
               },
             },
           },
+          where: {
+            and: [
+              { "department.hcode": currentUser.user.department.hcode },
+              { fullname: { like: searchName } },
+            ],
+          },
         },
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       // console.log(response.data);
+      let rowcount = await getCount(xParams, "teamusers");
+      //  console.log(rowcount.data.count);
+      setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
+      // setRowsCount(rowcount.data.count);
     }
   };
 
@@ -354,25 +410,77 @@ export default function UserList(props) {
       })
       .catch(() => {});
   }
+  const handleChangeSearchName = (e) => {
+    // console.log(e.target.value)
+    setSearchName(e.target.value);
+  };
+  const handleChangePage = (event, newPage) => {
+    setPaginationSkip((newPage - 1) * rowsPerPage);
+  };
+
+  useEffect(() => {
+    getTeamuser();
+  }, [paginationSkip]);
+
+  useEffect(() => {
+    getTeamuser();
+  }, [rowsPerPage]);
+
+
+  const onChangeRowsPerPage = (e) => {
+    setRowsPerPage(e.target.value);
+    setPaginationLimit(e.target.value);
+  };
+
+  const keyPress = (e) => {
+    if(e.keyCode === 13){
+      // console.log( e.target.value);
+      getTeamuser();
+      // put the login here
+   }
+  };
 
   return (
     <div>
-      <h1>Users</h1>
-      <button
-        onClick={() => clickUserEditlink("newadd")}
-        className="btn btn-sm btn-success mb-2"
+      <h1>ผู้ใช้งาน</h1>
+
+      <div
+        style={{
+          marginBottom: 5,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
       >
-        Add User
-      </button>
+        <div style={{ width: "100%"}}>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="ค้นหาชื่อ"
+            value={searchName}
+            onChange={handleChangeSearchName}
+            onKeyDown={keyPress}
+          />
+        </div>
+        
+      </div>
       <table className="table table-striped">
         <thead>
           <tr>
-            <th style={{ width: "20%" }}>ชื่อ-สกุล</th>
-            <th style={{ width: "20%" }}>Email</th>
-            <th style={{ width: "20%" }}>สิทธิการใช้งาน</th>
-            <th style={{ width: "20%" }}>จังหวัด</th>
-            <th style={{ width: "50%" }}>หน่วยงาน</th>
-            <th style={{ width: "10%" }}></th>
+            <th>ชื่อ-สกุล</th>
+            <th>Email</th>
+            <th>สิทธิการใช้งาน</th>
+            <th>จังหวัด</th>
+            <th>หน่วยงาน</th>
+            <th className="text-center">
+              {" "}
+              <button
+                onClick={() => clickUserEditlink("newadd")}
+                className="btn btn-sm btn-success mb-2"
+              >
+                เพิ่มผู้ใช้งาน
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -430,8 +538,8 @@ export default function UserList(props) {
           )}
           {users && !users.length && (
             <tr>
-              <td colSpan="4" className="text-center">
-                <div className="p-2">No Users To Display</div>
+              <td colSpan="6" className="text-center">
+                <div className="p-2">ไม่มีข้อมูล</div>
               </td>
             </tr>
           )}
@@ -479,7 +587,7 @@ export default function UserList(props) {
             </div>
           </DialogContent>
           <DialogActions style={{ padding: "0px 24px 24px 24px" }}>
-            <Button variant="outlined" onClick={handleClose} >
+            <Button variant="outlined" onClick={handleClose}>
               ยกเลิก
             </Button>
             <Button
@@ -498,6 +606,45 @@ export default function UserList(props) {
             </Button>
           </DialogActions>
         </Dialog>
+      </div>
+      <div className={classes.pagina } style={{
+          marginBottom: 5,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}>
+        <Pagination
+          count={rowsCount}
+          onChange={handleChangePage}
+          variant="outlined"
+          color="primary"
+          size="large"
+          
+        />
+        <div style={{ whiteSpace: "nowrap", marginLeft: 10 }}>
+          <FormControl variant="outlined" style={{ width: "100%" }}>
+            <Select value={rowsPerPage} onChange={onChangeRowsPerPage}>
+              <MenuItem key={10} value={10}>
+                {10} แถว
+              </MenuItem>
+              <MenuItem key={20} value={20}>
+                {20} แถว
+              </MenuItem>
+              <MenuItem key={30} value={30}>
+                {30} แถว
+              </MenuItem>
+              <MenuItem key={40} value={40}>
+                {40} แถว
+              </MenuItem>
+              <MenuItem key={50} value={50}>
+                {50} แถว
+              </MenuItem>
+              <MenuItem key={100} value={100}>
+                {100} แถว
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </div>
       </div>
     </div>
   );
