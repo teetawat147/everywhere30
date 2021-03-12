@@ -456,17 +456,19 @@ export default function UserList(props) {
 
       <div
         style={{
-          marginBottom: 5,
+          marginBottom: 8,
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
         }}
       >
         <div style={{ width: "100%"}}>
-          <input
+          <TextField
             type="text"
             className="form-control"
             placeholder="ค้นหาชื่อ"
+            variant="outlined"
+            style={{ width: '100%' }}
             value={searchName}
             onChange={handleChangeSearchName}
             onKeyDown={keyPress}
@@ -477,7 +479,30 @@ export default function UserList(props) {
             }
           />
         </div>
-        
+        <div style={{ whiteSpace: "nowrap", marginLeft: 10 }}>
+          <FormControl variant="outlined" style={{ width: "100%" }}>
+            <Select value={rowsPerPage} onChange={onChangeRowsPerPage}>
+              <MenuItem key={10} value={10}>
+                {10} แถว
+              </MenuItem>
+              <MenuItem key={20} value={20}>
+                {20} แถว
+              </MenuItem>
+              <MenuItem key={30} value={30}>
+                {30} แถว
+              </MenuItem>
+              <MenuItem key={40} value={40}>
+                {40} แถว
+              </MenuItem>
+              <MenuItem key={50} value={50}>
+                {50} แถว
+              </MenuItem>
+              <MenuItem key={100} value={100}>
+                {100} แถว
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </div>
       </div>
       <table className="table table-striped">
         <thead>
@@ -636,30 +661,7 @@ export default function UserList(props) {
           size="large"
           
         />
-        <div style={{ whiteSpace: "nowrap", marginLeft: 10 }}>
-          <FormControl variant="outlined" style={{ width: "100%" }}>
-            <Select value={rowsPerPage} onChange={onChangeRowsPerPage}>
-              <MenuItem key={10} value={10}>
-                {10} แถว
-              </MenuItem>
-              <MenuItem key={20} value={20}>
-                {20} แถว
-              </MenuItem>
-              <MenuItem key={30} value={30}>
-                {30} แถว
-              </MenuItem>
-              <MenuItem key={40} value={40}>
-                {40} แถว
-              </MenuItem>
-              <MenuItem key={50} value={50}>
-                {50} แถว
-              </MenuItem>
-              <MenuItem key={100} value={100}>
-                {100} แถว
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </div>
+        
       </div>
     </div>
   );
