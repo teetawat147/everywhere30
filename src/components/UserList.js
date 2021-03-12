@@ -438,6 +438,7 @@ export default function UserList(props) {
     if(e.keyCode === 13){
       // console.log( e.target.value);
       getTeamuser();
+      setPaginationSkip(0);
       // put the login here
    }
   };
