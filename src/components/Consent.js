@@ -29,6 +29,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import { useConfirm } from "material-ui-confirm";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -181,12 +182,29 @@ function ConsentArea() {
     }
 
   }
+
+  const download_consent = () => {
+    window.open('https://drive.google.com/file/d/1NjM8FPrjKuBanyfGkXy29icF7wcxnqoO/view?usp=sharing');
+  }
+
   return (
     <Card mb={6} className={classes.card}>
       <CardContent style={{ padding: '30px 30px 0 30px' }}>
         <Grid container spacing={2}>
           <Grid item xs={12} md={12} >
-            <Typography component="p">ค้นหาผู้ป่วย</Typography>
+            Download หนังสือแสดงความยินยอมเปิดเผยข้อมูลด้านสุขภาพของบุคคลทางอิเล็กทรอนิกส์ คลิกที่นี่ 
+              <Button
+                variant="contained"
+                color="secondary"
+                className={classes.button}
+                startIcon={<CloudDownloadIcon />}
+                onClick={e=>download_consent()}
+              >
+                Download
+              </Button>
+          </Grid>
+          <Grid item xs={12} md={12} >
+            <Typography component="p"><b>ค้นหาผู้ป่วย</b></Typography>
           </Grid>
           <Grid item xs={11} md={11} >
             <TextField

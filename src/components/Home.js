@@ -7,6 +7,7 @@ import {
 } from "@material-ui/core";
 import homeImage from "../images/flow_01.jpg";
 import RegisterGuide from "./RegisterGuide";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,6 +39,7 @@ MyButton.propTypes = {
 };
 
 const Home = () => {
+  const classes = useStyles();
   const [totalPerson, setTotalPerson] = useState(0);
   const [totalIntervention, setTotalIntervention] = useState(0);
 
@@ -65,6 +67,10 @@ const Home = () => {
     getCountIntervention();
   }, []);
 
+  const download_consent = () => {
+    window.open('https://drive.google.com/file/d/1V1J_oVftGGA7Nm24EzsgqTIv_ncbttFW/view?usp=sharing');
+  }
+
   return (
     <div className="container">
       <React.Fragment>
@@ -74,6 +80,16 @@ const Home = () => {
       <br/><br/>
       <RegisterGuide/>
       <br/>
+      <Button
+        variant="contained"
+        color="secondary"
+        className={classes.button}
+        startIcon={<CloudDownloadIcon />}
+        onClick={e=>download_consent()}
+      >
+        Download คู่มือการใช้งาน
+      </Button>
+      <br/><br/>
       <header className="jumbotron">
         <img src={homeImage} alt="" style={{ width: '100%' }} />
       </header>

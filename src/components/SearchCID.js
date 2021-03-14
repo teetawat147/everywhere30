@@ -246,7 +246,7 @@ export default function SearchCID(props) {
           // console.log(response.data[0].consent);
           if (typeof response.data[0].consent === 'undefined') {
             setOpenBackdrop(false);
-            setDialogText(<div><b>ผู้ป่วยยังไม่ยื่นเอกสาร Consent</b><br />กรุณาประสานงานให้ผู้ป่วยติดต่อยื่นเอกสาร Consent กับเจ้าหน้าที่ที่เกี่ยว เพื่อยืนยันการเปิดเผยข้อมูลประวัติการรักษาพยาบาลค่ะ</div>);
+            setDialogText(<div><b>ผู้ป่วยยังไม่ยื่นเอกสาร Consent</b><br />กรุณาประสานงานให้ผู้ป่วยติดต่อยื่นเอกสาร Consent กับเจ้าหน้าที่ที่เกี่ยวข้อง เพื่อยืนยันการเปิดเผยข้อมูลประวัติการรักษาพยาบาลค่ะ</div>);
             setOpenDialog(true);
           }
           else {
