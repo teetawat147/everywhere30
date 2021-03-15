@@ -301,6 +301,7 @@ export default function UserList(props) {
           principalType: "USER",
           principalId: userroleid,
           roleId: currentRoleMapping.roleId,
+          approveBy: currentUser.user.id,
         },
         "rolemappings"
       ).then(
@@ -625,6 +626,7 @@ export default function UserList(props) {
                   //  console.log(currentRoleMapping)
                   let x = currentRoleMapping;
                   x["roleId"] = newValue.id;
+                  x["approveBy"] = currentUser.user.id;
                   setCurrentRoleMapping({ ...currentRoleMapping, ...x });
                 }}
                 renderInput={(params) => (
