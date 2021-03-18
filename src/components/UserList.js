@@ -102,7 +102,14 @@ export default function UserList(props) {
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
 
-      let rowcount = await getCount(xParams, "teamusers");
+      let rowcount = await getCount(
+        {
+          where: {
+            fullname: { like: searchName },
+          },
+        },
+        "teamusers"
+      );
       //  console.log(rowcount.data.count);
       setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
       // setRowsCount(rowcount.data.count);
@@ -136,7 +143,17 @@ export default function UserList(props) {
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       // "where":{"ampurCode":21}
-      let rowcount = await getCount(xParams, "teamusers");
+      let rowcount = await getCount(
+        {
+          where: {
+            and: [
+              { changwat: currentUser.user.changwat },
+              { fullname: { like: searchName } },
+            ],
+          },
+        },
+        "teamusers"
+      );
       //  console.log(rowcount.data.count);
       setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
       // setRowsCount(rowcount.data.count);
@@ -166,8 +183,18 @@ export default function UserList(props) {
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       // console.log(response.data);
-      let rowcount = await getCount(xParams, "teamusers");
-      //  console.log(rowcount.data.count);
+      let rowcount = await getCount(
+        {
+          where: {
+            and: [
+              { "department.hcode": currentUser.user.department.hcode },
+              { fullname: { like: searchName } },
+            ],
+          },
+        },
+        "teamusers"
+      );
+      // console.log(rowcount.data.count);
       setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
       // setRowsCount(rowcount.data.count);
     }
