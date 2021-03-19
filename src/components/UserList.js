@@ -96,7 +96,7 @@ export default function UserList(props) {
               },
             },
           },
-          where: { fullname: { like: searchName } },
+          where: { fullname: { like: searchName ,options: "i"} },
         },
       };
       let response = await getAll(xParams, "teamusers");
@@ -105,7 +105,8 @@ export default function UserList(props) {
       let rowcount = await getCount(
         {
           where: {
-            fullname: { like: searchName },
+            fullname: { like: searchName ,options: "i"},
+            options: "i"
           },
         },
         "teamusers"
@@ -135,7 +136,7 @@ export default function UserList(props) {
           where: {
             and: [
               { changwat: currentUser.user.changwat },
-              { fullname: { like: searchName } },
+              { fullname: { like: searchName ,options: "i"} },
             ],
           },
         },
@@ -148,7 +149,7 @@ export default function UserList(props) {
           where: {
             and: [
               { changwat: currentUser.user.changwat },
-              { fullname: { like: searchName } },
+              { fullname: { like: searchName ,options: "i"} },
             ],
           },
         },
@@ -175,7 +176,7 @@ export default function UserList(props) {
           where: {
             and: [
               { "department.hcode": currentUser.user.department.hcode },
-              { fullname: { like: searchName } },
+              { fullname: { like: searchName ,options: "i"} },
             ],
           },
         },
@@ -188,7 +189,7 @@ export default function UserList(props) {
           where: {
             and: [
               { "department.hcode": currentUser.user.department.hcode },
-              { fullname: { like: searchName } },
+              { fullname: { like: searchName ,options: "i"} },
             ],
           },
         },
