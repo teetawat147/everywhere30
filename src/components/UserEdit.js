@@ -515,8 +515,8 @@ export default function UserEdit(props) {
           (response) => {
             if (response.status === 200) {
               setOpen(true);
-              // alert("สำเร็จ");
-              // redirect.push("/userlist");
+               alert("สำเร็จ");
+               redirect.push("/userlist");
             }
           },
           (error) => {
