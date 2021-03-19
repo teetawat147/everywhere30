@@ -287,7 +287,6 @@ export default function UserEdit(props) {
           setUserData(props.location.state.status);
         } else {
           setUserData({
-            username: "",
             email: "",
             fullname: "",
             cid: "",
@@ -491,6 +490,10 @@ export default function UserEdit(props) {
   };
   const handleRegister = (e) => {
     e.preventDefault();
+    if (typeof userData.RoleMapping !== "undefined") {
+      // console.log(userData.RoleMapping)
+      delete userData["RoleMapping"];
+    }
     if (checkBtn.current.context._errors.length === 0) {
       if (isAddMode === "newadd") {
         create(userData, "teamusers").then(
@@ -510,13 +513,14 @@ export default function UserEdit(props) {
           }
         );
       } else {
-        //  console.log(userData);
+        // console.log(userData);
+        // delete userData["RoleMapping"];
         patch(userData["id"], userData, "teamusers").then(
           (response) => {
             if (response.status === 200) {
               setOpen(true);
-               alert("สำเร็จ");
-               redirect.push("/userlist");
+              alert("สำเร็จ");
+              redirect.push("/userlist");
             }
           },
           (error) => {
