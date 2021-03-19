@@ -138,7 +138,7 @@ const Monitor = () => {
     setOpenBackdrop(true);
     let params = {
       filter: {
-        fields: { hos_id: true, hos_name: true },
+        fields: { hos_id: true, hos_name: true, lastupdate: true, total: true, transfermode: true },
         where: {},
         counts: "person",
         // limit: rowPerpage,
@@ -175,6 +175,9 @@ const Monitor = () => {
               return {
                 hcode: hos.hos_id,
                 hosname: hosname,
+                lastupdate: hos.lastupdate,
+                total_patient: hos.total,
+                transfermode: hos.transfermode,
                 count: hos.personCount
               };
             });
@@ -186,21 +189,33 @@ const Monitor = () => {
   }
   const MakeRows = (hospitals) => {
     let row = [];
-    let total_person = 0;
+    let total_sync = 0;
+    let total_patient = 0;
     let key = 0;
     hospitals.map((hos) => {
-      total_person += hos.count;
+      let sub_total_patient = 0;
+      if (typeof hos.total_patient !== "undefined") {
+        sub_total_patient = hos.total_patient;
+      }
+      total_patient += sub_total_patient;
+      total_sync += hos.count;
       row.push(<StyledTableRow key={key++}>
         <TableCell align="center">{hos.hcode}</TableCell>
         <TableCell component="th" scope="row">{hos.hosname}</TableCell>
-        <TableCell align="right">{typeof total_person !== "undefined" ? hos.count.toLocaleString() : hos.count}</TableCell>
+        <TableCell align="center">{hos.lastupdate}</TableCell>
+        <TableCell align="center">{hos.transfermode}</TableCell>
+        <TableCell align="right">{typeof hos.total_patient !== "undefined" ? hos.total_patient.toLocaleString() : hos.total_patient}</TableCell>
+        <TableCell align="right">{typeof hos.count !== "undefined" ? hos.count.toLocaleString() : hos.count}</TableCell>
       </StyledTableRow>);
     });
     row.push(
       <StyledTableRow key="total">
         <TableCell align="center"></TableCell>
         <TableCell component="th" scope="row"><b>รวมทั้งสิ้น</b></TableCell>
-        <TableCell align="right"><b>{typeof total_person !== "undefined" ? total_person.toLocaleString() : total_person}</b></TableCell>
+        <TableCell align="center"></TableCell>
+        <TableCell align="center"></TableCell>
+        <TableCell align="right"><b>{typeof total_patient !== "undefined" ? total_patient.toLocaleString() : total_patient}</b></TableCell>
+        <TableCell align="right"><b>{typeof total_sync !== "undefined" ? total_sync.toLocaleString() : total_sync}</b></TableCell>
       </StyledTableRow>
     );
     setRows(row);
@@ -223,7 +238,7 @@ const Monitor = () => {
       <Grid>
         <Grid item xs={12}>
           <Backdrop className={classes.backdrop} open={openBackdrop}><CircularProgress color="inherit" /></Backdrop>
-          <div style={{ marginBottom: '30px' }}><h4>Monitor Person Data</h4></div>
+          <div style={{ marginBottom: '30px' }}><h4>Monitor Patient Data</h4></div>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={12} md={2} lg={2}>
               <FormControl variant="outlined" size="small" className={classes.formControl} style={{ margin: '0', width: '100%' }}>
@@ -275,8 +290,11 @@ const Monitor = () => {
                   <TableHead>
                     <TableRow>
                       <StyledTableCell align="center"><b>รหัสหน่วยบริการ</b></StyledTableCell>
-                      <StyledTableCell align="center"><b>หน่วยบริการ</b></StyledTableCell>
-                      <StyledTableCell align="center"><b>จำนวน</b></StyledTableCell>
+                      <StyledTableCell><b>หน่วยบริการ</b></StyledTableCell>
+                      <StyledTableCell align="center"><b>LastUpdate</b></StyledTableCell>
+                      <StyledTableCell align="center"><b>Mode</b></StyledTableCell>
+                      <StyledTableCell align="right"><b>Patient ทั้งหมด</b></StyledTableCell>
+                      <StyledTableCell align="right"><b>นำเข้าแล้ว</b></StyledTableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
