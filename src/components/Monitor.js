@@ -23,6 +23,9 @@ import { getAll } from "../services/UniversalAPI";
 import { getCurrentUser } from "../services/auth.service";
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import Tooltip from '@material-ui/core/Tooltip';
+
 function useWidth() {
   const theme = useTheme();
   const keys = [...theme.breakpoints.keys].reverse();
@@ -292,7 +295,11 @@ const Monitor = () => {
                       <StyledTableCell align="center"><b>รหัสหน่วยบริการ</b></StyledTableCell>
                       <StyledTableCell><b>หน่วยบริการ</b></StyledTableCell>
                       <StyledTableCell align="center"><b>LastUpdate</b></StyledTableCell>
-                      <StyledTableCell align="center"><b>Mode</b></StyledTableCell>
+                      <StyledTableCell align="center"><b>Mode&nbsp;
+                        <Tooltip title={<span>sync : ดึงข้อมูลประวัติเก่า<br/>replicate : ดึงข้อมูลปัจจุบัน</span>} placement="top">
+                          <HelpOutlineIcon/>
+                        </Tooltip>
+                        </b></StyledTableCell>
                       <StyledTableCell align="right"><b>Patient ทั้งหมด</b></StyledTableCell>
                       <StyledTableCell align="right"><b>นำเข้าแล้ว</b></StyledTableCell>
                     </TableRow>
