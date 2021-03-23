@@ -105,8 +105,7 @@ export default function UserList(props) {
       let rowcount = await getCount(
         {
           where: {
-            fullname: { like: searchName ,options: "i"},
-            options: "i"
+            fullname: { like: searchName ,options: "i"}
           },
         },
         "teamusers"
