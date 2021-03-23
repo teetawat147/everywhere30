@@ -141,7 +141,7 @@ const Monitor = () => {
     setOpenBackdrop(true);
     let params = {
       filter: {
-        fields: { hos_id: true, hos_name: true, lastupdate: true, total: true, transfermode: true },
+        fields: { hos_id: true, hos_name: true, lastupdate: true, total: true, transfermode: true, transferpercent: true, transfers: true, version: true },
         where: {},
         counts: "person",
         // limit: rowPerpage,
@@ -181,6 +181,9 @@ const Monitor = () => {
                 lastupdate: hos.lastupdate,
                 total_patient: hos.total,
                 transfermode: hos.transfermode,
+                transferpercent: hos.transferpercent,
+                transfers: hos.transfers,
+                version: hos.version,
                 count: hos.personCount
               };
             });
@@ -208,7 +211,11 @@ const Monitor = () => {
         <TableCell align="center">{hos.lastupdate}</TableCell>
         <TableCell align="center">{hos.transfermode}</TableCell>
         <TableCell align="right">{typeof hos.total_patient !== "undefined" ? hos.total_patient.toLocaleString() : hos.total_patient}</TableCell>
-        <TableCell align="right">{typeof hos.count !== "undefined" ? hos.count.toLocaleString() : hos.count}</TableCell>
+        <TableCell align="right">
+          {typeof hos.transfers !== "undefined" ? hos.transfers.toLocaleString() : typeof hos.count !== "underfined" ? hos.count.toLocaleString() : "0"}
+        </TableCell>
+        <TableCell align="center">{typeof hos.transferpercent !== "undefined" ? hos.transferpercent.toFixed(2) : "-"}</TableCell>
+        <TableCell align="center">{hos.version}</TableCell>
       </StyledTableRow>);
     });
     row.push(
@@ -219,6 +226,8 @@ const Monitor = () => {
         <TableCell align="center"></TableCell>
         <TableCell align="right"><b>{typeof total_patient !== "undefined" ? total_patient.toLocaleString() : total_patient}</b></TableCell>
         <TableCell align="right"><b>{typeof total_sync !== "undefined" ? total_sync.toLocaleString() : total_sync}</b></TableCell>
+        <TableCell align="center"></TableCell>
+        <TableCell align="center"></TableCell>
       </StyledTableRow>
     );
     setRows(row);
@@ -302,6 +311,8 @@ const Monitor = () => {
                         </b></StyledTableCell>
                       <StyledTableCell align="right"><b>Patient ทั้งหมด</b></StyledTableCell>
                       <StyledTableCell align="right"><b>นำเข้าแล้ว</b></StyledTableCell>
+                      <StyledTableCell align="center"><b>คิดเป็น %</b></StyledTableCell>
+                      <StyledTableCell align="center"><b>Version</b></StyledTableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
