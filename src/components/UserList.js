@@ -100,6 +100,7 @@ export default function UserList(props) {
         },
       };
       let response = await getAll(xParams, "teamusers");
+      // console.log(response.data);
       setUsers(response.data);
 
       let rowcount = await getCount(
@@ -114,7 +115,7 @@ export default function UserList(props) {
       setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
       // setRowsCount(rowcount.data.count);
 
-      //  console.log(response.data);
+       
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
@@ -570,7 +571,7 @@ export default function UserList(props) {
                 <td>{user.email}</td>
                 <td>
                   {user.RoleMapping.length > 0
-                    ? user.RoleMapping[0].role.name
+                    ? typeof user.RoleMapping[0].role.name !== "undefined" ? user.RoleMapping[0].role.name :""
                     : ""}
                 </td>
                 <td>{user.changwat}</td>
