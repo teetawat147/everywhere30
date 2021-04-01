@@ -111,7 +111,7 @@ const consent = {
   id: "Consent",
   path: "/consent",
   icon: <AssignmentIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor"],
+  roles: ["Doctor", "Consent"],
   component: Consent
 };
 const profile = {
