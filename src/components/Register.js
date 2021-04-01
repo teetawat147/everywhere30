@@ -78,6 +78,7 @@ const Register = (props) => {
   useEffect(() => {
     getChangwat();
   }, []);
+
   const [formData, setFormdata] = useState({
     fullname: '',
     position: '',
@@ -86,7 +87,8 @@ const Register = (props) => {
     mobile: '',
     password: '',
     changwat: '',
-    department: ''
+    department: '',
+    application: ["R8Anywhere"]
   });
   const [validator, setValidator] = useState({
     formElements: {
@@ -125,6 +127,10 @@ const Register = (props) => {
     },
     formValid: true
   });
+  // useEffect(() => {
+  //   console.log(formData);
+  // }, [formData]);
+
   const onElementChange = (e) => {
     let result = validation(validator, e);
     if (typeof result !== 'undefined') {
@@ -339,7 +345,7 @@ const Register = (props) => {
 
   return (
     <div className="col-md-12">
-      <RegisterGuide/>
+      <RegisterGuide />
       <div className={"card " + classes.containerCard}>
         <label htmlFor="caption" style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h3>ลงทะเบียน</h3>
