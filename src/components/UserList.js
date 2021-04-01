@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 
 import React, { useState, useEffect } from "react";
@@ -238,6 +239,7 @@ export default function UserList(props) {
                 { name: "AdminChangwat" },
                 { name: "AdminHospital" },
                 { name: "Doctor" },
+                { name: "Consent" },
               ],
             },
           },
@@ -261,6 +263,7 @@ export default function UserList(props) {
                 { name: "AdminChangwat" },
                 { name: "AdminHospital" },
                 { name: "Doctor" },
+                { name: "Consent" }
               ],
             },
           },
@@ -277,7 +280,16 @@ export default function UserList(props) {
       }
     } else if (currentUser.user.role === "AdminHospital") {
       let response = await getAll(
-        { filter: { where: { name: "Doctor" } } },
+        {
+          filter: {
+            where: {
+              or: [
+                { name: "Doctor" },
+                { name: "Consent" }
+              ],
+            },
+          },
+        },
         "roles"
       );
       if (response.status === 200) {
@@ -399,7 +411,7 @@ export default function UserList(props) {
           }
         );
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   function delRole(x) {
@@ -438,7 +450,7 @@ export default function UserList(props) {
           );
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }
   const handleChangeSearchName = (e) => {
     // console.log(e.target.value)

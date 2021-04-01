@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 
 import React, { useState, useRef, useEffect } from "react";
@@ -421,7 +422,7 @@ export default function UserEdit(props) {
             helperText={inputHelperText.password}
             error={inputError.password}
             disabled={disPassword}
-            // required
+          // required
           />
         </div>
         <div className="form-group">
