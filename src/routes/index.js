@@ -29,6 +29,7 @@ import UserList from "../components/UserList";
 import UserEdit from "../components/UserEdit";
 import Monitor from "../components/Monitor";
 import SystemSetting from "../components/SystemSetting";
+import DialyVisit from "../components/DialyVisit";
 
 const root = {
   id: "Root",
@@ -135,6 +136,13 @@ const systemsetting = {
   roles: ["AdminR8"],
   component: SystemSetting
 };
+const dialyvisit = {
+  id: "Dialyvisit",
+  path: "/dialyvisit",
+  icon: <DvrIcon />,
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "noRole"],
+  component: DialyVisit
+};
 
 
 export const appBarRoute = [
@@ -169,5 +177,5 @@ export const mainRoute = [
   consent,
   profile,
   monitor,
-  systemsetting,
+  systemsetting
 ];
