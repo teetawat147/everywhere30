@@ -62,14 +62,14 @@ const login = {
   id: "Login",
   path: "/login",
   icon: <LockOpenIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent"],
   component: Login
 };
 const logout = {
   id: "Logout",
   path: "/logout",
   icon: <ExitToAppIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent"],
   component: Logout
 };
 const emr = {
@@ -118,7 +118,7 @@ const profile = {
   id: "Profile",
   path: "/profile",
   icon: null,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole", "Consent"],
   component: Profile
 };
 const monitor = {
