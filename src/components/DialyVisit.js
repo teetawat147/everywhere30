@@ -5,11 +5,7 @@ import { makeStyles  } from '@material-ui/core/styles';
 import useGlobal from "../store";
 
 const useStyles = makeStyles((theme) => ({
-  hide: { display: 'none' },
-  avatarLarge: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-  },
+
 }));
 
 const DialyVisit = () => {

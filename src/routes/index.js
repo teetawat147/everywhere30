@@ -177,5 +177,6 @@ export const mainRoute = [
   consent,
   profile,
   monitor,
-  systemsetting
+  systemsetting,
+  dialyvisit
 ];
