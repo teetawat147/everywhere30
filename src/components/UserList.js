@@ -97,7 +97,13 @@ export default function UserList(props) {
               },
             },
           },
-          where: { fullname: { like: searchName ,options: "i"} },
+          // where: { fullname: { like: searchName ,options: "i"} },
+          where: {
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName, options: "i"} }
+            ]
+          }
         },
       };
       let response = await getAll(xParams, "teamusers");
@@ -106,9 +112,15 @@ export default function UserList(props) {
 
       let rowcount = await getCount(
         {
+          // where: {
+          //   fullname: { like: searchName ,options: "i"}
+          // },
           where: {
-            fullname: { like: searchName ,options: "i"}
-          },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName, options: "i"} }
+            ]
+          }
         },
         "teamusers"
       );
@@ -560,6 +572,7 @@ export default function UserList(props) {
         <thead>
           <tr>
             <th>ชื่อ-สกุล</th>
+            <th>ตำแหน่ง</th>
             <th>Email</th>
             <th>สิทธิการใช้งาน</th>
             <th>จังหวัด</th>
@@ -580,6 +593,7 @@ export default function UserList(props) {
             users.map((user) => (
               <tr key={user.id}>
                 <td>{user.fullname}</td>
+                <td>{user.position}</td>
                 <td>{user.email}</td>
                 <td>
                   {user.RoleMapping.length > 0
