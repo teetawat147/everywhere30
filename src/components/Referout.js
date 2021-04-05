@@ -49,11 +49,10 @@ import DateFnsUtils from '@date-io/date-fns';
 import { th } from "date-fns/locale";
 
 import {
-  Autocomplete,
   Pagination
 } from '@material-ui/lab';
 
-import PropTypes from 'prop-types';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
 
@@ -362,47 +361,31 @@ export default function SearchCID(props) {
     // อื่นๆ  -- กรอง hospital แสดงเฉพาะหน่วยงานตนเอง และ disabled ด้วย
     let xParams = {};
     if (globalState.userRole === "AdminR8") {
-      
+
       xParams = {
         filter: {
           fields: ["hos_id", "hos_name"],
           order: ["hos_type_id ASC", "hos_id ASC"],
           where: {
             or: [
-              { hos_id: globalState.currentUser.user.department.hcode }
-              , { hos_type_id: '2' }
-              , { hos_type_id: '3' }
-              , { hos_type_id: '4' }
-              , { hos_type_id: '6' }
+              { hos_id: globalState.currentUser.user.department.hcode },
+              {
+                and: [
+                  { zonecode: '08'},
+                  {
+                    or: [
+                      { hos_type_id: '2' },
+                      { hos_type_id: '3' },
+                      { hos_type_id: '4' },
+                      { hos_type_id: '6' }
+                    ]
+                  }
+                ]
+              }
             ]
           }
         }
       };
-
-      // xParams = {
-      //   filter: {
-      //     fields: ["hos_id", "hos_name"],
-      //     order: ["hos_type_id ASC", "hos_id ASC"],
-      //     where: {
-      //       or: [
-      //         { hos_id: globalState.currentUser.user.department.hcode },
-      //         {
-      //           and: [
-      //             { zonecode: '08'},
-      //             {
-      //               or: [
-      //                 { hos_type_id: '2' },
-      //                 { hos_type_id: '3' },
-      //                 { hos_type_id: '4' },
-      //                 { hos_type_id: '6' }
-      //               ]
-      //             }
-      //           ]
-      //         }
-      //       ]
-      //     }
-      //   }
-      // };
 
     }
     else if (globalState.userRole === "AdminChangwat") {
@@ -531,6 +514,10 @@ export default function SearchCID(props) {
     setForcePage(page);
   }
 
+  const filterOptions = createFilterOptions({
+    limit: 1000,
+  });
+
   useEffect(() => {
     // console.log(globalState);
     if (globalState.userRole === "AdminR8" || globalState.userRole === "AdminChangwat") {
@@ -558,42 +545,49 @@ export default function SearchCID(props) {
         {/* <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" disabled={true} /> */}
         {/* <TextField style={{ width: 200, marginRight: 5 }} label="รพ.ต้นทาง" variant="outlined" /> */}
 
-        {sentHospitalData && (
-          <Autocomplete
-            disabled={acSentHcodeDisabled}
-            style={{ width: 200, marginRight: 5 }}
-            options={sentHospitalData}
-            onInputChange={(event, newInputValue) => {
-              sentHospitalData.map((i) => {
-                if (i.hos_name === newInputValue) {
-                  setSentHcode(i.hos_id);
-                }
-              });
-            }}
-            defaultValue={setACVSent}
-            getOptionLabel={(option) => option.hos_name}
-            getOptionSelected={(option, value) => option.hos_name === value.hos_name}
-            renderInput={(params) => <TextField {...params} label={'รพ.ต้นทาง'} variant="outlined" />}
-          />
-        )}
         {receiveHospitalData && (
-          <Autocomplete
-            style={{ width: 200, marginRight: 5 }}
-            options={receiveHospitalData}
-            onInputChange={(event, newInputValue) => {
-              if (newInputValue === null || newInputValue === '') {
-                setReceiveHcode(null);
-              }
-              receiveHospitalData.map((i) => {
-                if (i.hos_name === newInputValue) {
-                  setReceiveHcode(i.hos_id);
+          receiveHospitalData.length>0 && (
+            <Autocomplete
+              filterOptions={filterOptions}
+              disabled={acSentHcodeDisabled}
+              style={{ width: 200, marginRight: 5 }}
+              options={sentHospitalData}
+              onInputChange={(event, newInputValue) => {
+                sentHospitalData.map((i) => {
+                  if (i.hos_name === newInputValue) {
+                    setSentHcode(i.hos_id);
+                  }
+                });
+              }}
+              defaultValue={setACVSent}
+              getOptionLabel={(option) => option.hos_name}
+              getOptionSelected={(option, value) => option.hos_name === value.hos_name}
+              renderInput={(params) => <TextField {...params} label={'รพ.ต้นทาง'} variant="outlined" />}
+            />
+          )
+        )}
+        
+        {receiveHospitalData && (
+          receiveHospitalData.length>0 && (
+            <Autocomplete
+              filterOptions={filterOptions}
+              style={{ width: 200, marginRight: 5 }}
+              options={receiveHospitalData}
+              onInputChange={(event, newInputValue) => {
+                if (newInputValue === null || newInputValue === '') {
+                  setReceiveHcode(null);
                 }
-              });
-            }}
-            getOptionLabel={(option) => option.hos_name}
-            getOptionSelected={(option, value) => option.hos_name === value.hos_name}
-            renderInput={(params) => <TextField {...params} label={'รพ.ปลายทาง'} variant="outlined" />}
-          />
+                receiveHospitalData.map((i) => {
+                  if (i.hos_name === newInputValue) {
+                    setReceiveHcode(i.hos_id);
+                  }
+                });
+              }}
+              getOptionLabel={(option) => option.hos_name}
+              getOptionSelected={(option, value) => option.hos_name === value.hos_name}
+              renderInput={(params) => <TextField {...params} label={'รพ.ปลายทาง'} variant="outlined" />}
+            />
+          )
         )}
 
         <TextField

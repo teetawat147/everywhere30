@@ -49,11 +49,10 @@ import DateFnsUtils from '@date-io/date-fns';
 import { th } from "date-fns/locale";
 
 import {
-  Autocomplete,
   Pagination
 } from '@material-ui/lab';
 
-import PropTypes from 'prop-types';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
 
@@ -372,47 +371,31 @@ export default function SearchCID(props) {
     // อื่นๆ  -- กรอง hospital แสดงเฉพาะหน่วยงานตนเอง และ disabled ด้วย
     let xParams = {};
     if (globalState.userRole === "AdminR8") {
-      
+
       xParams = {
         filter: {
           fields: ["hos_id", "hos_name"],
           order: ["hos_type_id ASC", "hos_id ASC"],
           where: {
             or: [
-              { hos_id: globalState.currentUser.user.department.hcode }
-              , { hos_type_id: '2' }
-              , { hos_type_id: '3' }
-              , { hos_type_id: '4' }
-              , { hos_type_id: '6' }
+              { hos_id: globalState.currentUser.user.department.hcode },
+              {
+                and: [
+                  { zonecode: '08'},
+                  {
+                    or: [
+                      { hos_type_id: '2' },
+                      { hos_type_id: '3' },
+                      { hos_type_id: '4' },
+                      { hos_type_id: '6' }
+                    ]
+                  }
+                ]
+              }
             ]
           }
         }
       };
-
-      // xParams = {
-      //   filter: {
-      //     fields: ["hos_id", "hos_name"],
-      //     order: ["hos_type_id ASC", "hos_id ASC"],
-      //     where: {
-      //       or: [
-      //         { hos_id: globalState.currentUser.user.department.hcode },
-      //         {
-      //           and: [
-      //             { zonecode: '08'},
-      //             {
-      //               or: [
-      //                 { hos_type_id: '2' },
-      //                 { hos_type_id: '3' },
-      //                 { hos_type_id: '4' },
-      //                 { hos_type_id: '6' }
-      //               ]
-      //             }
-      //           ]
-      //         }
-      //       ]
-      //     }
-      //   }
-      // };
 
     }
     else if (globalState.userRole === "AdminChangwat") {
@@ -541,6 +524,10 @@ export default function SearchCID(props) {
     setForcePage(page);
   }
 
+  const filterOptions = createFilterOptions({
+    limit: 1000,
+  });
+
   useEffect(() => {
     // console.log(globalState);
     if (globalState.userRole === "AdminR8" || globalState.userRole === "AdminChangwat") {
@@ -571,6 +558,7 @@ export default function SearchCID(props) {
         {sentHospitalData && (
           sentHospitalData.length>0 && (
             <Autocomplete
+              filterOptions={filterOptions}
               style={{ width: 200, marginRight: 5 }}
               options={sentHospitalData}
               onInputChange={(event, newInputValue) => {
@@ -593,6 +581,7 @@ export default function SearchCID(props) {
         {receiveHospitalData && (
           receiveHospitalData.length>0 && (
             <Autocomplete
+              filterOptions={filterOptions}
               disabled={acRecieveHcodeDisabled}
               style={{ width: 200, marginRight: 5 }}
               options={receiveHospitalData}
