@@ -30,11 +30,8 @@ import UserList from "../components/UserList";
 import UserEdit from "../components/UserEdit";
 import Monitor from "../components/Monitor";
 import SystemSetting from "../components/SystemSetting";
-<<<<<<< HEAD
 import ClaimSend from "../components/ClaimSend";
-=======
 import DialyVisit from "../components/DialyVisit";
->>>>>>> 7670d0c34dcfed8cf007b356ecba2bb050e309db
 
 const root = {
   id: "Root",
@@ -191,9 +188,6 @@ export const mainRoute = [
   profile,
   monitor,
   systemsetting,
-<<<<<<< HEAD
   claimsend,
-=======
   dialyvisit
->>>>>>> 7670d0c34dcfed8cf007b356ecba2bb050e309db
 ];
