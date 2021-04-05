@@ -8,6 +8,7 @@ import {
 import homeImage from "../images/flow_01.jpg";
 import RegisterGuide from "./RegisterGuide";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import DashboardRegister from './DashboardRegister';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -90,9 +91,12 @@ const Home = () => {
         Download คู่มือการใช้งาน
       </Button>
       <br/><br/>
+      <DashboardRegister/>
+      <br/>
       <header className="jumbotron">
         <img src={homeImage} alt="" style={{ width: '100%' }} />
       </header>
+      
     </div>
   );
 };

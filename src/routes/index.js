@@ -30,7 +30,11 @@ import UserList from "../components/UserList";
 import UserEdit from "../components/UserEdit";
 import Monitor from "../components/Monitor";
 import SystemSetting from "../components/SystemSetting";
+<<<<<<< HEAD
 import ClaimSend from "../components/ClaimSend";
+=======
+import DialyVisit from "../components/DialyVisit";
+>>>>>>> 7670d0c34dcfed8cf007b356ecba2bb050e309db
 
 const root = {
   id: "Root",
@@ -64,14 +68,14 @@ const login = {
   id: "Login",
   path: "/login",
   icon: <LockOpenIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent"],
   component: Login
 };
 const logout = {
   id: "Logout",
   path: "/logout",
   icon: <ExitToAppIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent"],
   component: Logout
 };
 const emr = {
@@ -113,14 +117,14 @@ const consent = {
   id: "Consent",
   path: "/consent",
   icon: <AssignmentIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor"],
+  roles: ["Doctor", "Consent"],
   component: Consent
 };
 const profile = {
   id: "Profile",
   path: "/profile",
   icon: null,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole", "Consent"],
   component: Profile
 };
 const monitor = {
@@ -144,6 +148,14 @@ const claimsend = {
   roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
   component: ClaimSend
 };
+const dialyvisit = {
+  id: "Dialyvisit",
+  path: "/dialyvisit",
+  icon: <DvrIcon />,
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "noRole"],
+  component: DialyVisit
+};
+
 
 export const appBarRoute = [
   root,
@@ -179,5 +191,9 @@ export const mainRoute = [
   profile,
   monitor,
   systemsetting,
+<<<<<<< HEAD
   claimsend,
+=======
+  dialyvisit
+>>>>>>> 7670d0c34dcfed8cf007b356ecba2bb050e309db
 ];
