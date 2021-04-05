@@ -13,6 +13,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import DvrIcon from '@material-ui/icons/Dvr';
 import SettingsIcon from '@material-ui/icons/Settings';
+import SendIcon from '@material-ui/icons/Send';
 
 // Pages Component
 import Home from "../components/Home";
@@ -29,6 +30,7 @@ import UserList from "../components/UserList";
 import UserEdit from "../components/UserEdit";
 import Monitor from "../components/Monitor";
 import SystemSetting from "../components/SystemSetting";
+import ClaimSend from "../components/ClaimSend";
 
 const root = {
   id: "Root",
@@ -135,7 +137,13 @@ const systemsetting = {
   roles: ["AdminR8"],
   component: SystemSetting
 };
-
+const claimsend = {
+  id: "ClaimSend",
+  path: "/claimsend",
+  icon: <SendIcon />,
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  component: ClaimSend
+};
 
 export const appBarRoute = [
   root,
@@ -149,6 +157,7 @@ export const sideBarRoute = [
   emr,
   referin,
   referout,
+  // claimsend,
   consent,
   monitor,
   userlist,
@@ -170,4 +179,5 @@ export const mainRoute = [
   profile,
   monitor,
   systemsetting,
+  claimsend,
 ];

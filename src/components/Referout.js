@@ -14,7 +14,8 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import UCard from "./UniversalCard";
 // import UListTable from "./UniversalListTable";
 
-import { getAll } from "../services/UniversalAPI";
+import useGlobal from "../store";
+import { getAll, getCount } from "../services/UniversalAPI";
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
 
 import {
@@ -37,20 +38,27 @@ import {
   Slide,
   Grid,
   IconButton,
+  Backdrop,
+  CircularProgress,
 } from '@material-ui/core';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
+import { th } from "date-fns/locale";
 
+import {
+  Autocomplete,
+  Pagination
+} from '@material-ui/lab';
 
 import PropTypes from 'prop-types';
 
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
 
-const useStyles = makeStyles({
+// const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 700,
   },
@@ -94,63 +102,146 @@ const useStyles = makeStyles({
     verticalAlign: 'top',
     borderBottom: 'solid 1px #dadada',
     padding: 10,
-  }
-});
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+}));
 
 export default function SearchCID(props) {
   const classes = useStyles();
   const history = useHistory();
   const [data, setData] = useState(null);
-  const [startDate, setStartDate] = React.useState(new Date('2021-02-02'));
+  const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState(new Date());
+  const [globalState, globalActions] = useGlobal();
+  const [sentHospitalData, setSentHospitalData] = useState(null);
+  const [receiveHospitalData, setReceiveHospitalData] = useState(null);
+  const [sentHcode, setSentHcode] = useState(globalState.currentUser.user.department.hcode);
+  const [receiveHcode, setReceiveHcode] = useState(null);
+  const [cid, setCid] = useState(null);
+  const [htCid, setHtCid] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [openBackdrop, setOpenBackdrop] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [allPages, setAllPages] = useState();
+  const [forcePage, setForcePage] = useState(1);
+  const [acSentHcodeDisabled, setAcSentHcodeDisabled] = useState(true);
 
-  // const handleDateChange = (date) => {
-  //   setSelectedDate(date);
-  // };
 
-  const handleDateChange = (e,x) => {
-    console.log(x);
-    console.log(e);
-  }
+  const getData = async (page) => {
+    let xSkip = 0;
+    let xLimit = rowsPerPage;
 
-  const getData = async () => {
+    if (typeof page !== 'undefined') {
+      xSkip = rowsPerPage * page;
+    }
 
+    // ใช้ lte gte กับ วันที่ใน DB ที่เก็บเป็น string ไม่ได้ user inrerface 
+    // ก็ให้เลือกเดือน แล้วสร้าง query เป็น or วันที่ 1 - 31 เอา ลำบากได้อีก
+    // let x = {"include":"person","limit":5,"where":{"and":[{"hcode":"11046"},{"activities.referout.refer_hospcode":{"ne":null}},{"or":[{"activities.referout.date":"2021-02-01"},{"activities.referout.date":"2021-02-02"},{"activities.referout.date":"2021-02-03"},{"activities.referout.date":"2021-02-04"},{"activities.referout.date":"2021-02-05"},{"activities.referout.date":"2021-02-06"},{"activities.referout.date":"2021-02-07"},{"activities.referout.date":"2021-02-08"},{"activities.referout.date":"2021-02-09"},{"activities.referout.date":"2021-02-10"},{"activities.referout.date":"2021-02-11"},{"activities.referout.date":"2021-02-12"},{"activities.referout.date":"2021-02-13"},{"activities.referout.date":"2021-02-14"},{"activities.referout.date":"2021-02-15"},{"activities.referout.date":"2021-02-16"},{"activities.referout.date":"2021-02-17"},{"activities.referout.date":"2021-02-18"},{"activities.referout.date":"2021-02-19"},{"activities.referout.date":"2021-02-20"},{"activities.referout.date":"2021-02-21"},{"activities.referout.date":"2021-02-22"},{"activities.referout.date":"2021-02-23"},{"activities.referout.date":"2021-02-24"},{"activities.referout.date":"2021-02-25"},{"activities.referout.date":"2021-02-26"},{"activities.referout.date":"2021-02-27"},{"activities.referout.date":"2021-02-28"},{"activities.referout.date":"2021-02-29"},{"activities.referout.date":"2021-02-30"},{"activities.referout.date":"2021-02-31"}]}]}}
+
+    // ถ้าระบุวันที่มา ให้เลือก query แบบวันเดือน ถ้าเลือกเดือนมาให้ query แบบ or 31 วันในเดือนที่เลือกมา
+    let dateQuery = null;
+    if (selectedDate) {
+      dateQuery = { "activities.referout.date": ds(selectedDate) };
+    }
+    else if (selectedMonth) {
+      let sMonth = ds(selectedMonth).substr(0, 7);
+      let qMonth = [];
+      for (let i = 1; i <= 31; ++i) {
+        qMonth.push({ "activities.referout.date": sMonth + "-" + az(i, 2) });
+      }
+      // console.log(qMonth);  
+      dateQuery = { or: qMonth };
+    }
+    let cidQuery = null;
+    if (cid) {
+      cidQuery = { cid: cid };
+    }
+    let andQuery = [];
+    andQuery.push({ hcode: sentHcode });
+    // console.log(receiveHcode);
+    if (receiveHcode) {
+      andQuery.push({ "activities.referout.refer_hospcode": receiveHcode });
+    }
+    else {
+      andQuery.push({ "activities.referout.refer_hospcode": { ne: null } });
+    }
+    if (cidQuery) {
+      andQuery.push(cidQuery);
+    }
+    if (dateQuery) {
+      andQuery.push(dateQuery);
+    }
     let xParams = {
+      // ปัญหา filter LOOPBACK 
+      // ค้น refer_hospcode not null อย่างเดียว ไม่ได้ ต้องมี refer date กำกับ จะขึ้้น timeout
+      // ค้น cid กับ refer_hospcode not null ได้ ไม่ต้องมี refer date กำกับ
       filter: {
-        limit: 10,
-        // fields:["hcode","vn","an","activities"],
+        limit: xLimit,
+        skip: xSkip,
+        include: ["hospital", "person"],
         where: {
-          and: [
-            {"activities.referout.refer_hospcode": "10711"},
-            // {vstdate: {between: [startDate,endDate]}},
-            {vstdate: {gte: startDate}},
-            {vstdate: {lte: endDate}}
-          ]
+          and: andQuery
         },
-        order: [
-          'vstdate ASC', 
-          'refer_hospcode DESC'
-        ],
-        include: "person"
       }
     };
+    // console.log(xParams);
+    console.log(JSON.stringify(xParams));
+
+    calAllPages(rowsPerPage, { and: andQuery });
 
     let response = await getAll(xParams, 'interventions');
+    console.log(response.data);
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
-          // console.log(response.data);
-          // let r=response.data[0];
-          // console.log(r);
           setData(response.data);
+          setOpenBackdrop(false);
+        }
+        else {
+          setOpenBackdrop(false);
         }
       }
     }
 
   }
 
+  // calAllPages(rowsPerPage, filter_where);
+
+  const calAllPages = async (rowsPerPage, filter_where) => {
+    let xWhere = {};
+    if (typeof filter_where !== 'undefined') {
+      xWhere = filter_where;
+    }
+    let xParams = { where: xWhere };
+    let documentsCount = await getCount(xParams, 'interventions');
+    setAllPages(parseInt(Math.ceil(parseInt(documentsCount.data.count) / parseInt(rowsPerPage))));
+  }
+
+  const ds = (x) => {
+    let y = x.getFullYear().toString();
+    let m = az(x.getMonth() + 1, 2);
+    let d = az(x.getDate(), 2);
+    let ymd = y + '-' + m + '-' + d;
+    return ymd;
+  }
+
+  const az = (x, n) => {
+    let r = x.toString();
+    for (var i = 0; i < n - r.length; ++i) {
+      r = '0' + r;
+    }
+    return r;
+  }
+
+
+
+
   const clickRow = (e, d, hcode, vn, cid) => {
-    // console.log(d,hcode,vn,cid);
     history.push({ pathname: '/emr', state: { date: d, hcode: hcode, vn: vn, cid: cid } });
   }
 
@@ -161,7 +252,6 @@ export default function SearchCID(props) {
         if (data.length > 0) {
           let n = 0;
           data.forEach(i => {
-            // console.log(i);
             n++;
             let refer = {};
             let person = {};
@@ -182,10 +272,11 @@ export default function SearchCID(props) {
                     <MdRemoveRedEye size={20} />
                   </IconButton>
                 </td>
-                <td className={classes.tcell}>{n}.</td>
+                <td className={classes.tcell}>{((forcePage - 1) * rowsPerPage) + n}.</td>
                 <td className={classes.tcell}>{typeof refer.refer_date !== 'undefined' ? thaiXSDate(refer.refer_date) : thaiXSDate(refer.date)}</td>
-                <td className={classes.tcell}>-</td>
-                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : '-'}</td>
+                <td className={classes.tcell}>{i.hcode} {i.hospital.hos_name}</td>
+                {/* <td className={classes.tcell}>-</td> */}
+                {/* <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : '-'}</td> */}
                 <td className={classes.tcellWrap}>
                   <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}</span>} arrow={true} placement="top" >
                     <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
@@ -221,11 +312,11 @@ export default function SearchCID(props) {
                   </Tooltip>
                 </td>
                 <td className={classes.tcell}>{typeof refer.refer_cause_name !== 'undefined' ? refer.refer_cause_name : ''}</td>
+                {/* <td className={classes.tcell}></td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}></td>
                 <td className={classes.tcell}></td>
-                <td className={classes.tcell}></td>
-                <td className={classes.tcell}></td>
+                <td className={classes.tcell}></td> */}
               </tr>
             );
           });
@@ -239,8 +330,9 @@ export default function SearchCID(props) {
             <td className={classes.thead}><br /></td>
             <td className={classes.thead}><br /></td>
             <td className={classes.thead}>วันที่ส่งตัว</td>
-            <td className={classes.thead}>วันที่รับตัว</td>
-            <td className={classes.thead}>เลขที่ใบส่งตัว</td>
+            {/* <td className={classes.thead}>วันที่รับตัว</td> */}
+            {/* <td className={classes.thead}>เลขที่ใบส่งตัว</td> */}
+            <td className={classes.thead}>รพ.ต้นทาง</td>
             <td className={classes.thead}>รพ.ปลายทาง</td>
             <td className={classes.thead}>HN</td>
             <td className={classes.thead}>ชื่อสกุล</td>
@@ -250,11 +342,11 @@ export default function SearchCID(props) {
             <td className={classes.thead}>จุดส่งต่อ</td>
             <td className={classes.thead}>แผนก</td>
             <td className={classes.thead}>ประเภทการส่งต่อ</td>
-            <td className={classes.thead}>วันหมดอายุ</td>
+            {/* <td className={classes.thead}>วันหมดอายุ</td>
             <td className={classes.thead}>เรียกเก็บไปที่</td>
             <td className={classes.thead}>จนท.อนุมัติสิทธิ</td>
             <td className={classes.thead}>approve</td>
-            <td className={classes.thead}>หมายเหตุ</td>
+            <td className={classes.thead}>หมายเหตุ</td> */}
           </tr>
         </thead>
         <tbody>
@@ -264,35 +356,213 @@ export default function SearchCID(props) {
     );
   }
 
-  useEffect(() => {
-    // alert('work list > search, pagination');
-    getData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const getHospital = async () => {
+    // AdminR8 -- ไม่ต้องกรอง hospital
+    // AdminChangwat -- กรอง hospital แสดงเฉพาะจังหวัดตนเอง
+    // อื่นๆ  -- กรอง hospital แสดงเฉพาะหน่วยงานตนเอง และ disabled ด้วย
+    let xParams = {};
+    let whereQuery;
+    if (globalState.userRole === "AdminR8") {
+      let xParams = { filter: { fields: ["hos_id", "hos_name"] } };
+    }
+    if (globalState.userRole === "AdminChangwat") {
+      let xParams = {
+        filter: {
+          fields: ["hos_id", "hos_name"],
+          where: {
+            province_name: globalState.currentUser.user.changwat
+          }
+        }
+      };
+    }
+    else {
+      let xParams = {
+        filter: {
+          fields: ["hos_id", "hos_name"],
+          where: {
+            hos_id: globalState.currentUser.user.department.hcode
+          }
+        }
+      };
+    }
 
-  // useEffect(() => {
-  //   console.log('startDate- ', startDate);
-  // }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
+    // console.log(JSON.stringify(xParams));
+    let response = await getAll(xParams, 'hospitals');
+    if (response.status === 200) {
+      if (response.data) {
+        if (response.data.length > 0) {
+          let x = [];
+          response.data.map((i) => {
+            x.push({ hos_id: i.hos_id, hos_name: i.hos_id + ' ' + i.hos_name });
+          });
+          setSentHospitalData(x);
+        }
+      }
+    }
+    let responseB = await getAll({}, 'hospitals');
+    if (responseB.status === 200) {
+      if (responseB.data) {
+        if (responseB.data.length > 0) {
+          let x = [];
+          responseB.data.map((i) => {
+            x.push({ hos_id: i.hos_id, hos_name: i.hos_id + ' ' + i.hos_name });
+          });
+          setReceiveHospitalData(x);
+        }
+      }
+    }
+  }
+
+  const setACVSent = () => {
+    if (typeof sentHospitalData !== 'undefined') {
+      if (sentHospitalData) {
+        let r;
+        sentHospitalData.map((i) => {
+          if (i['hos_id'] === globalState.currentUser.user.department.hcode) {
+            r = i;
+          }
+        });
+        return r;
+      }
+    }
+  }
+
+  const clickSearch = () => {
+    setData(null);
+    setOpenBackdrop(true);
+    getData();
+    setForcePage(1);
+    setAllPages(0);
+  }
+
+  const changeCid = (e) => {
+    setCid(null);
+    let cid = e.target.value;
+    if (cid) {
+      if (cid.length === 13) {
+        setHtCid(null);
+        setCid(e.target.value);
+      }
+      else {
+        setHtCid('ตัวเลขต้องครบ13หลัก');
+      }
+    }
+  }
+
+  const closeBackdrop = () => {
+    setOpenBackdrop(false);
+  }
+
+  const onClickPage = (e, page) => {
+    setOpenBackdrop(true);
+    getData(page - 1);
+    setForcePage(page);
+  }
+
+  useEffect(() => {
+    // console.log(globalState);
+    if (globalState.userRole === "AdminR8" || globalState.userRole === "AdminChangwat") {
+      setAcSentHcodeDisabled(false);
+    }
+    getData();
+    getHospital();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ marginBottom: 100, width: '100%' }}>
 
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center'}}>
+      {/* <div style={{ width: '100%', display: 'flex', justifyContent: 'center'}}>
         <div style={{border: 'solid 1px #E2E2E2', padding: 30, borderRadius: 10, backgroundColor: '#EFEFEF', marginTop: 50}}>
           ขออภัยค่ะ อยู่ระหว่างการปรับปรุง
         </div>
-      </div>
+      </div> */}
 
-      {/* <div><h5>REFEROUT</h5></div>
+      <Backdrop className={classes.backdrop} open={openBackdrop} onClick={closeBackdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      <div><h5>REFEROUT</h5></div>
       <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
-        <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" disabled={true} />
-        <TextField style={{ width: 200, marginRight: 5 }} label="สถานพยาบาลต้นทาง" variant="outlined" disabled={true} />
-        <TextField style={{ width: 120, marginRight: 5 }} label="HN" variant="outlined" disabled={true} />
-        <TextField style={{ width: 120, marginRight: 5 }} label="ชื่อสกุล" variant="outlined" disabled={true} />
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        {/* <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" disabled={true} /> */}
+        {/* <TextField style={{ width: 200, marginRight: 5 }} label="รพ.ต้นทาง" variant="outlined" /> */}
+
+        {sentHospitalData && (
+          <Autocomplete
+            disabled={acSentHcodeDisabled}
+            style={{ width: 200, marginRight: 5 }}
+            options={sentHospitalData}
+            onInputChange={(event, newInputValue) => {
+              sentHospitalData.map((i) => {
+                if (i.hos_name === newInputValue) {
+                  setSentHcode(i.hos_id);
+                }
+              });
+            }}
+            defaultValue={setACVSent}
+            getOptionLabel={(option) => option.hos_name}
+            getOptionSelected={(option, value) => option.hos_name === value.hos_name}
+            renderInput={(params) => <TextField {...params} label={'รพ.ต้นทาง'} variant="outlined" />}
+          />
+        )}
+        {receiveHospitalData && (
+          <Autocomplete
+            style={{ width: 200, marginRight: 5 }}
+            options={receiveHospitalData}
+            onInputChange={(event, newInputValue) => {
+              if (newInputValue===null || newInputValue==='') {
+                setReceiveHcode(null);
+              }
+              receiveHospitalData.map((i) => {
+                if (i.hos_name === newInputValue) {
+                  setReceiveHcode(i.hos_id);
+                }
+              });
+            }}
+            getOptionLabel={(option) => option.hos_name}
+            getOptionSelected={(option, value) => option.hos_name === value.hos_name}
+            renderInput={(params) => <TextField {...params} label={'รพ.ปลายทาง'} variant="outlined" />}
+          />
+        )}
+
+        <TextField
+          style={{ width: 150, marginRight: 5 }}
+          label="CID"
+          variant="outlined"
+          onChange={(e) => { changeCid(e) }}
+          helperText={htCid}
+          FormHelperTextProps={{ color: 'red' }}
+        />
+        {/* <TextField style={{ width: 120, marginRight: 5 }} label="ชื่อสกุล" variant="outlined" disabled={true} /> */}
+        <MuiPickersUtilsProvider locale={th} utils={DateFnsUtils} >
           <KeyboardDatePicker
+            clearable
             inputVariant="outlined"
-            // margin="normal"
-            // id="date-picker-dialog"
+            label="เลือกวันที่"
+            format="dd/MM/yyyy"
+            value={selectedDate}
+            onChange={(date) => { setSelectedDate(date); setSelectedMonth(null); }}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+            style={{ width: 180, marginRight: 5 }}
+          />
+          <KeyboardDatePicker
+            views={["year", "month"]}
+            clearable
+            inputVariant="outlined"
+            label="เลือกเดือน"
+            format="MM/yyyy"
+            value={selectedMonth}
+            onChange={(date) => { setSelectedMonth(date); setSelectedDate(null); }}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+            style={{ width: 180, marginRight: 5 }}
+          />
+
+          {/* <KeyboardDatePicker
+            clearable
+            inputVariant="outlined"
             label="จากวันที่"
             format="dd/MM/yyyy"
             value={startDate}
@@ -303,9 +573,8 @@ export default function SearchCID(props) {
             style={{width: 180, marginRight: 5}}
           />
           <KeyboardDatePicker
+            clearable
             inputVariant="outlined"
-            // margin="normal"
-            // id="date-picker-dialog"
             label="ถึงวันที่"
             format="dd/MM/yyyy"
             value={endDate}
@@ -314,10 +583,10 @@ export default function SearchCID(props) {
               'aria-label': 'change date',
             }}
             style={{width: 180}}
-          />
+          /> */}
         </MuiPickersUtilsProvider>
         <Button
-          // onClick={handleClickSearch}
+          onClick={clickSearch}
           style={{ height: 55 }}
           variant="contained"
           color="primary"
@@ -326,9 +595,18 @@ export default function SearchCID(props) {
           ค้นหา
         </Button>
       </div>
+
+      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Pagination count={allPages} page={forcePage} onChange={onClickPage} color="primary" />
+      </div>
+
       <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, marginTop: 10, overfloY: 'hidden', overflowX: 'scroll' }}>
         {mkRows()}
-      </div> */}
+      </div>
+
+      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Pagination count={allPages} page={forcePage} onChange={onClickPage} color="primary" />
+      </div>
 
     </div>
   )

@@ -494,7 +494,7 @@ export default function SearchCID(props) {
           }
         }
       }
-      // console.log(serviceData);
+      console.log(serviceData);
       // console.log(serviceData.activities.referout);
       // console.log(assessment);
     }
