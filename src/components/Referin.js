@@ -381,13 +381,16 @@ export default function SearchCID(props) {
               { hos_id: globalState.currentUser.user.department.hcode },
               {
                 and: [
-                  { zonecode: '08'},
+                  { zonecode: '08' },
                   {
                     or: [
                       { hos_type_id: '2' },
                       { hos_type_id: '3' },
                       { hos_type_id: '4' },
-                      { hos_type_id: '6' }
+                      { hos_type_id: '6' },
+                      { hos_type_id: '11' },
+                      { hos_type_id: '12' },
+                      { hos_type_id: '14' }
                     ]
                   }
                 ]
@@ -406,15 +409,18 @@ export default function SearchCID(props) {
           where: {
             or: [
               { hos_id: globalState.currentUser.user.department.hcode },
-              { 
-                and : [
+              {
+                and: [
                   { province_name: globalState.currentUser.user.changwat },
                   {
-                    or : [
+                    or: [
                       { hos_type_id: '2' },
                       { hos_type_id: '3' },
                       { hos_type_id: '4' },
-                      { hos_type_id: '6' }
+                      { hos_type_id: '6' },
+                      { hos_type_id: '11' },
+                      { hos_type_id: '12' },
+                      { hos_type_id: '14' }
                     ]
                   }
                 ]
@@ -435,7 +441,7 @@ export default function SearchCID(props) {
         }
       };
     }
-    
+
     let response = await getAll(xParams, 'hospitals');
     if (response.status === 200) {
       if (response.data) {
@@ -452,13 +458,16 @@ export default function SearchCID(props) {
     let xParamsB = {
       filter: {
         fields: ["hos_id", "hos_name"],
-        order: ["hos_type_id ASC","hos_id ASC"],
+        order: ["hos_type_id ASC", "hos_id ASC"],
         where: {
           or: [
-            {hos_type_id:'2'}
-            ,{hos_type_id:'3'}
-            ,{hos_type_id:'4'}
-            ,{hos_type_id:'6'}
+            { hos_type_id: '2' },
+            { hos_type_id: '3' },
+            { hos_type_id: '4' },
+            { hos_type_id: '6' },
+            { hos_type_id: '11' },
+            { hos_type_id: '12' },
+            { hos_type_id: '14' }
           ]
         }
       }
@@ -556,13 +565,13 @@ export default function SearchCID(props) {
         {/* <TextField style={{ width: 200, marginRight: 5 }} label="รพ.ต้นทาง" variant="outlined" /> */}
 
         {sentHospitalData && (
-          sentHospitalData.length>0 && (
+          sentHospitalData.length > 0 && (
             <Autocomplete
               filterOptions={filterOptions}
               style={{ width: 200, marginRight: 5 }}
               options={sentHospitalData}
               onInputChange={(event, newInputValue) => {
-                if (newInputValue===null || newInputValue==='') {
+                if (newInputValue === null || newInputValue === '') {
                   setSentHcode(null);
                 }
                 sentHospitalData.map((i) => {
@@ -579,7 +588,7 @@ export default function SearchCID(props) {
         )}
 
         {receiveHospitalData && (
-          receiveHospitalData.length>0 && (
+          receiveHospitalData.length > 0 && (
             <Autocomplete
               filterOptions={filterOptions}
               disabled={acRecieveHcodeDisabled}

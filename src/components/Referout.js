@@ -377,7 +377,10 @@ export default function SearchCID(props) {
                       { hos_type_id: '2' },
                       { hos_type_id: '3' },
                       { hos_type_id: '4' },
-                      { hos_type_id: '6' }
+                      { hos_type_id: '6' },
+                      { hos_type_id: '11' },
+                      { hos_type_id: '12' },
+                      { hos_type_id: '14' }
                     ]
                   }
                 ]
@@ -404,7 +407,10 @@ export default function SearchCID(props) {
                       { hos_type_id: '2' },
                       { hos_type_id: '3' },
                       { hos_type_id: '4' },
-                      { hos_type_id: '6' }
+                      { hos_type_id: '6' },
+                      { hos_type_id: '11' },
+                      { hos_type_id: '12' },
+                      { hos_type_id: '14' }
                     ]
                   }
                 ]
@@ -445,10 +451,13 @@ export default function SearchCID(props) {
         order: ["hos_type_id ASC", "hos_id ASC"],
         where: {
           or: [
-            { hos_type_id: '2' }
-            , { hos_type_id: '3' }
-            , { hos_type_id: '4' }
-            , { hos_type_id: '6' }
+            { hos_type_id: '2' },
+            { hos_type_id: '3' },
+            { hos_type_id: '4' },
+            { hos_type_id: '6' },
+            { hos_type_id: '11' },
+            { hos_type_id: '12' },
+            { hos_type_id: '14' }
           ]
         }
       }
@@ -566,7 +575,7 @@ export default function SearchCID(props) {
             />
           )
         )}
-        
+
         {receiveHospitalData && (
           receiveHospitalData.length>0 && (
             <Autocomplete
