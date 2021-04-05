@@ -158,7 +158,7 @@ export default function SearchCID(props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedHCode, setSelectedHCode] = useState('all');
   const [dialogText, setDialogText] = useState('');
-  const [needConsent, setNeedConsent] = useState(2);
+  // const [needConsent, setNeedConsent] = useState(2);
   const [openBackdrop, setOpenBackdrop] = useState(false);
   
 
@@ -206,7 +206,7 @@ export default function SearchCID(props) {
     }
   }
 
-  const preGetPersonInfo = (cid) => {
+  const preGetPersonInfo = async (cid) => {
     setOpenBackdrop(true);
     let c = null;
     if (searchCID) {
@@ -215,15 +215,32 @@ export default function SearchCID(props) {
     else {
       c = cid;
     }
-    let mustCheckConsent=needConsent;
+
+    let xParams = { filter: {where:{key: "emrRequiredConsent"}}};
+    let response = await getAll(xParams, 'SystemSettings');
+    if (response.status === 200) {
+      if (response.data) {
+        if (response.data.length > 0) {
+          // console.log(response.data[0].value.toString());
+          // setNeedConsent(parseInt(response.data[0].value.toString()));
+          if (response.data[0].value.toString()==="1") {
+            checkConsent(c);
+          }
+          else {
+            getPersonInfo(c);
+          }
+        }
+      }
+    }
+    // let mustCheckConsent=needConsent;
     // console.log(mustCheckConsent);
-    // console.log(mustCheckConsent===1);
-    if (mustCheckConsent===1) {
-      checkConsent(c);
-    }
-    else {
-      getPersonInfo(c);
-    }
+    // // console.log(mustCheckConsent===1);
+    // if (mustCheckConsent===1) {
+    //   checkConsent(c);
+    // }
+    // else {
+    //   getPersonInfo(c);
+    // }
   }
 
   const checkConsent = async (cid) => {
@@ -680,27 +697,26 @@ export default function SearchCID(props) {
     setOpenDialog(false);
   };
 
-  const getConsentSetting = async () => {
-    let xParams = { filter: {where:{key: "emrRequiredConsent"}}};
-    let response = await getAll(xParams, 'SystemSettings');
-    if (response.status === 200) {
-      if (response.data) {
-        if (response.data.length > 0) {
-          // console.log(response.data[0].value);
-          setNeedConsent(parseInt(response.data[0].value));
-        }
-      }
-    }
-  }
+  // const getConsentSetting = async () => {
+  //   let xParams = { filter: {where:{key: "emrRequiredConsent"}}};
+  //   let response = await getAll(xParams, 'SystemSettings');
+  //   if (response.status === 200) {
+  //     if (response.data) {
+  //       if (response.data.length > 0) {
+  //         console.log(response.data[0].value);
+  //         setNeedConsent(parseInt(response.data[0].value));
+  //       }
+  //     }
+  //   }
+  // }
 
   const closeBackdrop = () => {
     setOpenBackdrop(false);
   }
 
-  useEffect(() => {
-    getConsentSetting();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
+  // useEffect(() => {
+  //   getConsentSetting();
+  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     mkYearShow();
