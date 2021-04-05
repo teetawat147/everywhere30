@@ -13,6 +13,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import DvrIcon from '@material-ui/icons/Dvr';
 import SettingsIcon from '@material-ui/icons/Settings';
+import SendIcon from '@material-ui/icons/Send';
 
 // Pages Component
 import Home from "../components/Home";
@@ -29,6 +30,8 @@ import UserList from "../components/UserList";
 import UserEdit from "../components/UserEdit";
 import Monitor from "../components/Monitor";
 import SystemSetting from "../components/SystemSetting";
+import ClaimSend from "../components/ClaimSend";
+import DialyVisit from "../components/DialyVisit";
 
 const root = {
   id: "Root",
@@ -62,14 +65,14 @@ const login = {
   id: "Login",
   path: "/login",
   icon: <LockOpenIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent"],
   component: Login
 };
 const logout = {
   id: "Logout",
   path: "/logout",
   icon: <ExitToAppIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent"],
   component: Logout
 };
 const emr = {
@@ -83,14 +86,16 @@ const referin = {
   id: "Referin",
   path: "/referin",
   icon: <GetAppIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  // roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  roles: ["AdminR8", "Doctor", "Claim"],
   component: Referin
 };
 const referout = {
   id: "Referout",
   path: "/referout",
   icon: <CallMissedOutgoingIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  // roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  roles: ["AdminR8", "Doctor", "Claim"],
   component: Referout
 };
 const userlist = {
@@ -111,14 +116,14 @@ const consent = {
   id: "Consent",
   path: "/consent",
   icon: <AssignmentIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor"],
+  roles: ["Doctor", "Consent"],
   component: Consent
 };
 const profile = {
   id: "Profile",
   path: "/profile",
   icon: null,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole", "Consent"],
   component: Profile
 };
 const monitor = {
@@ -135,6 +140,20 @@ const systemsetting = {
   roles: ["AdminR8"],
   component: SystemSetting
 };
+const claimsend = {
+  id: "ClaimSend",
+  path: "/claimsend",
+  icon: <SendIcon />,
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  component: ClaimSend
+};
+const dialyvisit = {
+  id: "Dialyvisit",
+  path: "/dialyvisit",
+  icon: <DvrIcon />,
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "noRole"],
+  component: DialyVisit
+};
 
 
 export const appBarRoute = [
@@ -149,6 +168,7 @@ export const sideBarRoute = [
   emr,
   referin,
   referout,
+  // claimsend,
   consent,
   monitor,
   userlist,
@@ -170,4 +190,6 @@ export const mainRoute = [
   profile,
   monitor,
   systemsetting,
+  claimsend,
+  dialyvisit
 ];
