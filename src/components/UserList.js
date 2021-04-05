@@ -96,7 +96,7 @@ export default function UserList(props) {
               },
             },
           },
-          where: { fullname: { like: searchName, options: "i" } },
+          where: { fullname: { like: searchName ,options: "i"} },
         },
       };
       let response = await getAll(xParams, "teamusers");
@@ -106,7 +106,7 @@ export default function UserList(props) {
       let rowcount = await getCount(
         {
           where: {
-            fullname: { like: searchName, options: "i" },
+            fullname: { like: searchName ,options: "i"}
           },
         },
         "teamusers"
@@ -114,6 +114,8 @@ export default function UserList(props) {
       //  console.log(rowcount.data.count);
       setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
       // setRowsCount(rowcount.data.count);
+
+       
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
@@ -134,7 +136,7 @@ export default function UserList(props) {
           where: {
             and: [
               { changwat: currentUser.user.changwat },
-              { fullname: { like: searchName, options: "i" } },
+              { fullname: { like: searchName ,options: "i"} },
             ],
           },
         },
@@ -147,7 +149,7 @@ export default function UserList(props) {
           where: {
             and: [
               { changwat: currentUser.user.changwat },
-              { fullname: { like: searchName, options: "i" } },
+              { fullname: { like: searchName ,options: "i"} },
             ],
           },
         },
@@ -174,7 +176,7 @@ export default function UserList(props) {
           where: {
             and: [
               { "department.hcode": currentUser.user.department.hcode },
-              { fullname: { like: searchName, options: "i" } },
+              { fullname: { like: searchName ,options: "i"} },
             ],
           },
         },
@@ -187,7 +189,7 @@ export default function UserList(props) {
           where: {
             and: [
               { "department.hcode": currentUser.user.department.hcode },
-              { fullname: { like: searchName, options: "i" } },
+              { fullname: { like: searchName ,options: "i"} },
             ],
           },
         },
@@ -554,7 +556,7 @@ export default function UserList(props) {
               {" "}
               <button
                 onClick={() => clickUserEditlink("newadd")}
-                className="btn btn-sm btn-success mb-2"
+                className="btn btn-md btn-success mb-2"
               >
                 เพิ่มผู้ใช้งาน
               </button>
@@ -569,9 +571,7 @@ export default function UserList(props) {
                 <td>{user.email}</td>
                 <td>
                   {user.RoleMapping.length > 0
-                    ? typeof user.RoleMapping[0].role.name !== "undefined"
-                      ? user.RoleMapping[0].role.name
-                      : ""
+                    ? typeof user.RoleMapping[0].role.name !== "undefined" ? user.RoleMapping[0].role.name :""
                     : ""}
                 </td>
                 <td>{user.changwat}</td>
