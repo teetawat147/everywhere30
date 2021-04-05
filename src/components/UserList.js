@@ -101,7 +101,11 @@ export default function UserList(props) {
           where: {
             or: [
               { email: { like: searchName, options: "i"} },
-              { fullname: { like: searchName, options: "i"} }
+              { fullname: { like: searchName, options: "i"} },
+              { "department.hos_name": { like: searchName, options: "i" }}
+            ],
+            and: [
+              { application: "R8Anywhere" }
             ]
           }
         },
@@ -118,7 +122,11 @@ export default function UserList(props) {
           where: {
             or: [
               { email: { like: searchName, options: "i"} },
-              { fullname: { like: searchName, options: "i"} }
+              { fullname: { like: searchName, options: "i"} },
+              { "department.hos_name": { like: searchName, options: "i" }}
+            ],
+            and: [
+              { application: "R8Anywhere" }
             ]
           }
         },
@@ -146,12 +154,22 @@ export default function UserList(props) {
               // where: { "name":"AdminR8"},
             },
           },
+          // where: {
+          //   and: [
+          //     { changwat: currentUser.user.changwat },
+          //     { fullname: { like: searchName ,options: "i"} },
+          //   ],
+          // },
           where: {
             and: [
-              { changwat: currentUser.user.changwat },
-              { fullname: { like: searchName ,options: "i"} },
+              { changwat: currentUser.user.changwat }
             ],
-          },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName ,options: "i"} },
+              { "department.hos_name": { like: searchName, options: "i" }}
+            ]
+          }
         },
       };
       let response = await getAll(xParams, "teamusers");
@@ -159,12 +177,22 @@ export default function UserList(props) {
       // "where":{"ampurCode":21}
       let rowcount = await getCount(
         {
+          // where: {
+          //   and: [
+          //     { changwat: currentUser.user.changwat },
+          //     { fullname: { like: searchName ,options: "i"} },
+          //   ],
+          // },
           where: {
             and: [
-              { changwat: currentUser.user.changwat },
-              { fullname: { like: searchName ,options: "i"} },
+              { changwat: currentUser.user.changwat }
             ],
-          },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName ,options: "i"} },
+              { "department.hos_name": { like: searchName, options: "i" }}
+            ],
+          }
         },
         "teamusers"
       );
@@ -186,25 +214,43 @@ export default function UserList(props) {
               },
             },
           },
+          // where: {
+          //   and: [
+          //     { "department.hcode": currentUser.user.department.hcode },
+          //     { fullname: { like: searchName ,options: "i"} },
+          //   ],
+          // },
           where: {
             and: [
-              { "department.hcode": currentUser.user.department.hcode },
-              { fullname: { like: searchName ,options: "i"} },
+              { "department.hcode": currentUser.user.department.hcode }
             ],
-          },
-        },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName ,options: "i"} }
+            ]
+          }
+        }
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       // console.log(response.data);
       let rowcount = await getCount(
         {
+          // where: {
+          //   and: [
+          //     { "department.hcode": currentUser.user.department.hcode },
+          //     { fullname: { like: searchName ,options: "i"} },
+          //   ],
+          // },
           where: {
             and: [
-              { "department.hcode": currentUser.user.department.hcode },
-              { fullname: { like: searchName ,options: "i"} },
+              { "department.hcode": currentUser.user.department.hcode }
             ],
-          },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName ,options: "i"} }
+            ]
+          }
         },
         "teamusers"
       );
@@ -535,7 +581,7 @@ export default function UserList(props) {
           <TextField
             type="text"
             className="form-control"
-            placeholder="ค้นหาชื่อ"
+            placeholder="ระบุคำค้นหา ชื่อ, อีเมล์ หรือหน่วยงาน"
             variant="outlined"
             style={{ width: "100%" }}
             value={searchName}
