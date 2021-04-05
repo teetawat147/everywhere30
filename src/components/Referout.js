@@ -361,24 +361,81 @@ export default function SearchCID(props) {
     // AdminChangwat -- กรอง hospital แสดงเฉพาะจังหวัดตนเอง
     // อื่นๆ  -- กรอง hospital แสดงเฉพาะหน่วยงานตนเอง และ disabled ด้วย
     let xParams = {};
-    let whereQuery;
     if (globalState.userRole === "AdminR8") {
-      let xParams = { filter: { fields: ["hos_id", "hos_name"] } };
-    }
-    if (globalState.userRole === "AdminChangwat") {
-      let xParams = {
+      
+      xParams = {
         filter: {
           fields: ["hos_id", "hos_name"],
+          order: ["hos_type_id ASC", "hos_id ASC"],
           where: {
-            province_name: globalState.currentUser.user.changwat
+            or: [
+              { hos_id: globalState.currentUser.user.department.hcode }
+              , { hos_type_id: '2' }
+              , { hos_type_id: '3' }
+              , { hos_type_id: '4' }
+              , { hos_type_id: '6' }
+            ]
+          }
+        }
+      };
+
+      // xParams = {
+      //   filter: {
+      //     fields: ["hos_id", "hos_name"],
+      //     order: ["hos_type_id ASC", "hos_id ASC"],
+      //     where: {
+      //       or: [
+      //         { hos_id: globalState.currentUser.user.department.hcode },
+      //         {
+      //           and: [
+      //             { zonecode: '08'},
+      //             {
+      //               or: [
+      //                 { hos_type_id: '2' },
+      //                 { hos_type_id: '3' },
+      //                 { hos_type_id: '4' },
+      //                 { hos_type_id: '6' }
+      //               ]
+      //             }
+      //           ]
+      //         }
+      //       ]
+      //     }
+      //   }
+      // };
+
+    }
+    else if (globalState.userRole === "AdminChangwat") {
+      xParams = {
+        filter: {
+          fields: ["hos_id", "hos_name"],
+          order: ["hos_type_id ASC", "hos_id ASC"],
+          where: {
+            or: [
+              { hos_id: globalState.currentUser.user.department.hcode },
+              { 
+                and : [
+                  { province_name: globalState.currentUser.user.changwat },
+                  {
+                    or : [
+                      { hos_type_id: '2' },
+                      { hos_type_id: '3' },
+                      { hos_type_id: '4' },
+                      { hos_type_id: '6' }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         }
       };
     }
     else {
-      let xParams = {
+      xParams = {
         filter: {
           fields: ["hos_id", "hos_name"],
+          order: ["hos_type_id ASC", "hos_id ASC"],
           where: {
             hos_id: globalState.currentUser.user.department.hcode
           }
@@ -386,7 +443,6 @@ export default function SearchCID(props) {
       };
     }
 
-    // console.log(JSON.stringify(xParams));
     let response = await getAll(xParams, 'hospitals');
     if (response.status === 200) {
       if (response.data) {
@@ -399,7 +455,23 @@ export default function SearchCID(props) {
         }
       }
     }
-    let responseB = await getAll({}, 'hospitals');
+
+    let xParamsB = {
+      filter: {
+        fields: ["hos_id", "hos_name"],
+        order: ["hos_type_id ASC", "hos_id ASC"],
+        where: {
+          or: [
+            { hos_type_id: '2' }
+            , { hos_type_id: '3' }
+            , { hos_type_id: '4' }
+            , { hos_type_id: '6' }
+          ]
+        }
+      }
+    };
+    // console.log(JSON.stringify(xParamsB));
+    let responseB = await getAll(xParamsB, 'hospitals');
     if (responseB.status === 200) {
       if (responseB.data) {
         if (responseB.data.length > 0) {
@@ -509,7 +581,7 @@ export default function SearchCID(props) {
             style={{ width: 200, marginRight: 5 }}
             options={receiveHospitalData}
             onInputChange={(event, newInputValue) => {
-              if (newInputValue===null || newInputValue==='') {
+              if (newInputValue === null || newInputValue === '') {
                 setReceiveHcode(null);
               }
               receiveHospitalData.map((i) => {

@@ -86,14 +86,16 @@ const referin = {
   id: "Referin",
   path: "/referin",
   icon: <GetAppIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  // roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  roles: ["AdminR8", "Doctor", "Claim"],
   component: Referin
 };
 const referout = {
   id: "Referout",
   path: "/referout",
   icon: <CallMissedOutgoingIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  // roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  roles: ["AdminR8", "Doctor", "Claim"],
   component: Referout
 };
 const userlist = {
