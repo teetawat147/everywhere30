@@ -162,7 +162,8 @@ export default function UserList(props) {
           // },
           where: {
             and: [
-              { changwat: currentUser.user.changwat }
+              { changwat: currentUser.user.changwat },
+              { application: "R8Anywhere" }
             ],
             or: [
               { email: { like: searchName, options: "i"} },
@@ -185,7 +186,8 @@ export default function UserList(props) {
           // },
           where: {
             and: [
-              { changwat: currentUser.user.changwat }
+              { changwat: currentUser.user.changwat },
+              { application: "R8Anywhere" }
             ],
             or: [
               { email: { like: searchName, options: "i"} },
@@ -222,7 +224,8 @@ export default function UserList(props) {
           // },
           where: {
             and: [
-              { "department.hcode": currentUser.user.department.hcode }
+              { "department.hcode": currentUser.user.department.hcode },
+              { application: "R8Anywhere" }
             ],
             or: [
               { email: { like: searchName, options: "i"} },
@@ -244,7 +247,8 @@ export default function UserList(props) {
           // },
           where: {
             and: [
-              { "department.hcode": currentUser.user.department.hcode }
+              { "department.hcode": currentUser.user.department.hcode },
+              { application: "R8Anywhere" }
             ],
             or: [
               { email: { like: searchName, options: "i"} },
