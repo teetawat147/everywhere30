@@ -50,7 +50,8 @@ const Login = () => {
   const [message, setMessage] = useState("");
 
   const onChangeEmail = (e) => {
-    const email = e.target.value;
+    const email = e.target.value.toLowerCase();
+    console.log(email);
     setEmail(email);
   };
 
