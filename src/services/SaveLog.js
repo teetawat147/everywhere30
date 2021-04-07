@@ -2,7 +2,7 @@ import { create } from "../services/UniversalAPI";
 import getIP from "../services/GetClientIP";
 import * as AuthService from "../services/auth.service";
 
-const currentUser = AuthService.getCurrentUser();
+// const currentUser = AuthService.getCurrentUser();
 
 let clientIP = '';
 getIP().then(data => clientIP = data.ip);
@@ -20,6 +20,7 @@ const addZero = (x, n) => {
 }
 
 const logSave = (event_datail) => {
+  const currentUser = AuthService.getCurrentUser();
   let d = new Date();
   let data = {
     date: d.getFullYear() + '-' + addZero(parseInt(d.getMonth()) + 1, 2) + '-' + addZero(d.getDate(), 2),

@@ -51,7 +51,6 @@ const Login = () => {
 
   const onChangeEmail = (e) => {
     const email = e.target.value.toLowerCase();
-    console.log(email);
     setEmail(email);
   };
 
