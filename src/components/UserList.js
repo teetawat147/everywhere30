@@ -97,7 +97,17 @@ export default function UserList(props) {
               },
             },
           },
-          where: { fullname: { like: searchName, options: "i" } },
+          // where: { fullname: { like: searchName ,options: "i"} },
+          where: {
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName, options: "i"} },
+              { "department.hos_name": { like: searchName, options: "i" }}
+            ],
+            and: [
+              { application: "R8Anywhere" }
+            ]
+          }
         },
       };
       let response = await getAll(xParams, "teamusers");
@@ -106,15 +116,27 @@ export default function UserList(props) {
 
       let rowcount = await getCount(
         {
+          // where: {
+          //   fullname: { like: searchName ,options: "i"}
+          // },
           where: {
-            fullname: { like: searchName, options: "i" },
-          },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName, options: "i"} },
+              { "department.hos_name": { like: searchName, options: "i" }}
+            ],
+            and: [
+              { application: "R8Anywhere" }
+            ]
+          }
         },
         "teamusers"
       );
       //  console.log(rowcount.data.count);
       setRowsCount(Math.ceil(rowcount.data.count / rowsPerPage));
       // setRowsCount(rowcount.data.count);
+
+       
     } else if (currentUser.user.role === "AdminChangwat") {
       let xParams = {
         filter: {
@@ -132,12 +154,23 @@ export default function UserList(props) {
               // where: { "name":"AdminR8"},
             },
           },
+          // where: {
+          //   and: [
+          //     { changwat: currentUser.user.changwat },
+          //     { fullname: { like: searchName ,options: "i"} },
+          //   ],
+          // },
           where: {
             and: [
               { changwat: currentUser.user.changwat },
-              { fullname: { like: searchName, options: "i" } },
+              { application: "R8Anywhere" }
             ],
-          },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName ,options: "i"} },
+              { "department.hos_name": { like: searchName, options: "i" }}
+            ]
+          }
         },
       };
       let response = await getAll(xParams, "teamusers");
@@ -145,12 +178,23 @@ export default function UserList(props) {
       // "where":{"ampurCode":21}
       let rowcount = await getCount(
         {
+          // where: {
+          //   and: [
+          //     { changwat: currentUser.user.changwat },
+          //     { fullname: { like: searchName ,options: "i"} },
+          //   ],
+          // },
           where: {
             and: [
               { changwat: currentUser.user.changwat },
-              { fullname: { like: searchName, options: "i" } },
+              { application: "R8Anywhere" }
             ],
-          },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName ,options: "i"} },
+              { "department.hos_name": { like: searchName, options: "i" }}
+            ],
+          }
         },
         "teamusers"
       );
@@ -172,25 +216,45 @@ export default function UserList(props) {
               },
             },
           },
+          // where: {
+          //   and: [
+          //     { "department.hcode": currentUser.user.department.hcode },
+          //     { fullname: { like: searchName ,options: "i"} },
+          //   ],
+          // },
           where: {
             and: [
               { "department.hcode": currentUser.user.department.hcode },
-              { fullname: { like: searchName, options: "i" } },
+              { application: "R8Anywhere" }
             ],
-          },
-        },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName ,options: "i"} }
+            ]
+          }
+        }
       };
       let response = await getAll(xParams, "teamusers");
       setUsers(response.data);
       // console.log(response.data);
       let rowcount = await getCount(
         {
+          // where: {
+          //   and: [
+          //     { "department.hcode": currentUser.user.department.hcode },
+          //     { fullname: { like: searchName ,options: "i"} },
+          //   ],
+          // },
           where: {
             and: [
               { "department.hcode": currentUser.user.department.hcode },
-              { fullname: { like: searchName, options: "i" } },
+              { application: "R8Anywhere" }
             ],
-          },
+            or: [
+              { email: { like: searchName, options: "i"} },
+              { fullname: { like: searchName ,options: "i"} }
+            ]
+          }
         },
         "teamusers"
       );
@@ -521,7 +585,7 @@ export default function UserList(props) {
           <TextField
             type="text"
             className="form-control"
-            placeholder="ค้นหาชื่อ"
+            placeholder="ระบุคำค้นหา ชื่อ, อีเมล์ หรือหน่วยงาน"
             variant="outlined"
             style={{ width: "100%" }}
             value={searchName}
@@ -558,6 +622,7 @@ export default function UserList(props) {
         <thead>
           <tr>
             <th>ชื่อ-สกุล</th>
+            <th>ตำแหน่ง</th>
             <th>Email</th>
             <th>สิทธิการใช้งาน</th>
             <th>จังหวัด</th>
@@ -566,7 +631,7 @@ export default function UserList(props) {
               {" "}
               <button
                 onClick={() => clickUserEditlink("newadd")}
-                className="btn btn-sm btn-success mb-2"
+                className="btn btn-md btn-success mb-2"
               >
                 เพิ่มผู้ใช้งาน
               </button>
@@ -578,12 +643,11 @@ export default function UserList(props) {
             users.map((user) => (
               <tr key={user.id}>
                 <td>{user.fullname}</td>
+                <td>{user.position}</td>
                 <td>{user.email}</td>
                 <td>
                   {user.RoleMapping.length > 0
-                    ? typeof user.RoleMapping[0].role.name !== "undefined"
-                      ? user.RoleMapping[0].role.name
-                      : ""
+                    ? typeof user.RoleMapping[0].role.name !== "undefined" ? user.RoleMapping[0].role.name :""
                     : ""}
                 </td>
                 <td>{user.changwat}</td>
