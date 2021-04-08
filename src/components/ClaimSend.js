@@ -14,7 +14,8 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import UCard from "./UniversalCard";
 // import UListTable from "./UniversalListTable";
 
-import { getAll } from "../services/UniversalAPI";
+import useGlobal from "../store";
+import { getAll, getCount } from "../services/UniversalAPI";
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
 
 import {
@@ -37,20 +38,26 @@ import {
   Slide,
   Grid,
   IconButton,
+  Backdrop,
+  CircularProgress,
 } from '@material-ui/core';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
+import { th } from "date-fns/locale";
 
+import {
+  Pagination
+} from '@material-ui/lab';
 
-import PropTypes from 'prop-types';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
 
-const useStyles = makeStyles({
+// const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 700,
   },
@@ -94,65 +101,159 @@ const useStyles = makeStyles({
     verticalAlign: 'top',
     borderBottom: 'solid 1px #dadada',
     padding: 10,
-  }
-});
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+}));
 
-export default function ClaimSend(props) {
+export default function SearchCID(props) {
   const classes = useStyles();
   const history = useHistory();
   const [data, setData] = useState(null);
-  const [startDate, setStartDate] = React.useState(new Date('2021-02-02'));
+  const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState(new Date());
+  const [globalState, globalActions] = useGlobal();
+  const [sentHospitalData, setSentHospitalData] = useState(null);
+  const [receiveHospitalData, setReceiveHospitalData] = useState(null);
+  const [sentHcode, setSentHcode] = useState(globalState.currentUser.user.department.hcode);
+  const [hmainHcode, setHmainHcode] = useState(null);
+  const [cid, setCid] = useState(null);
+  const [htCid, setHtCid] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [openBackdrop, setOpenBackdrop] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [allPages, setAllPages] = useState();
+  const [forcePage, setForcePage] = useState(1);
+  const [acSentHcodeDisabled, setAcSentHcodeDisabled] = useState(true);
 
-  // const handleDateChange = (date) => {
-  //   setSelectedDate(date);
-  // };
 
-  const handleDateChange = (e,x) => {
-    console.log(x);
-    console.log(e);
-  }
+  const getData = async (page) => {
+    let xSkip = 0;
+    let xLimit = rowsPerPage;
 
-  const getData = async () => {
+    if (typeof page !== 'undefined') {
+      xSkip = rowsPerPage * page;
+    }
 
+    let dateQuery = null;
+    if (selectedDate) {
+      dateQuery = { "vstdate": ds(selectedDate) };
+    }
+    else if (selectedMonth) {
+      let sMonth = ds(selectedMonth).substr(0, 7);
+      let qMonth = [];
+      for (let i = 1; i <= 31; ++i) {
+        qMonth.push({ "vstdate": sMonth + "-" + az(i, 2) });
+      }
+      dateQuery = { or: qMonth };
+    }
+    let cidQuery = null;
+    if (cid) {
+      cidQuery = { cid: cid };
+    }
+    let andQuery = [];
+    andQuery.push({ hcode: sentHcode });
+    // andQuery.push({ an: null });
+    andQuery.push({ or :[{ walkin_pttype: "wi" },{ walkin_pttype: "wo" },{ walkin_pttype: "wz" },{ walkin_pttype: "WI" },{ walkin_pttype: "WO" },{ walkin_pttype: "WZ" }]});
+    // console.log(hmainHcode);
+    if (hmainHcode) {
+      andQuery.push({ hospmain: hmainHcode });
+    }
+    else {
+      andQuery.push({ hospmain: { ne: null } });
+    }
+    if (cidQuery) {
+      andQuery.push(cidQuery);
+    }
+    if (dateQuery) {
+      andQuery.push(dateQuery);
+    }
     let xParams = {
       filter: {
-        limit: 10,
-        // fields:["hcode","vn","an","activities"],
+        limit: xLimit,
+        skip: xSkip,
+        include: ["hospital", "person"],
         where: {
-          and: [
-            {"activities.referout.refer_hospcode": "10711"},
-            // {vstdate: {between: [startDate,endDate]}},
-            {vstdate: {gte: startDate}},
-            {vstdate: {lte: endDate}}
-          ]
+          and: andQuery
         },
-        order: [
-          'vstdate ASC', 
-          'refer_hospcode DESC'
-        ],
-        include: "person"
       }
     };
-console.log(xParams);
-console.log(JSON.stringify(xParams));
+    // console.log(xParams);
+    console.log(JSON.stringify(xParams));
+
+    calAllPages(rowsPerPage, { and: andQuery });
+
     let response = await getAll(xParams, 'interventions');
+    console.log(response.data);
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
-          console.log(response.data);
-          // let r=response.data[0];
-          // console.log(r);
           setData(response.data);
+          setOpenBackdrop(false);
+        }
+        else {
+          setOpenBackdrop(false);
         }
       }
     }
 
   }
 
+  const calAllPages = async (rowsPerPage, filter_where) => {
+    let xWhere = {};
+    if (typeof filter_where !== 'undefined') {
+      xWhere = filter_where;
+    }
+    let xParams = { where: xWhere };
+    let documentsCount = await getCount(xParams, 'interventions');
+    setAllPages(parseInt(Math.ceil(parseInt(documentsCount.data.count) / parseInt(rowsPerPage))));
+  }
+
+  const ds = (x) => {
+    let y = x.getFullYear().toString();
+    let m = az(x.getMonth() + 1, 2);
+    let d = az(x.getDate(), 2);
+    let ymd = y + '-' + m + '-' + d;
+    return ymd;
+  }
+
+  const az = (x, n) => {
+    let r = x.toString();
+    for (var i = 0; i < n - r.length; ++i) {
+      r = '0' + r;
+    }
+    return r;
+  }
+
   const clickRow = (e, d, hcode, vn, cid) => {
-    // console.log(d,hcode,vn,cid);
     history.push({ pathname: '/emr', state: { date: d, hcode: hcode, vn: vn, cid: cid } });
+  }
+
+  const PDX = (x) => {
+    let r='';
+    if (typeof x !== 'undefined') {
+      x.forEach(i => {
+        if (parseInt(i.diagtype)===1) {
+          r='('+i.icd10+') '+i.diag_name;
+        }
+      });
+    }
+    return r;
+  }
+
+  const calPrice = (x) => {
+    let r=0;
+    if (typeof x !== 'undefined') {
+      x.forEach(i => {
+        if (typeof i.sum_price !== 'undefined') {
+          r=r+parseInt(i.sum_price);
+        }
+      });
+    }
+    return r;
   }
 
   const mkRows = () => {
@@ -162,7 +263,6 @@ console.log(JSON.stringify(xParams));
         if (data.length > 0) {
           let n = 0;
           data.forEach(i => {
-            // console.log(i);
             n++;
             let refer = {};
             let person = {};
@@ -183,14 +283,19 @@ console.log(JSON.stringify(xParams));
                     <MdRemoveRedEye size={20} />
                   </IconButton>
                 </td>
-                <td className={classes.tcell}>{n}.</td>
-                <td className={classes.tcell}>{typeof refer.refer_date !== 'undefined' ? thaiXSDate(refer.refer_date) : thaiXSDate(refer.date)}</td>
-                <td className={classes.tcell}>-</td>
-                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : '-'}</td>
-                <td className={classes.tcellWrap}>
-                  <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}</span>} arrow={true} placement="top" >
+                <td className={classes.tcell}>{((forcePage - 1) * rowsPerPage) + n}.</td>
+                <td className={classes.tcell}>{thaiXSDate(i.vstdate)}</td>
+                <td className={classes.tcell}>
+                  <Tooltip title={<span style={{ fontSize: 16 }}>{i.hcode} {i.hospital.hos_name}</span>} arrow={true} placement="top" >
                     <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
-                      {typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}
+                      {i.hcode} {i.hospital.hos_name}
+                    </div>
+                  </Tooltip>
+                </td>
+                <td className={classes.tcellWrap}>
+                  <Tooltip title={<span style={{ fontSize: 16 }}>{i.hospmain} {i.hospmain_name}</span>} arrow={true} placement="top" >
+                    <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
+                      {i.hospmain} {i.hospmain_name}
                     </div>
                   </Tooltip>
                 </td>
@@ -200,33 +305,20 @@ console.log(JSON.stringify(xParams));
                   <div>{person.cid}</div>
                 </td>
                 <td className={classes.tcellWrap}>
-                  <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.pttype_name !== 'undefined' ? refer.pttype_name : ''}</span>} arrow={true} placement="top" >
+                  <Tooltip title={<span style={{ fontSize: 16 }}>{i.walkin_pttype_name}</span>} arrow={true} placement="top" >
                     <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
-                      {typeof refer.pttype_name !== 'undefined' ? refer.pttype_name : ''}
+                      {i.walkin_pttype_name}
                     </div>
                   </Tooltip>
                 </td>
                 <td className={classes.tcellWrap}>
-                  <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.diag_name !== 'undefined' ? refer.diag_name : ''}</span>} arrow={true} placement="top" >
+                  <Tooltip title={<span style={{ fontSize: 16 }}>{PDX(i.activities.diagnosis)}</span>} arrow={true} placement="top" >
                     <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
-                      {typeof refer.diag_name !== 'undefined' ? refer.diag_name : ''}
+                      {PDX(i.activities.diagnosis)}
                     </div>
                   </Tooltip>
                 </td>
-                <td className={classes.tcell}>{typeof refer.refer_point !== 'undefined' ? refer.refer_point : ''}</td>
-                <td className={classes.tcellWrap}>
-                  <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.department !== 'undefined' ? refer.department : ''}</span>} arrow={true} placement="top" >
-                    <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
-                      {typeof refer.department !== 'undefined' ? refer.department : ''}
-                    </div>
-                  </Tooltip>
-                </td>
-                <td className={classes.tcell}>{typeof refer.refer_cause_name !== 'undefined' ? refer.refer_cause_name : ''}</td>
-                <td className={classes.tcell}></td>
-                <td className={classes.tcell}></td>
-                <td className={classes.tcell}></td>
-                <td className={classes.tcell}></td>
-                <td className={classes.tcell}></td>
+                <td className={classes.tcell} style={{ textAlign: 'right' }}>{calPrice(i.activities.treatment).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
               </tr>
             );
           });
@@ -238,35 +330,206 @@ console.log(JSON.stringify(xParams));
       <table>
         <thead>
           <tr>
-            <td className={classes.thead}>No.</td>
-            <td className={classes.thead}>เลขที่ Ref.</td>
-            <td className={classes.thead}>สถานพยาบาลหลักผู้ป่วย</td>
-            <td className={classes.thead}>สถานพยาบาลที่รักษา</td>
-            <td className={classes.thead}>สถานพยาบาลที่ส่งต่อ</td>
-            <td className={classes.thead}>HN (Hcode,Href)</td>
-            <td className={classes.thead}>PID</td>
-            <td className={classes.thead}>ชื่อสกุล</td>
+            <td className={classes.thead}><br /></td>
+            <td className={classes.thead}><br /></td>
             <td className={classes.thead}>วันที่รับบริการ</td>
-            <td className={classes.thead}>โรคหลัก(pdx)</td>
-            <td className={classes.thead}>ยอดค่าใช้จ่าย (1)</td>
-            <td className={classes.thead}>check all</td>
+            <td className={classes.thead}>รพ.ผู้ให้บริการ</td>
+            <td className={classes.thead}>รพ.ตามสิทธิฯ</td>
+            <td className={classes.thead}>HN</td>
+            <td className={classes.thead}>ชื่อสกุล</td>
+            <td className={classes.thead}>CID</td>
+            <td className={classes.thead}>สิทธิ</td>
+            <td className={classes.thead}>วินิจฉัยหลัก</td>
+            <td className={classes.thead}>ยอดค่าใช้จ่าย</td>
           </tr>
         </thead>
         <tbody>
-          {/* {r} */}
+          {r}
         </tbody>
       </table>
     );
   }
 
-  useEffect(() => {
-    // alert('work list > search, pagination');
-    getData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const getHospital = async () => {
+    // AdminR8 -- ไม่ต้องกรอง hospital
+    // AdminChangwat -- กรอง hospital แสดงเฉพาะจังหวัดตนเอง
+    // อื่นๆ  -- กรอง hospital แสดงเฉพาะหน่วยงานตนเอง และ disabled ด้วย
+    let xParams = {};
+    if (globalState.userRole === "AdminR8") {
 
-  // useEffect(() => {
-  //   console.log('startDate- ', startDate);
-  // }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
+      xParams = {
+        filter: {
+          fields: ["hos_id", "hos_name"],
+          order: ["hos_type_id ASC", "hos_id ASC"],
+          where: {
+            or: [
+              { hos_id: globalState.currentUser.user.department.hcode },
+              {
+                and: [
+                  { zonecode: '08' },
+                  {
+                    or: [
+                      { hos_type_id: '2' },
+                      { hos_type_id: '3' },
+                      { hos_type_id: '4' },
+                      { hos_type_id: '6' },
+                      { hos_type_id: '11' },
+                      { hos_type_id: '12' },
+                      { hos_type_id: '14' }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      };
+
+    }
+    else if (globalState.userRole === "AdminChangwat") {
+      xParams = {
+        filter: {
+          fields: ["hos_id", "hos_name"],
+          order: ["hos_type_id ASC", "hos_id ASC"],
+          where: {
+            or: [
+              { hos_id: globalState.currentUser.user.department.hcode },
+              {
+                and: [
+                  { province_name: globalState.currentUser.user.changwat },
+                  {
+                    or: [
+                      { hos_type_id: '2' },
+                      { hos_type_id: '3' },
+                      { hos_type_id: '4' },
+                      { hos_type_id: '6' },
+                      { hos_type_id: '11' },
+                      { hos_type_id: '12' },
+                      { hos_type_id: '14' }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      };
+    }
+    else {
+      xParams = {
+        filter: {
+          fields: ["hos_id", "hos_name"],
+          order: ["hos_type_id ASC", "hos_id ASC"],
+          where: {
+            hos_id: globalState.currentUser.user.department.hcode
+          }
+        }
+      };
+    }
+
+    let response = await getAll(xParams, 'hospitals');
+    if (response.status === 200) {
+      if (response.data) {
+        if (response.data.length > 0) {
+          let x = [];
+          response.data.map((i) => {
+            x.push({ hos_id: i.hos_id, hos_name: i.hos_id + ' ' + i.hos_name });
+          });
+          setSentHospitalData(x);
+        }
+      }
+    }
+
+    let xParamsB = {
+      filter: {
+        fields: ["hos_id", "hos_name"],
+        order: ["hos_type_id ASC", "hos_id ASC"],
+        where: {
+          or: [
+            { hos_type_id: '2' },
+            { hos_type_id: '3' },
+            { hos_type_id: '4' },
+            { hos_type_id: '6' },
+            { hos_type_id: '11' },
+            { hos_type_id: '12' },
+            { hos_type_id: '14' }
+          ]
+        }
+      }
+    };
+    // console.log(JSON.stringify(xParamsB));
+    let responseB = await getAll(xParamsB, 'hospitals');
+    if (responseB.status === 200) {
+      if (responseB.data) {
+        if (responseB.data.length > 0) {
+          let x = [];
+          responseB.data.map((i) => {
+            x.push({ hos_id: i.hos_id, hos_name: i.hos_id + ' ' + i.hos_name });
+          });
+          setReceiveHospitalData(x);
+        }
+      }
+    }
+  }
+
+  const setACVSent = () => {
+    if (typeof sentHospitalData !== 'undefined') {
+      if (sentHospitalData) {
+        let r;
+        sentHospitalData.map((i) => {
+          if (i['hos_id'] === globalState.currentUser.user.department.hcode) {
+            r = i;
+          }
+        });
+        return r;
+      }
+    }
+  }
+
+  const clickSearch = () => {
+    setData(null);
+    setOpenBackdrop(true);
+    getData();
+    setForcePage(1);
+    setAllPages(0);
+  }
+
+  const changeCid = (e) => {
+    setCid(null);
+    let cid = e.target.value;
+    if (cid) {
+      if (cid.length === 13) {
+        setHtCid(null);
+        setCid(e.target.value);
+      }
+      else {
+        setHtCid('ตัวเลขต้องครบ13หลัก');
+      }
+    }
+  }
+
+  const closeBackdrop = () => {
+    setOpenBackdrop(false);
+  }
+
+  const onClickPage = (e, page) => {
+    setOpenBackdrop(true);
+    getData(page - 1);
+    setForcePage(page);
+  }
+
+  const filterOptions = createFilterOptions({
+    limit: 1000,
+  });
+
+  useEffect(() => {
+    // console.log(globalState);
+    if (globalState.userRole === "AdminR8" || globalState.userRole === "AdminChangwat") {
+      setAcSentHcodeDisabled(false);
+    }
+    getData();
+    getHospital();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ marginBottom: 100, width: '100%' }}>
@@ -277,41 +540,94 @@ console.log(JSON.stringify(xParams));
         </div>
       </div> */}
 
-      <div><h5>ส่งเคลม</h5></div>
+      <Backdrop className={classes.backdrop} open={openBackdrop} onClick={closeBackdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      <div><h5>Claim walk-in</h5></div>
       <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
-        <TextField style={{ width: 200, marginRight: 5 }} label="สถานบริการหลักผู้ป่วย" variant="outlined" />
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        {receiveHospitalData && (
+          receiveHospitalData.length > 0 && (
+            <Autocomplete
+              filterOptions={filterOptions}
+              disabled={acSentHcodeDisabled}
+              style={{ width: 200, marginRight: 5 }}
+              options={sentHospitalData}
+              onInputChange={(event, newInputValue) => {
+                sentHospitalData.map((i) => {
+                  if (i.hos_name === newInputValue) {
+                    setSentHcode(i.hos_id);
+                  }
+                });
+              }}
+              defaultValue={setACVSent}
+              getOptionLabel={(option) => option.hos_name}
+              getOptionSelected={(option, value) => option.hos_name === value.hos_name}
+              renderInput={(params) => <TextField {...params} label={'รพ.ผู้ให้บริการ'} variant="outlined" />}
+            />
+          )
+        )}
+
+        {receiveHospitalData && (
+          receiveHospitalData.length > 0 && (
+            <Autocomplete
+              filterOptions={filterOptions}
+              style={{ width: 200, marginRight: 5 }}
+              options={receiveHospitalData}
+              onInputChange={(event, newInputValue) => {
+                if (newInputValue === null || newInputValue === '') {
+                  setHmainHcode(null);
+                }
+                receiveHospitalData.map((i) => {
+                  if (i.hos_name === newInputValue) {
+                    setHmainHcode(i.hos_id);
+                  }
+                });
+              }}
+              getOptionLabel={(option) => option.hos_name}
+              getOptionSelected={(option, value) => option.hos_name === value.hos_name}
+              renderInput={(params) => <TextField {...params} label={'รพ.ตามสิทธิฯ'} variant="outlined" />}
+            />
+          )
+        )}
+
+        <TextField
+          style={{ width: 150, marginRight: 5 }}
+          label="CID"
+          variant="outlined"
+          onChange={(e) => { changeCid(e) }}
+          helperText={htCid}
+          FormHelperTextProps={{ color: 'red' }}
+        />
+        <MuiPickersUtilsProvider locale={th} utils={DateFnsUtils} >
           <KeyboardDatePicker
+            clearable
             inputVariant="outlined"
-            // margin="normal"
-            // id="date-picker-dialog"
-            label="วันที่เข้ารับบริการ"
+            label="เลือกวันที่"
             format="dd/MM/yyyy"
-            value={startDate}
-            onChange={(date)=>setStartDate(date)}
+            value={selectedDate}
+            onChange={(date) => { setSelectedDate(date); setSelectedMonth(null); }}
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
-            style={{width: 180, marginRight: 5}}
+            style={{ width: 180, marginRight: 5 }}
           />
           <KeyboardDatePicker
+            views={["year", "month"]}
+            clearable
             inputVariant="outlined"
-            // margin="normal"
-            // id="date-picker-dialog"
-            label="ถึงวันที่"
-            format="dd/MM/yyyy"
-            value={endDate}
-            onChange={(date)=>setEndDate(date)}
+            label="เลือกเดือน"
+            format="MM/yyyy"
+            value={selectedMonth}
+            onChange={(date) => { setSelectedMonth(date); setSelectedDate(null); }}
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
-            style={{width: 180}}
+            style={{ width: 180, marginRight: 5 }}
           />
         </MuiPickersUtilsProvider>
-        <TextField style={{ width: 200, marginRight: 5 }} label="PID" variant="outlined" />
-        <TextField style={{ width: 120, marginRight: 5 }} label="ประเภทบริการ" variant="outlined" />
         <Button
-          // onClick={handleClickSearch}
+          onClick={clickSearch}
           style={{ height: 55 }}
           variant="contained"
           color="primary"
@@ -320,8 +636,17 @@ console.log(JSON.stringify(xParams));
           ค้นหา
         </Button>
       </div>
+
+      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Pagination count={allPages} page={forcePage} onChange={onClickPage} color="primary" />
+      </div>
+
       <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, marginTop: 10, overfloY: 'hidden', overflowX: 'scroll' }}>
         {mkRows()}
+      </div>
+
+      <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Pagination count={allPages} page={forcePage} onChange={onClickPage} color="primary" />
       </div>
 
     </div>

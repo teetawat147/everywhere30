@@ -141,7 +141,7 @@ const systemsetting = {
   component: SystemSetting
 };
 const claimsend = {
-  id: "ClaimSend",
+  id: "ส่ง Claim",
   path: "/claimsend",
   icon: <SendIcon />,
   roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
@@ -168,7 +168,7 @@ export const sideBarRoute = [
   emr,
   referin,
   referout,
-  // claimsend,
+  claimsend,
   consent,
   monitor,
   userlist,
