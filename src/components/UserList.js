@@ -304,6 +304,7 @@ export default function UserList(props) {
                 { name: "AdminHospital" },
                 { name: "Doctor" },
                 { name: "Consent" },
+                { name: "Claim" },
               ],
             },
           },
@@ -327,7 +328,8 @@ export default function UserList(props) {
                 { name: "AdminChangwat" },
                 { name: "AdminHospital" },
                 { name: "Doctor" },
-                { name: "Consent" }
+                { name: "Consent" },
+                { name: "Claim" },
               ],
             },
           },
@@ -349,7 +351,8 @@ export default function UserList(props) {
             where: {
               or: [
                 { name: "Doctor" },
-                { name: "Consent" }
+                { name: "Consent" },
+                { name: "Claim" },
               ],
             },
           },
