@@ -40,6 +40,9 @@ import {
   IconButton,
   Backdrop,
   CircularProgress,
+  FormGroup, 
+  FormControlLabel, 
+  Checkbox,
 } from '@material-ui/core';
 import {
   MuiPickersUtilsProvider,
@@ -117,7 +120,8 @@ export default function SearchCID(props) {
   const [globalState, globalActions] = useGlobal();
   const [sentHospitalData, setSentHospitalData] = useState(null);
   const [receiveHospitalData, setReceiveHospitalData] = useState(null);
-  const [sentHcode, setSentHcode] = useState(globalState.currentUser.user.department.hcode);
+  const [userHcode, setUserHcode] = useState(null);
+  const [sentHcode, setSentHcode] = useState(null);
   const [hmainHcode, setHmainHcode] = useState(null);
   const [cid, setCid] = useState(null);
   const [htCid, setHtCid] = useState(null);
@@ -128,7 +132,10 @@ export default function SearchCID(props) {
   const [allPages, setAllPages] = useState();
   const [forcePage, setForcePage] = useState(1);
   const [acSentHcodeDisabled, setAcSentHcodeDisabled] = useState(true);
-
+  const [checkedWI, setCheckedWI] = useState(true);
+  const [checkedWO, setCheckedWO] = useState(true);
+  const [checkedWZ, setCheckedWZ] = useState(true);
+  
 
   const getData = async (page) => {
     let xSkip = 0;
@@ -157,8 +164,22 @@ export default function SearchCID(props) {
     let andQuery = [];
     andQuery.push({ hcode: sentHcode });
     // andQuery.push({ an: null });
-    andQuery.push({ or :[{ walkin_pttype: "wi" },{ walkin_pttype: "wo" },{ walkin_pttype: "wz" },{ walkin_pttype: "WI" },{ walkin_pttype: "WO" },{ walkin_pttype: "WZ" }]});
-    // console.log(hmainHcode);
+    let walkinQuery=[];
+    if (checkedWI) {
+      walkinQuery.push({ walkin_pttype: "wi" });
+      walkinQuery.push({ walkin_pttype: "WI" });
+    }
+    if (checkedWO) {
+      walkinQuery.push({ walkin_pttype: "wo" });
+      walkinQuery.push({ walkin_pttype: "WO" });
+    }
+    if (checkedWZ) {
+      walkinQuery.push({ walkin_pttype: "wz" });
+      walkinQuery.push({ walkin_pttype: "WZ" });
+    }
+    if (walkinQuery.length>0) {
+      andQuery.push({ or : walkinQuery });
+    }
     if (hmainHcode) {
       andQuery.push({ hospmain: hmainHcode });
     }
@@ -187,7 +208,6 @@ export default function SearchCID(props) {
     calAllPages(rowsPerPage, { and: andQuery });
 
     let response = await getAll(xParams, 'interventions');
-    console.log(response.data);
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
@@ -421,7 +441,7 @@ export default function SearchCID(props) {
           fields: ["hos_id", "hos_name"],
           order: ["hos_type_id ASC", "hos_id ASC"],
           where: {
-            hos_id: globalState.currentUser.user.department.hcode
+            hos_id: userHcode
           }
         }
       };
@@ -523,13 +543,29 @@ export default function SearchCID(props) {
   });
 
   useEffect(() => {
-    // console.log(globalState);
-    if (globalState.userRole === "AdminR8" || globalState.userRole === "AdminChangwat") {
-      setAcSentHcodeDisabled(false);
+    if (globalState) {
+      if (typeof globalState.currentUser !== 'undefined') {
+        if (typeof globalState.currentUser.user !== 'undefined') {
+          // ดึงข้อมูลจาก globalState มาได้แล้วค่อย get ต่างๆนานา
+          setUserHcode(globalState.currentUser.user.department.hcode); 
+          if (globalState.userRole === "AdminR8" || globalState.userRole === "AdminChangwat") {
+            setAcSentHcodeDisabled(false);
+          }
+          getData();
+          getHospital();
+        }
+      }
     }
-    getData();
-    getHospital();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [globalState]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  // useEffect(() => {
+  //   if (globalState.userRole === "AdminR8" || globalState.userRole === "AdminChangwat") {
+  //     setAcSentHcodeDisabled(false);
+  //   }
+  //   getData();
+  //   getHospital();
+  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ marginBottom: 100, width: '100%' }}>
@@ -545,96 +581,117 @@ export default function SearchCID(props) {
       </Backdrop>
 
       <div><h5>Claim walk-in</h5></div>
-      <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
-        {receiveHospitalData && (
-          receiveHospitalData.length > 0 && (
-            <Autocomplete
-              filterOptions={filterOptions}
-              disabled={acSentHcodeDisabled}
-              style={{ width: 200, marginRight: 5 }}
-              options={sentHospitalData}
-              onInputChange={(event, newInputValue) => {
-                sentHospitalData.map((i) => {
-                  if (i.hos_name === newInputValue) {
-                    setSentHcode(i.hos_id);
-                  }
-                });
-              }}
-              defaultValue={setACVSent}
-              getOptionLabel={(option) => option.hos_name}
-              getOptionSelected={(option, value) => option.hos_name === value.hos_name}
-              renderInput={(params) => <TextField {...params} label={'รพ.ผู้ให้บริการ'} variant="outlined" />}
-            />
-          )
-        )}
-
-        {receiveHospitalData && (
-          receiveHospitalData.length > 0 && (
-            <Autocomplete
-              filterOptions={filterOptions}
-              style={{ width: 200, marginRight: 5 }}
-              options={receiveHospitalData}
-              onInputChange={(event, newInputValue) => {
-                if (newInputValue === null || newInputValue === '') {
-                  setHmainHcode(null);
-                }
-                receiveHospitalData.map((i) => {
-                  if (i.hos_name === newInputValue) {
-                    setHmainHcode(i.hos_id);
-                  }
-                });
-              }}
-              getOptionLabel={(option) => option.hos_name}
-              getOptionSelected={(option, value) => option.hos_name === value.hos_name}
-              renderInput={(params) => <TextField {...params} label={'รพ.ตามสิทธิฯ'} variant="outlined" />}
-            />
-          )
-        )}
-
-        <TextField
-          style={{ width: 150, marginRight: 5 }}
-          label="CID"
-          variant="outlined"
-          onChange={(e) => { changeCid(e) }}
-          helperText={htCid}
-          FormHelperTextProps={{ color: 'red' }}
-        />
-        <MuiPickersUtilsProvider locale={th} utils={DateFnsUtils} >
-          <KeyboardDatePicker
-            clearable
-            inputVariant="outlined"
-            label="เลือกวันที่"
-            format="dd/MM/yyyy"
-            value={selectedDate}
-            onChange={(date) => { setSelectedDate(date); setSelectedMonth(null); }}
-            KeyboardButtonProps={{
-              'aria-label': 'change date',
-            }}
-            style={{ width: 180, marginRight: 5 }}
+      <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10 }}>
+        <div style={{ marginBottom: 10 }}>
+          <b>ประเภท : </b>
+          <FormControlLabel
+            // control={<Checkbox checked={gilad} onChange={handleChange} name="gilad" />}
+            control={<Checkbox style={{ padding: 0, margin: 0 }} checked={checkedWI} onChange={(e)=>setCheckedWI(e.target.checked)} />}
+            label="ข้าม CUP ในจังหวัด"
+            style={{ padding: 0, margin: 0, marginRight: 20 }}
           />
-          <KeyboardDatePicker
-            views={["year", "month"]}
-            clearable
-            inputVariant="outlined"
-            label="เลือกเดือน"
-            format="MM/yyyy"
-            value={selectedMonth}
-            onChange={(date) => { setSelectedMonth(date); setSelectedDate(null); }}
-            KeyboardButtonProps={{
-              'aria-label': 'change date',
-            }}
-            style={{ width: 180, marginRight: 5 }}
+          <FormControlLabel
+            control={<Checkbox style={{ padding: 0, margin: 0 }} checked={checkedWO} onChange={(e)=>setCheckedWO(e.target.checked)} />}
+            label="ข้ามจังหวัดในเขต"
+            style={{ padding: 0, margin: 0, marginRight: 20 }}
           />
-        </MuiPickersUtilsProvider>
-        <Button
-          onClick={clickSearch}
-          style={{ height: 55 }}
-          variant="contained"
-          color="primary"
-          startIcon={<MdSearch size={20} />}
-        >
-          ค้นหา
-        </Button>
+          <FormControlLabel
+            control={<Checkbox style={{ padding: 0, margin: 0 }} checked={checkedWZ} onChange={(e)=>setCheckedWZ(e.target.checked)} />}
+            label="ข้ามเขต"
+            style={{ padding: 0, margin: 0, marginRight: 20 }}
+          />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+          {sentHospitalData && (
+            sentHospitalData.length > 0 && (
+              <Autocomplete
+                filterOptions={filterOptions}
+                disabled={acSentHcodeDisabled}
+                style={{ width: 200, marginRight: 5 }}
+                options={sentHospitalData}
+                onInputChange={(event, newInputValue) => {
+                  sentHospitalData.map((i) => {
+                    if (i.hos_name === newInputValue) {
+                      setSentHcode(i.hos_id);
+                    }
+                  });
+                }}
+                defaultValue={setACVSent}
+                getOptionLabel={(option) => option.hos_name}
+                getOptionSelected={(option, value) => option.hos_name === value.hos_name}
+                renderInput={(params) => <TextField {...params} label={'รพ.ผู้ให้บริการ'} variant="outlined" />}
+              />
+            )
+          )}
+
+          {receiveHospitalData && (
+            receiveHospitalData.length > 0 && (
+              <Autocomplete
+                filterOptions={filterOptions}
+                style={{ width: 200, marginRight: 5 }}
+                options={receiveHospitalData}
+                onInputChange={(event, newInputValue) => {
+                  if (newInputValue === null || newInputValue === '') {
+                    setHmainHcode(null);
+                  }
+                  receiveHospitalData.map((i) => {
+                    if (i.hos_name === newInputValue) {
+                      setHmainHcode(i.hos_id);
+                    }
+                  });
+                }}
+                getOptionLabel={(option) => option.hos_name}
+                getOptionSelected={(option, value) => option.hos_name === value.hos_name}
+                renderInput={(params) => <TextField {...params} label={'รพ.ตามสิทธิฯ'} variant="outlined" />}
+              />
+            )
+          )}
+
+          <TextField
+            style={{ width: 150, marginRight: 5 }}
+            label="CID"
+            variant="outlined"
+            onChange={(e) => { changeCid(e) }}
+            helperText={htCid}
+            FormHelperTextProps={{ color: 'red' }}
+          />
+          <MuiPickersUtilsProvider locale={th} utils={DateFnsUtils} >
+            <KeyboardDatePicker
+              clearable
+              inputVariant="outlined"
+              label="เลือกวันที่"
+              format="dd/MM/yyyy"
+              value={selectedDate}
+              onChange={(date) => { setSelectedDate(date); setSelectedMonth(null); }}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+              style={{ width: 180, marginRight: 5 }}
+            />
+            <KeyboardDatePicker
+              views={["year", "month"]}
+              clearable
+              inputVariant="outlined"
+              label="เลือกเดือน"
+              format="MM/yyyy"
+              value={selectedMonth}
+              onChange={(date) => { setSelectedMonth(date); setSelectedDate(null); }}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+              style={{ width: 180, marginRight: 5 }}
+            />
+          </MuiPickersUtilsProvider>
+          <Button
+            onClick={clickSearch}
+            style={{ height: 55 }}
+            variant="contained"
+            color="primary"
+            startIcon={<MdSearch size={20} />}
+          >
+            ค้นหา
+          </Button>
+        </div>
       </div>
 
       <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

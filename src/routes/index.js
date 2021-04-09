@@ -141,7 +141,7 @@ const systemsetting = {
   component: SystemSetting
 };
 const claimsend = {
-  id: "ส่ง Claim",
+  id: "Claim",
   path: "/claimsend",
   icon: <SendIcon />,
   roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
