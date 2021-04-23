@@ -6,9 +6,11 @@ import {
   Button,
 } from "@material-ui/core";
 import homeImage from "../images/flow_01.jpg";
+import opchat from "../images/opchat.jpg";
 import RegisterGuide from "./RegisterGuide";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DashboardRegister from './DashboardRegister';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,10 +32,11 @@ const useStyles = makeStyles((theme) => ({
         : props.color === 'green'
         ? '0 3px 5px 2px rgba(0, 255, 127, .3)'
         : '',
-    color: 'white',
+    color: 'black',
     height: 48,
     padding: '0 30px',
     margin: 8,
+    flexGrow: 1,
   }
 }));
 
@@ -100,31 +103,52 @@ const Home = () => {
   }
 
   return (
-    <div className="container">
-      <React.Fragment>
-        <MyButton color="red">จำนวนผู้ป่วยทั้งหมด &nbsp;&nbsp;<b>{typeof totalPerson.count !== "undefined" ? totalPerson.count.toLocaleString() : totalPerson.count}</b>&nbsp;&nbsp; ราย</MyButton>
-        <MyButton color="blue">ประวัติการรักษาทั้งหมด &nbsp;&nbsp;<b>{typeof totalIntervention.count !== "undefined" ? totalIntervention.count.toLocaleString() : totalIntervention.count}</b>&nbsp;&nbsp; รายการ</MyButton>
-        <MyButton color="green">ดูประวัติการรักษา &nbsp;&nbsp;<b>{typeof totalLog.count !== "undefined" ? totalLog.count.toLocaleString() : totalLog.count}</b>&nbsp;&nbsp; ครั้ง</MyButton>
-      </React.Fragment>
-      <br/><br/>
-      <RegisterGuide/>
-      <br/>
-      <Button
-        variant="contained"
-        color="secondary"
-        className={classes.button}
-        startIcon={<CloudDownloadIcon />}
-        onClick={e=>download_consent()}
-      >
-        Download คู่มือการใช้งาน
-      </Button>
-      <br/><br/>
-      <DashboardRegister/>
-      <br/>
-      <header className="jumbotron">
-        <img src={homeImage} alt="" style={{ width: '100%' }} />
-      </header>
-      
+    <div className={classes.root}>
+      <Grid container spacing={12}>
+        <React.Fragment>
+          <MyButton color="red">จำนวนผู้ป่วยทั้งหมด &nbsp;&nbsp;<b>{typeof totalPerson.count !== "undefined" ? totalPerson.count.toLocaleString() : totalPerson.count}</b>&nbsp;&nbsp; ราย</MyButton>
+          <MyButton color="blue">ประวัติการรักษาทั้งหมด &nbsp;&nbsp;<b>{typeof totalIntervention.count !== "undefined" ? totalIntervention.count.toLocaleString() : totalIntervention.count}</b>&nbsp;&nbsp; รายการ</MyButton>
+          <MyButton color="green">ดูประวัติการรักษา &nbsp;&nbsp;<b>{typeof totalLog.count !== "undefined" ? totalLog.count.toLocaleString() : totalLog.count}</b>&nbsp;&nbsp; ครั้ง</MyButton>
+        </React.Fragment>
+      </Grid>
+      <Grid container spacing={5}>
+        <Grid item xs={7}>
+          <RegisterGuide/>
+        </Grid>
+        <Grid item xs={3}>
+          <img src={opchat} alt="" style={{ width: '100%' }} />
+        </Grid>
+        <Grid item xs={2}>
+          <b>Scan</b><br/>
+          เข้ากลุ่ม Line<br/>
+          แจ้งปัญหาการใช้งาน
+        </Grid>
+      </Grid>
+      <Grid container spacing={5}>
+        <Grid item xs={7}>
+          <Button
+          variant="contained"
+          color="secondary"
+          className={classes.button}
+          startIcon={<CloudDownloadIcon />}
+          onClick={e=>download_consent()}
+          >
+            Download คู่มือการใช้งาน
+          </Button>
+        </Grid>
+      </Grid>
+      <Grid container spacing={5}>
+        <Grid item xs={12}>
+          <DashboardRegister/>
+        </Grid>
+      </Grid>
+      <Grid container spacing={5}>
+        <Grid item xs={12}>
+          <header className="jumbotron">
+            <img src={homeImage} alt="" style={{ width: '100%' }} />
+          </header>
+        </Grid>
+      </Grid>
     </div>
   );
 };
