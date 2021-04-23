@@ -104,45 +104,38 @@ const Home = () => {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={12}>
-        <React.Fragment>
-          <MyButton color="red">จำนวนผู้ป่วยทั้งหมด &nbsp;&nbsp;<b>{typeof totalPerson.count !== "undefined" ? totalPerson.count.toLocaleString() : totalPerson.count}</b>&nbsp;&nbsp; ราย</MyButton>
-          <MyButton color="blue">ประวัติการรักษาทั้งหมด &nbsp;&nbsp;<b>{typeof totalIntervention.count !== "undefined" ? totalIntervention.count.toLocaleString() : totalIntervention.count}</b>&nbsp;&nbsp; รายการ</MyButton>
-          <MyButton color="green">ดูประวัติการรักษา &nbsp;&nbsp;<b>{typeof totalLog.count !== "undefined" ? totalLog.count.toLocaleString() : totalLog.count}</b>&nbsp;&nbsp; ครั้ง</MyButton>
-        </React.Fragment>
-      </Grid>
-      <Grid container spacing={5}>
-        <Grid item xs={7}>
-          <RegisterGuide/>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <React.Fragment>
+            <MyButton color="red">จำนวนผู้ป่วยทั้งหมด &nbsp;&nbsp;<b>{typeof totalPerson.count !== "undefined" ? totalPerson.count.toLocaleString() : totalPerson.count}</b>&nbsp;&nbsp; ราย</MyButton>
+            <MyButton color="blue">ประวัติการรักษาทั้งหมด &nbsp;&nbsp;<b>{typeof totalIntervention.count !== "undefined" ? totalIntervention.count.toLocaleString() : totalIntervention.count}</b>&nbsp;&nbsp; รายการ</MyButton>
+            <MyButton color="green">ดูประวัติการรักษา &nbsp;&nbsp;<b>{typeof totalLog.count !== "undefined" ? totalLog.count.toLocaleString() : totalLog.count}</b>&nbsp;&nbsp; ครั้ง</MyButton>
+          </React.Fragment>
+        </Grid>
+        <Grid item xs={6}>
+          <RegisterGuide/><br/>
+          <DashboardRegister/>
         </Grid>
         <Grid item xs={3}>
           <img src={opchat} alt="" style={{ width: '100%' }} />
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={3}>
           <b>Scan</b><br/>
           เข้ากลุ่ม Line<br/>
-          แจ้งปัญหาการใช้งาน
-        </Grid>
-      </Grid>
-      <Grid container spacing={5}>
-        <Grid item xs={7}>
+          แจ้งปัญหาการใช้งาน<br/><br/>
           <Button
-          variant="contained"
-          color="secondary"
-          className={classes.button}
-          startIcon={<CloudDownloadIcon />}
-          onClick={e=>download_consent()}
-          >
-            Download คู่มือการใช้งาน
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<CloudDownloadIcon />}
+            onClick={e=>download_consent()}
+            >
+              Download คู่มือการใช้งาน
           </Button>
         </Grid>
-      </Grid>
-      <Grid container spacing={5}>
         <Grid item xs={12}>
-          <DashboardRegister/>
+          
         </Grid>
-      </Grid>
-      <Grid container spacing={5}>
         <Grid item xs={12}>
           <header className="jumbotron">
             <img src={homeImage} alt="" style={{ width: '100%' }} />
