@@ -128,6 +128,8 @@ export default function SearchCID(props) {
   const [allPages, setAllPages] = useState();
   const [forcePage, setForcePage] = useState(1);
   const [acRecieveHcodeDisabled, setAcRecieveHcodeDisabled] = useState(true);
+  const [referNumber, setReferNumber] = useState(null);
+  const [htReferNumber, setHtReferNumber] = useState(null);
 
 
   const getData = async (page) => {
@@ -160,11 +162,14 @@ export default function SearchCID(props) {
     if (cid) {
       cidQuery = { cid: cid };
     }
+    let referNumberQuery = null;
+    if (referNumber) {
+      referNumberQuery = { "activities.referout.refer_number": referNumber };
+    }
+
     let andQuery = [];
-
-    console.log(sentHcode);
-    console.log(receiveHcode);
-
+    // console.log(sentHcode);
+    // console.log(receiveHcode);
     if (sentHcode) {
       andQuery.push({ hcode: sentHcode });
     }
@@ -184,6 +189,9 @@ export default function SearchCID(props) {
     }
     if (dateQuery) {
       andQuery.push(dateQuery);
+    }
+    if (referNumberQuery) {
+      andQuery.push(referNumberQuery);
     }
     let xParams = {
       // ปัญหา filter LOOPBACK 
@@ -285,7 +293,7 @@ export default function SearchCID(props) {
                 <td className={classes.tcell}>{typeof refer.refer_date !== 'undefined' ? thaiXSDate(refer.refer_date) : thaiXSDate(refer.date)}</td>
                 <td className={classes.tcell}>{i.hcode} {i.hospital.hos_name}</td>
                 {/* <td className={classes.tcell}>-</td> */}
-                {/* <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : '-'}</td> */}
+                <td className={classes.tcell}>{typeof refer.refer_number !== 'undefined' ? refer.refer_number : '-'}</td>
                 <td className={classes.tcellWrap}>
                   <Tooltip title={<span style={{ fontSize: 16 }}>{typeof refer.refer_hospcode !== 'undefined' ? refer.refer_hospcode : ''} {typeof refer.refer_hospital_name !== 'undefined' ? refer.refer_hospital_name : ''}</span>} arrow={true} placement="top" >
                     <div style={{ height: 70, overflow: 'hidden', textOverflow: 'ellipsis', width: 150 }}>
@@ -340,8 +348,8 @@ export default function SearchCID(props) {
             <td className={classes.thead}><br /></td>
             <td className={classes.thead}>วันที่ส่งตัว</td>
             {/* <td className={classes.thead}>วันที่รับตัว</td> */}
-            {/* <td className={classes.thead}>เลขที่ใบส่งตัว</td> */}
             <td className={classes.thead}>รพ.ต้นทาง</td>
+            <td className={classes.thead}>เลขที่ใบส่งตัว</td>
             <td className={classes.thead}>รพ.ปลายทาง</td>
             <td className={classes.thead}>HN</td>
             <td className={classes.thead}>ชื่อสกุล</td>
@@ -523,6 +531,20 @@ export default function SearchCID(props) {
     }
   }
 
+  const changeReferNumber = (e) => {
+    setReferNumber(null);
+    let cid = e.target.value;
+    if (cid) {
+      if (cid.length > 0) {
+        setHtReferNumber(null);
+        setReferNumber(e.target.value);
+      }
+      else {
+        setHtReferNumber('ตัวเลขอย่างน้อย1หลัก');
+      }
+    }
+  }
+
   const closeBackdrop = () => {
     setOpenBackdrop(false);
   }
@@ -561,8 +583,6 @@ export default function SearchCID(props) {
 
       <div><h5>REFERIN</h5></div>
       <div style={{ borderRadius: 5, border: 'solid 1px #dadada', padding: 10, display: 'flex', justifyContent: 'flex-start' }}>
-        {/* <TextField style={{ width: 120, marginRight: 5 }} label="เลขที่ใบส่งตัว" variant="outlined" disabled={true} /> */}
-        {/* <TextField style={{ width: 200, marginRight: 5 }} label="รพ.ต้นทาง" variant="outlined" /> */}
 
         {sentHospitalData && (
           sentHospitalData.length > 0 && (
@@ -608,6 +628,15 @@ export default function SearchCID(props) {
             />
           )
         )}
+
+        <TextField
+          style={{ width: 120, marginRight: 5 }}
+          label="เลขที่ใบส่งตัว"
+          variant="outlined"
+          onChange={(e) => { changeReferNumber(e) }}
+          helperText={htCid}
+          FormHelperTextProps={{ color: 'red' }}
+        />
 
         <TextField
           style={{ width: 150, marginRight: 5 }}
