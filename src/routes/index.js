@@ -37,49 +37,49 @@ const root = {
   id: "Root",
   path: "/",
   icon: <HomeIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Refer"],
   component: Home
 };
 const home = {
   id: "Home",
   path: "/home",
   icon: <HomeIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Refer"],
   component: Home
 };
 const register = {
   id: "register",
   path: "/register",
   icon: <PersonAddIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Refer"],
   component: Register
 };
 const linelogin = {
   id: "linelogin",
   path: "/linelogin",
   icon: null,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Refer"],
   component: LineLogin
 };
 const login = {
   id: "Login",
   path: "/login",
   icon: <LockOpenIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent", "Refer"],
   component: Login
 };
 const logout = {
   id: "Logout",
   path: "/logout",
   icon: <ExitToAppIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole", "Consent", "Refer"],
   component: Logout
 };
 const emr = {
   id: "EMR",
   path: "/emr",
   icon: <WcIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Refer"],
   component: Emr
 };
 const referin = {
@@ -87,7 +87,7 @@ const referin = {
   path: "/referin",
   icon: <GetAppIcon />,
   // roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
-  roles: ["AdminR8", "Doctor", "Claim"],
+  roles: ["AdminR8", "Doctor", "Claim", "Refer"],
   component: Referin
 };
 const referout = {
@@ -95,7 +95,7 @@ const referout = {
   path: "/referout",
   icon: <CallMissedOutgoingIcon />,
   // roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim"],
-  roles: ["AdminR8", "Doctor", "Claim"],
+  roles: ["AdminR8", "Doctor", "Claim", "Refer"],
   component: Referout
 };
 const userlist = {
@@ -116,14 +116,14 @@ const consent = {
   id: "Consent",
   path: "/consent",
   icon: <AssignmentIcon />,
-  roles: ["Doctor", "Consent"],
+  roles: ["Doctor", "Consent", "Claim", "Refer"],
   component: Consent
 };
 const profile = {
   id: "Profile",
   path: "/profile",
   icon: null,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole", "Consent"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Member", "noRole", "Consent", "Claim", "Refer"],
   component: Profile
 };
 const monitor = {
@@ -134,7 +134,7 @@ const monitor = {
   component: Monitor
 };
 const systemsetting = {
-  id: "Systemsetting",
+  id: "System Setting",
   path: "/systemsetting",
   icon: <SettingsIcon />,
   roles: ["AdminR8"],
@@ -144,7 +144,7 @@ const claimsend = {
   id: "Claim",
   path: "/claimsend",
   icon: <SendIcon />,
-  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "Claim", "Member", "noRole"],
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Claim", "Member", "noRole"],
   component: ClaimSend
 };
 const dialyvisit = {
