@@ -207,12 +207,12 @@ export default function SearchCID(props) {
       }
     };
     // console.log(xParams);
-    console.log(JSON.stringify(xParams));
+    // console.log(JSON.stringify(xParams));
 
     calAllPages(rowsPerPage, { and: andQuery });
 
     let response = await getAll(xParams, 'interventions');
-    console.log(response.data);
+    // console.log(response.data);
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
