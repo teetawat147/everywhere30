@@ -195,6 +195,12 @@ const Monitor = () => {
     }
     return await Promise.all(result);
   }
+
+  const numberWithCommas = (number) => {
+    console.log("Number : " + number);
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   const MakeRows = (hospitals) => {
     let row = [];
     let total_sync = 0;
@@ -212,9 +218,9 @@ const Monitor = () => {
         <TableCell component="th" scope="row">{hos.hosname}</TableCell>
         <TableCell align="center">{hos.lastupdate}</TableCell>
         <TableCell align="center">{hos.transfermode}</TableCell>
-        <TableCell align="right">{typeof hos.total_patient !== "undefined" ? hos.total_patient.toLocaleString() : hos.total_patient}</TableCell>
+        <TableCell align="right">{typeof hos.total_patient !== "undefined" ? hos.total_patient.toLocaleString() : hos.total_patient}</TableCell> 
         <TableCell align="right">
-          {typeof hos.transfers !== undefined ? hos.transfers.toLocaleString() : typeof hos.count !== undefined ? hos.count.toLocaleString() : "0"}
+          {typeof hos.transfers !== "undefined" ? hos.transfers.toLocaleString() : typeof hos.count !== undefined ? hos.count.toLocaleString() : "0"}
         </TableCell>
         <TableCell align="center">{typeof hos.transferpercent !== "undefined" ? hos.transferpercent.toFixed(2) : "-"}</TableCell>
         <TableCell align="center">{hos.version}</TableCell>
