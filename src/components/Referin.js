@@ -457,6 +457,7 @@ export default function SearchCID(props) {
           let x = [];
           response.data.map((i) => {
             x.push({ hos_id: i.hos_id, hos_name: i.hos_id + ' ' + i.hos_name });
+            return null;
           });
           setReceiveHospitalData(x);
         }
@@ -488,6 +489,7 @@ export default function SearchCID(props) {
           let x = [];
           responseB.data.map((i) => {
             x.push({ hos_id: i.hos_id, hos_name: i.hos_id + ' ' + i.hos_name });
+            return null;
           });
           setSentHospitalData(x);
         }
@@ -503,6 +505,7 @@ export default function SearchCID(props) {
           if (i['hos_id'] === globalState.currentUser.user.department.hcode) {
             r = i;
           }
+          return null;
         });
         return r;
       }
@@ -598,6 +601,7 @@ export default function SearchCID(props) {
                   if (i.hos_name === newInputValue) {
                     setSentHcode(i.hos_id);
                   }
+                  return null;
                 });
               }}
               getOptionLabel={(option) => option.hos_name}
@@ -619,6 +623,7 @@ export default function SearchCID(props) {
                   if (i.hos_name === newInputValue) {
                     setReceiveHcode(i.hos_id);
                   }
+                  return null;
                 });
               }}
               defaultValue={setACVReceive}

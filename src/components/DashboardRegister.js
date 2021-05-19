@@ -116,9 +116,10 @@ const DashboardRegister = (props) => {
     userregisters.map((hos) => {
       total_user += hos.count;
       row.push(<StyledTableRow key={key++}>
-        <TableCell align="center">{hos.changwat}</TableCell>
+        <TableCell align="center">{(typeof hos.changwat === 'object')?hos.changwat.changwatname:hos.changwat}</TableCell>
         <TableCell align="center">{typeof hos.count !== "undefined" ? hos.count.toFixed(0) : "0"}</TableCell>
       </StyledTableRow>);
+      return null;
     });
     row.push(
       <StyledTableRow key="total">

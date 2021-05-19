@@ -93,7 +93,7 @@ const Monitor = () => {
   const [openBackdrop, setOpenBackdrop] = useState(false);
   const currentUser = getCurrentUser();
   const [changwats, setChangwats] = useState([]);
-  const [changwat, setChangwat] = useState((currentUser != null) ? currentUser.user.changwat : '');
+  const [changwat, setChangwat] = useState((currentUser != null) ? currentUser.user.changwat || currentUser.user.changwat.changwatname : '');
   const [hostype, setHostype] = useState('hospital');
   const rowsPerpage = 7;
   // const [allPages, setAllPages] = useState(0);
@@ -162,10 +162,12 @@ const Monitor = () => {
     let response = null;
     if (typeof changwat !== 'undefined' && changwat != null && changwat !== '') {
       params.filter.where = {
-        province_name: changwat,
+        province_name: (typeof changwat==='object') ? changwat.changwatname : changwat,
         or: hostype_id
       };
+      // console.log(JSON.stringify(params));
       response = await getAll(params, 'hospitals');
+      // console.log(response);
     }
     // console.log(JSON.stringify(params));
     let result = [];
@@ -212,7 +214,7 @@ const Monitor = () => {
         <TableCell align="center">{hos.transfermode}</TableCell>
         <TableCell align="right">{typeof hos.total_patient !== "undefined" ? hos.total_patient.toLocaleString() : hos.total_patient}</TableCell>
         <TableCell align="right">
-          {typeof hos.transfers !== "undefined" ? hos.transfers.toLocaleString() : typeof hos.count !== "underfined" ? hos.count.toLocaleString() : "0"}
+          {typeof hos.transfers !== undefined ? hos.transfers.toLocaleString() : typeof hos.count !== undefined ? hos.count.toLocaleString() : "0"}
         </TableCell>
         <TableCell align="center">{typeof hos.transferpercent !== "undefined" ? hos.transferpercent.toFixed(2) : "-"}</TableCell>
         <TableCell align="center">{hos.version}</TableCell>

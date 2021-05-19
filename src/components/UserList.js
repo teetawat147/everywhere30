@@ -162,7 +162,7 @@ export default function UserList(props) {
           // },
           where: {
             and: [
-              { changwat: currentUser.user.changwat },
+              { changwat: currentUser.user.changwat || currentUser.user.changwat.changwatname },
               { application: "R8Anywhere" }
             ],
             or: [
@@ -186,7 +186,7 @@ export default function UserList(props) {
           // },
           where: {
             and: [
-              { changwat: currentUser.user.changwat },
+              { changwat: currentUser.user.changwat || currentUser.user.changwat.changwatname },
               { application: "R8Anywhere" }
             ],
             or: [
@@ -656,7 +656,7 @@ export default function UserList(props) {
                     ? typeof user.RoleMapping[0].role.name !== "undefined" ? user.RoleMapping[0].role.name :""
                     : ""}
                 </td>
-                <td>{user.changwat}</td>
+                <td>{ (typeof user.changwat === 'object') ? user.changwat.changwatname : user.changwat }</td>
                 <td>
                   {typeof user.department !== "undefined"
                     ? user.department.hos_name
