@@ -44,11 +44,13 @@ import {
   Slide,
   CircularProgress,
   Backdrop,
+  Grid,
+  InputAdornment,
 } from '@material-ui/core';
 
 import PropTypes from 'prop-types';
 
-import { MdSearch, MdSwapHoriz, MdSwapVert } from 'react-icons/md';
+import { MdSearch, MdSwapHoriz, MdSwapVert, MdClear } from 'react-icons/md';
 
 // const useStyles = makeStyles({
 const useStyles = makeStyles((theme) => ({
@@ -145,6 +147,7 @@ TabPanel.propTypes = {
 export default function SearchCID(props) {
   const classes = useStyles();
   const [searchCID, setSearchCID] = useState(null);
+  const [searchCIDValue, setSearchCIDValue] = useState('');
   const [cidHelperText, setCidHelperText] = useState(null);
   const [patientData, setPatientData] = useState([]);
   const [interventionData, setinterventionData] = useState([]);
@@ -160,9 +163,16 @@ export default function SearchCID(props) {
   const [dialogText, setDialogText] = useState('');
   // const [needConsent, setNeedConsent] = useState(2);
   const [openBackdrop, setOpenBackdrop] = useState(false);
-  
+  const [searchPassport, setSearchPassport] = useState(null);
+  const [searchPassportValue, setSearchPassportValue] = useState('');
+  const [passportHelperText, setPassportHelperText] = useState(null);
+  const [showClearSearchPassportButton, setShowClearSearchPassportButton] = useState('none');
+  const [showClearSearchCIDButton, setShowClearSearchCIDButton] = useState('none');
+  const [searchButtonDisabled, setSearchButtonDisabled] = useState(true);
+
 
   const onchangeSearchText = (e) => {
+    setSearchCIDValue(e.target.value);
     let v = e.target.value;
     let invalid = [];
     if (v.length !== 13) {
@@ -175,10 +185,49 @@ export default function SearchCID(props) {
     if (invalid.length === 0) {
       setSearchCID(v);
       setCidHelperText('');
+      setSearchButtonDisabled(false);
     }
     else {
       setSearchCID(null);
       setCidHelperText(invalid.join(', '));
+      setSearchButtonDisabled(true);
+    }
+
+    if (v.length>0) {
+      setShowClearSearchCIDButton('inline-block');
+    }
+    else {
+      setShowClearSearchCIDButton('none');
+    }
+  }
+
+  const onchangeSearchPassport = (e) => {
+    setSearchPassportValue(e.target.value);
+    let v = e.target.value;
+    let invalid = [];
+    if (v.length < 5) {
+      invalid.push('กรอกตัวเลขหรืออักษรภาษาอังกฤษอย่างน้อย 5 ตัว');
+    }
+    if (!(/^[a-zA-Z0-9]+$/.test(v))) {
+      invalid.push('เฉพาะตัวเลขหรืออักษรภาษาอังกฤษเท่านั้น');
+    }
+
+    if (invalid.length === 0) {
+      setSearchPassport(v);
+      setPassportHelperText('');
+      setSearchButtonDisabled(false);
+    }
+    else {
+      setSearchPassport(null);
+      setPassportHelperText(invalid.join(', '));
+      setSearchButtonDisabled(true);
+    }
+
+    if (v.length>0) {
+      setShowClearSearchPassportButton('inline-block');
+    }
+    else {
+      setShowClearSearchPassportButton('none');
     }
   }
 
@@ -194,35 +243,57 @@ export default function SearchCID(props) {
 
     let c = null;
     if (cid === null) {
-      c = searchCID
+      // ไม่มี cid ส่งมาด้วย ให้ไปเอาจาก state
+      // เช็คว่า search ด้วย passport หรือป่าว
+      if (searchPassport !== null) {
+        setOpenBackdrop(true);
+        let xParams = {
+          filter: {
+            where: {
+              passport_no: searchPassport
+            },
+            fields: ["id", "cid", "passport_no"]
+          }
+        };
+        let response = await getAll(xParams, 'people');
+        if (response.status === 200) {
+          if (response.data) {
+            if (typeof response.data[0] !== 'undefined') {
+              if (typeof response.data[0].cid !== 'undefined') {
+                if (response.data[0].cid.length===13) {
+                  preGetPersonInfo(response.data[0].cid);
+                }
+              }
+            }
+          }
+        }
+      }
+      else {
+        if (typeof searchCID !== 'undefined') {
+          if (searchCID !== null) {
+            preGetPersonInfo(searchCID);
+          }
+        }
+      }
     }
     else {
-      c = cid;
-    }
-    if (typeof c !== 'undefined') {
-      if (c !== null) {
-        preGetPersonInfo(c);
+      // มี cid ส่งมาด้วย (คือ cid ที่ส่งมาจากหน้า referin / referout)
+      if (typeof cid !== 'undefined') {
+        if (cid !== null) {
+          preGetPersonInfo(c);
+        }
       }
     }
   }
 
   const preGetPersonInfo = async (cid) => {
     setOpenBackdrop(true);
-    let c = null;
-    if (searchCID) {
-      c = searchCID;
-    }
-    else {
-      c = cid;
-    }
-
+    let c = cid;
     let xParams = { filter: {where:{key: "emrRequiredConsent"}}};
     let response = await getAll(xParams, 'SystemSettings');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
-          // console.log(response.data[0].value.toString());
-          // setNeedConsent(parseInt(response.data[0].value.toString()));
           if (response.data[0].value.toString()==="1") {
             checkConsent(c);
           }
@@ -232,15 +303,6 @@ export default function SearchCID(props) {
         }
       }
     }
-    // let mustCheckConsent=needConsent;
-    // console.log(mustCheckConsent);
-    // // console.log(mustCheckConsent===1);
-    // if (mustCheckConsent===1) {
-    //   checkConsent(c);
-    // }
-    // else {
-    //   getPersonInfo(c);
-    // }
   }
 
   const checkConsent = async (cid) => {
@@ -511,7 +573,7 @@ export default function SearchCID(props) {
           }
         }
       }
-      console.log(serviceData);
+      // console.log(serviceData);
       // console.log(serviceData.activities.referout);
       // console.log(assessment);
     }
@@ -714,6 +776,37 @@ export default function SearchCID(props) {
     setOpenBackdrop(false);
   }
 
+  const clearSearchCID = () => {
+    setSearchCID(null);
+    setSearchCIDValue('');
+    setShowClearSearchCIDButton('none');
+    setCidHelperText('');
+    setSearchButtonDisabled(true);
+  }
+
+  const clearSearchPassport = () => {
+    setSearchPassport(null);
+    setSearchPassportValue('');
+    setShowClearSearchPassportButton('none');
+    setPassportHelperText('');
+    setSearchButtonDisabled(true);
+  }
+
+  const clickSearchInput = () => {
+    setSearchButtonDisabled(true);
+
+    setSearchCID(null);
+    setSearchCIDValue('');
+    setShowClearSearchCIDButton('none');
+    setCidHelperText('');
+
+    setSearchPassport(null);
+    setSearchPassportValue('');
+    setShowClearSearchPassportButton('none');
+    setPassportHelperText('');
+  }
+
+
   // useEffect(() => {
   //   getConsentSetting();
   // }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -742,41 +835,67 @@ export default function SearchCID(props) {
     <div style={{ marginBottom: 100 }}>
 
 
-      <Backdrop className={classes.backdrop} open={openBackdrop} onClick={closeBackdrop}>
-      {/* <Backdrop className={classes.backdrop} open={true}> */}
+      {/* <Backdrop className={classes.backdrop} open={openBackdrop} onClick={closeBackdrop}> */}
+      <Backdrop className={classes.backdrop} open={openBackdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      <div><h5>ค้นหาด้วยเลขบัตรประจำตัวประชาชน</h5></div>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ width: '100%' }}>
+      <Grid container justify="flex-start">
+        <Grid item xs={5}>
+          <div><h5>ค้นหาด้วยเลขบัตรประจำตัวประชาชน</h5></div>
           <TextField
+            value={searchCIDValue}
             name="searchText"
             variant="outlined"
-            // placeholder="ค้นหา"
             style={{ width: '100%' }}
             onChange={(e) => onchangeSearchText(e)}
             helperText={cidHelperText}
             FormHelperTextProps={{ className: classes.helperText }}
-          // startAdornment={
-          //   <InputAdornment position="start">
-          //     <MdSearch size={20} />
-          //   </InputAdornment>
-          // }
+            onClick={clickSearchInput}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start" style={{ cursor: 'pointer',marginTop: -20 ,display: showClearSearchCIDButton }} onClick={clearSearchCID}>
+                  <MdClear />
+                </InputAdornment>
+              ),
+            }}
           />
-        </div>
-        <div>
+        </Grid>
+        <Grid item xs={5}>
+          <div><h5>ค้นหาด้วยเลข passport</h5></div>
+          <TextField
+            value={searchPassportValue}
+            name="searchPassport"
+            variant="outlined"
+            style={{ width: '100%', marginLeft: 5 }}
+            onChange={(e) => onchangeSearchPassport(e)}
+            helperText={passportHelperText}
+            FormHelperTextProps={{ className: classes.helperText }}
+            onClick={clickSearchInput}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start" style={{ cursor: 'pointer',marginTop: -20 ,display: showClearSearchPassportButton }} onClick={clearSearchPassport}>
+                  <MdClear />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid item xs={2} style={{ paddingLeft: 5 }}>
+          <div><h5><br /></h5></div>
           <Button
+            fullWidth
             onClick={(e) => handleClickSearch(e, null)}
-            style={{ height: 55 }}
+            style={{ height: 55  }}
             variant="contained"
             color="primary"
             startIcon={<MdSearch size={20} />}
+            disabled={searchButtonDisabled}
           >
             ค้นหา
           </Button>
-        </div>
-      </div>
+        </Grid>
+      </Grid>
 
       <div style={{ marginTop: 10, marginBottom: 10, padding: 10, backgroundColor: '#f9f9f9', borderRadius: 5, border: 'solid 1px #dadada' }}>
         <div style={{ display: 'flex', flexDirection: 'flex-start' }}>
