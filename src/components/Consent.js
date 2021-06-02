@@ -19,7 +19,7 @@ import IconButton from '@material-ui/core/IconButton'
 import InfoIcon from '@material-ui/icons/Info';
 import { indigo } from '@material-ui/core/colors';
 import moment from "moment";
-import { getAll, uploadFile, create, remove } from "../services/UniversalAPI";
+import { getAll, uploadFile, create, remove, removeFile } from "../services/UniversalAPI";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -199,6 +199,7 @@ function ConsentArea() {
     }).then(async () => {
       let consentResult = await remove(person.consent.id, 'consents'); // ยกเลิก consent
       if (consentResult.status === 200) {
+        let rmFile = await removeFile(person.consent.fileConsent, 'containers/consentForm/files'); // Remove File
         setPerson('');
         setAlertClass('success');
         setAlertText('ยกเลิก Consent เรียบร้อยแล้ว');
