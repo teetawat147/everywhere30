@@ -99,13 +99,14 @@ function ConsentArea() {
   }
   const handleSearch = async () => {
     if (cid !== '') {
-      let searchPerson = await getAll({ filter: { "fields": { "cid": "true", "id": "true", "prename": "true", "fname": "true", "lname": "true", "hcode": "true" }, "where": { "cid": cid }, "include": "consent", "limit": "1" } }, 'people');
+      let searchPerson = await getAll({ filter: { "fields": { "cid": "true", "id": "true", "pname": "true", "fname": "true", "lname": "true", "hcode": "true", "hname": "true" }, "where": { "cid": cid }, "include": "consent", "limit": "1" } }, 'people');
       if (typeof searchPerson.data[0] !== 'undefined' && searchPerson.data[0] !== '' && searchPerson.data[0] != null) {
         if (typeof searchPerson.data[0].consent !== 'undefined') {
           let token = JSON.parse(localStorage.getItem("EW30")).id;
           let consentPath = process.env.REACT_APP_API_URL + 'containers/consentForm/download/' + searchPerson.data[0].consent.fileConsent + '?access_token=token' + token;
           searchPerson.data[0].consent.consentPath = consentPath;
         }
+        console.log(searchPerson);
         setPerson(searchPerson.data[0]);
       } else {
         setPerson('ไม่พบข้อมูลผู้ป่วย');
@@ -228,10 +229,10 @@ function ConsentArea() {
             {(typeof person.id !== 'undefined') ? (
               <div>
                 <div>
-                  ชื่อ - สกุล : {(person.prename || '') + person.fname + " " + person.lname}
+                  ชื่อ - สกุล : {(person.pname || '') + person.fname + " " + person.lname}
                 </div>
                 <div>
-                  รหัสสถานบริการ : {person.hcode}
+                  รหัสสถานบริการ : {person.hcode} &nbsp;{person.hname}
                 </div>
                 <div className={(typeof person.consent !== 'undefined') ? classes.display : classes.hide}>
                   แบบฟอร์มยืนยัน : {
