@@ -8,7 +8,8 @@ import {
   makeStyles,
   Button as MuiButton,
   Card as MuiCard,
-  Typography
+  Typography,
+  ThemeProvider
 } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import { spacing } from "@material-ui/system";
@@ -18,7 +19,7 @@ import IconButton from '@material-ui/core/IconButton'
 import InfoIcon from '@material-ui/icons/Info';
 import { indigo } from '@material-ui/core/colors';
 import moment from "moment";
-import { getAll, uploadFile, create } from "../services/UniversalAPI";
+import { getAll, uploadFile, create, remove } from "../services/UniversalAPI";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -30,6 +31,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import { useConfirm } from "material-ui-confirm";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -106,7 +108,6 @@ function ConsentArea() {
           let consentPath = process.env.REACT_APP_API_URL + 'containers/consentForm/download/' + searchPerson.data[0].consent.fileConsent + '?access_token=token' + token;
           searchPerson.data[0].consent.consentPath = consentPath;
         }
-        console.log(searchPerson);
         setPerson(searchPerson.data[0]);
       } else {
         setPerson('ไม่พบข้อมูลผู้ป่วย');
@@ -188,6 +189,24 @@ function ConsentArea() {
     window.open('https://drive.google.com/file/d/1NjM8FPrjKuBanyfGkXy29icF7wcxnqoO/view?usp=sharing');
   }
 
+  const consent_reject = () => {
+    confirm({
+      title: 'ยกเลิก Consent',
+      description: <span>ต้องการยกเลิก Consent ใช่หรือไม่</span>,
+      confirmationText: 'ยืนยัน',
+      cancellationText: 'ยกเลิก',
+      onClose: () => { console.log("close") }
+    }).then(async () => {
+      let consentResult = await remove(person.consent.id, 'consents'); // ยกเลิก consent
+      if (consentResult.status === 200) {
+        setPerson('');
+        setAlertClass('success');
+        setAlertText('ยกเลิก Consent เรียบร้อยแล้ว');
+        alertOpen();
+      }
+    })
+  }
+
   return (
     <Card mb={6} className={classes.card}>
       <CardContent style={{ padding: '30px 30px 0 30px' }}>
@@ -240,6 +259,15 @@ function ConsentArea() {
                       ? <a href={person.consent.consentPath} target="_blank" rel="noopener noreferrer">ดูแบบฟอร์ม</a>
                       : ''
                   }
+                  <br/><Button
+                    variant="contained"
+                    color="secondary"
+                    className={classes.button}
+                    startIcon={<CancelIcon />}
+                    onClick={e=>consent_reject()}
+                  >
+                    ยกเลิก
+                  </Button>
                 </div>
               </div>
             ) : (<div>{person}</div>)}
