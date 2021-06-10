@@ -58,6 +58,7 @@ import {
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 // const useStyles = makeStyles({
 const useStyles = makeStyles((theme) => ({
@@ -135,6 +136,14 @@ export default function SearchCID(props) {
   const [checkedWI, setCheckedWI] = useState(true);
   const [checkedWO, setCheckedWO] = useState(true);
   const [checkedWZ, setCheckedWZ] = useState(true);
+
+  const [open, setOpen] = React.useState(false);
+  const alertOpen = () => { setOpen(true); };
+  const alertClose = () => { setOpen(false); };
+  const [alertText, setAlertText] = useState('');
+  const [alertClass, setAlertClass] = useState('error');
+
+  const [excelData, setExcelData] = useState([]);
   
 
   const getData = async (page) => {
@@ -203,7 +212,7 @@ export default function SearchCID(props) {
       }
     };
     // console.log(xParams);
-    console.log(JSON.stringify(xParams));
+    // console.log(JSON.stringify(xParams));
 
     calAllPages(rowsPerPage, { and: andQuery });
 
@@ -211,6 +220,7 @@ export default function SearchCID(props) {
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
+          // console.log(response.data);
           setData(response.data);
           setOpenBackdrop(false);
         }
@@ -570,6 +580,43 @@ export default function SearchCID(props) {
   //   getHospital();
   // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    //Format of data to be supported by 'react-csv' library
+    const excel = [{
+        "column_one":"Username",
+        "column_two":"Shama_Ahlawat@external.mckinsey.com"
+      },{
+        "column_one":"Purpose: Rating",
+        "column_two":"50"
+      },
+      {
+        "column_one":"Purpose: Comment 1",
+        "column_two":"BBB"
+      },
+      {
+        "column_one":"Purpose: Comment 2",
+        "column_two":"CCC"
+      }]
+    setExcelData(excel);
+  }, []);
+
+  const getCsvData = () => {
+    const csvData = [['Title']];
+    let i;
+    for (i = 0; i < excelData.length; i += 1) {
+        csvData.push([`${excelData[i].column_one}`, `${excelData[i].column_two}`]);
+    }
+    return csvData;
+  };
+
+  const export_excel = () => {
+    console.log(data);
+    // setAlertClass('success');
+    // setAlertText('อยู่ระหว่างดำเนินการพัฒนา โปรดลองอีกครั้งภายหลัง');
+    // alertOpen();
+
+  }
+
   return (
     <div style={{ marginBottom: 100, width: '100%' }}>
 
@@ -695,6 +742,15 @@ export default function SearchCID(props) {
             startIcon={<MdSearch size={20} />}
           >
             ค้นหา
+          </Button>
+          <Button
+            style={{ height: 55 }}
+            variant="contained"
+            color="secondary"
+            startIcon={<ExitToAppIcon size={20} />}
+            onClick={e=>export_excel()}
+          >
+            Excel
           </Button>
         </div>
       </div>
