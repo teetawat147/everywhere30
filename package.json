@@ -31,6 +31,7 @@
     "react-async-component": "^2.0.0",
     "react-datepicker": "^3.4.1",
     "react-dom": "^16.14.0",
+    "react-export-excel": "^0.5.3",
     "react-helmet": "^6.1.0",
     "react-icons": "^4.2.0",
     "react-idle-timer": "^4.5.5",
