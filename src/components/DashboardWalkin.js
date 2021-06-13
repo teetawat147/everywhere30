@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAll, getCount } from "../services/UniversalAPI";
+import { getAll } from "../services/UniversalAPI";
 
 import {
     Button as MuiButton,
@@ -15,11 +15,18 @@ const DashboardWalkin = () => {
         // andQuery.push({ hcode: sentHcode });
         let xParams = {
             filter: {
-              limit: 5,
-              include: ["hospital"],
-              where: {
-                "walkin_pttype": ["wi", "WI", "wo", "WO"]
-              }
+                limit: 5,
+                include: ["hospital"],
+                // where: {
+                //     or: [
+                //         { walkin_pttype: 'wi' },
+                //         { walkin_pttype: 'WI' },
+                //         { walkin_pttype: 'wo' },
+                //         { walkin_pttype: 'WO' },
+                //         { walkin_pttype: 'wz' },
+                //         { walkin_pttype: 'WZ' }
+                //     ]
+                // }
             }
         };
 
