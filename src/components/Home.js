@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from 'react-router-dom'
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -9,6 +10,7 @@ import homeImage from "../images/flow_01.jpg";
 import opchat from "../images/opchat.jpg";
 import RegisterGuide from "./RegisterGuide";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import AppsIcon from '@material-ui/icons/Apps';
 import DashboardRegister from './DashboardRegister';
 import Grid from '@material-ui/core/Grid';
 
@@ -51,6 +53,7 @@ MyButton.propTypes = {
 };
 
 const Home = () => {
+  const history = useHistory();
   const classes = useStyles();
   const [totalPerson, setTotalPerson] = useState(0);
   const [totalIntervention, setTotalIntervention] = useState(0);
@@ -102,6 +105,10 @@ const Home = () => {
     window.open('https://drive.google.com/file/d/1V1J_oVftGGA7Nm24EzsgqTIv_ncbttFW/view?usp=sharing');
   }
 
+  const goto_link = () => {
+    history.push({ pathname: '/DashboardWalkin'});
+  }
+
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -131,6 +138,15 @@ const Home = () => {
             onClick={e=>download_consent()}
             >
               Download คู่มือการใช้งาน
+          </Button><br/><br/>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<AppsIcon />}
+            onClick={e=>goto_link()}
+            >
+              Dashboard Walkin
           </Button>
         </Grid>
         <Grid item xs={12}>
