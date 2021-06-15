@@ -371,7 +371,7 @@ const DashboardWalkin = () => {
                     </Select>
                 </FormControl>
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3}>
+            <Grid item xs={12} sm={12} md={6} lg={5}>
                 <MuiPickersUtilsProvider locale={th} utils={DateFnsUtils} >
                     <KeyboardDatePicker
                         clearable
