@@ -141,7 +141,7 @@ const Home = () => {
           </Button><br/><br/>
           <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             className={classes.button}
             startIcon={<AppsIcon />}
             onClick={e=>goto_link()}

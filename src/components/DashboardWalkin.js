@@ -102,6 +102,7 @@ const DashboardWalkin = () => {
     const [changwat, setChangwat] = useState((currentUser != null) ? currentUser.user.changwat || currentUser.user.changwat.changwatname : '');
     const [hostype, setHostype] = useState('hospital');
     const [walkintype, setWalkintype] = useState('wi');
+    const [walkintype_name, setWalkintypeName] = useState('WI : Walkin ข้าม Cup ในจังหวัด');
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedMonth, setSelectedMonth] = useState(null);
     const rowsPerpage = 7;
@@ -142,6 +143,19 @@ const DashboardWalkin = () => {
                 MakeRows(result);
             } else {
                 setOpenBackdrop(false);
+            }
+            switch (walkintype) {
+                case 'wi':
+                    setWalkintypeName("WI : Walkin ข้าม Cup ในจังหวัด");
+                    break;
+                case 'wo':
+                    setWalkintypeName("WO : Walkin ข้ามจังหวัดในเขต");
+                    break;
+                case 'wz':
+                    setWalkintypeName("WZ : Walkin ข้ามเขต");
+                    break;
+                default:
+                    break;
             }
         });
     }, [changwat, hostype, walkintype, selectedDate, selectedMonth]);
@@ -395,7 +409,7 @@ const DashboardWalkin = () => {
                     <TableRow>
                       <StyledTableCell align="center"><b>รหัสหน่วยบริการ</b></StyledTableCell>
                       <StyledTableCell><b>หน่วยบริการ</b></StyledTableCell>
-                      <StyledTableCell align="right"><b>Walkin ข้ามจังหวัดในเขต</b></StyledTableCell>
+                      <StyledTableCell align="right"><b>{walkintype_name}</b></StyledTableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
