@@ -207,7 +207,7 @@ const DashboardWalkin = () => {
                 province_name: (typeof changwat==='object') ? changwat.changwatname : changwat,
                 or: hostype_id
             };
-            console.log(params);
+            // console.log(params);
             // console.log(JSON.stringify(params));
             response = await getAll(params, 'hospitals');
             // console.log(response);
