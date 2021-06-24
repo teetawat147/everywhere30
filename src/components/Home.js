@@ -6,8 +6,13 @@ import PropTypes from 'prop-types';
 import {
   Button,
 } from "@material-ui/core";
+import homeImage from "../images/flow_01.jpg";
+import opchat from "../images/opchat.jpg";
+import RegisterGuide from "./RegisterGuide";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import AppsIcon from '@material-ui/icons/Apps';
+import DashboardRegister from './DashboardRegister';
 import Grid from '@material-ui/core/Grid';
-import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,14 +55,107 @@ MyButton.propTypes = {
 const Home = () => {
   const history = useHistory();
   const classes = useStyles();
+  const [totalPerson, setTotalPerson] = useState(0);
+  const [totalIntervention, setTotalIntervention] = useState(0);
+  const [totalLog, setTotalLog] = useState(0);
+
+  useEffect(() => {
+    const getCountPerson = async () => {
+      let response = await axios.get(process.env.REACT_APP_API_URL + "people/count");
+      if (response.status === 200) {
+        if (response.data) {
+          setTotalPerson(response.data);
+        }
+      }
+    }
+    getCountPerson();
+  }, []);
+
+  useEffect(() => {
+    const getCountIntervention = async () => {
+      let response = await axios.get(process.env.REACT_APP_API_URL + "interventions/count");
+      if (response.status === 200) {
+        if (response.data) {
+          setTotalIntervention(response.data);
+        }
+      }
+    }
+    getCountIntervention();
+  }, []);
+
+  useEffect(() => {
+    const getCountLog = async () => {
+      let response = await axios.get(process.env.REACT_APP_API_URL + "logs/count", {
+        // params: {
+        //   where: {
+        //     "date": "2021-02-28"
+        //   }
+        // }
+      });
+      if (response.status === 200) {
+        if (response.data) {
+          setTotalLog(response.data);
+        }
+      }
+    }
+    getCountLog();
+  }, []);
+
+  const download_consent = () => {
+    window.open('https://drive.google.com/file/d/1V1J_oVftGGA7Nm24EzsgqTIv_ncbttFW/view?usp=sharing');
+  }
+
+  const goto_link = () => {
+    history.push({ pathname: '/DashboardWalkin'});
+  }
 
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Alert severity="warning">ประกาศ!<br/>
-          ปิดปรับปรุงระบบ ขออภัยในความไม่สะดวกครับ
-          </Alert>
+          <React.Fragment>
+            <MyButton color="red">จำนวนผู้ป่วยทั้งหมด &nbsp;&nbsp;<b>{typeof totalPerson.count !== "undefined" ? totalPerson.count.toLocaleString() : totalPerson.count}</b>&nbsp;&nbsp; ราย</MyButton>
+            <MyButton color="blue">ประวัติการรักษาทั้งหมด &nbsp;&nbsp;<b>{typeof totalIntervention.count !== "undefined" ? totalIntervention.count.toLocaleString() : totalIntervention.count}</b>&nbsp;&nbsp; รายการ</MyButton>
+            <MyButton color="green">ดูประวัติการรักษา &nbsp;&nbsp;<b>{typeof totalLog.count !== "undefined" ? totalLog.count.toLocaleString() : totalLog.count}</b>&nbsp;&nbsp; ครั้ง</MyButton>
+          </React.Fragment>
+        </Grid>
+        <Grid item xs={6}>
+          <RegisterGuide/><br/>
+          <DashboardRegister/>
+        </Grid>
+        <Grid item xs={3}>
+          <img src={opchat} alt="" style={{ width: '100%' }} />
+        </Grid>
+        <Grid item xs={3}>
+          <b>Scan</b><br/>
+          เข้ากลุ่ม Line<br/>
+          แจ้งปัญหาการใช้งาน<br/><br/>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<CloudDownloadIcon />}
+            onClick={e=>download_consent()}
+            >
+              Download คู่มือการใช้งาน
+          </Button><br/><br/>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            startIcon={<AppsIcon />}
+            onClick={e=>goto_link()}
+            >
+              Dashboard Walkin
+          </Button>
+        </Grid>
+        <Grid item xs={12}>
+          
+        </Grid>
+        <Grid item xs={12}>
+          <header className="jumbotron">
+            <img src={homeImage} alt="" style={{ width: '100%' }} />
+          </header>
         </Grid>
       </Grid>
     </div>
