@@ -124,7 +124,7 @@ const DashboardRegister = (props) => {
     row.push(
       <StyledTableRow key="total">
         <TableCell component="th" scope="row" align="center"><b>รวมทั้งสิ้น</b></TableCell>
-        <TableCell align="center"><b>{typeof total_user !== "undefined" ? total_user.toFixed(0) : "0"}</b></TableCell>
+        <TableCell align="center"><b>{typeof total_user !== "undefined" ? total_user.toLocaleString() : "0"}</b></TableCell>
       </StyledTableRow>
     );
     setRows(row);
