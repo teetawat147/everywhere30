@@ -23,6 +23,8 @@ const useStyles = makeStyles((theme) => ({
         ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
         : props.color === 'green'
         ? 'linear-gradient(45deg, #009900 30%, #00CC66 90%)'
+        : props.color === 'orange'
+        ? 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)'
         : '',
     border: 0,
     borderRadius: 3,
@@ -33,6 +35,8 @@ const useStyles = makeStyles((theme) => ({
         ? '0 3px 5px 2px rgba(33, 203, 243, .3)'
         : props.color === 'green'
         ? '0 3px 5px 2px rgba(0, 255, 127, .3)'
+        : props.color === 'orange'
+        ? '0 3px 5px 2px rgba(255, 215, 0, .3)'
         : '',
     color: 'black',
     height: 48,
@@ -58,6 +62,7 @@ const Home = () => {
   const [totalPerson, setTotalPerson] = useState(0);
   const [totalIntervention, setTotalIntervention] = useState(0);
   const [totalLog, setTotalLog] = useState(0);
+  // const [datenow, setDateNow] = useState(new Date());
 
   useEffect(() => {
     const getCountPerson = async () => {
@@ -101,6 +106,22 @@ const Home = () => {
     getCountLog();
   }, []);
 
+  const ds = (x) => {
+    let y = x.getFullYear().toString();
+    let m = az(x.getMonth() + 1, 2);
+    let d = az(x.getDate(), 2);
+    let ymd = y + '-' + m + '-' + d;
+    return ymd;
+  }
+
+  const az = (x, n) => {
+    let r = x.toString();
+    for (var i = 0; i < n - r.length; ++i) {
+      r = '0' + r;
+    }
+    return r;
+  }
+
   const download_consent = () => {
     window.open('https://drive.google.com/file/d/1V1J_oVftGGA7Nm24EzsgqTIv_ncbttFW/view?usp=sharing');
   }
@@ -117,6 +138,7 @@ const Home = () => {
             <MyButton color="red">จำนวนผู้ป่วยทั้งหมด &nbsp;&nbsp;<b>{typeof totalPerson.count !== "undefined" ? totalPerson.count.toLocaleString() : totalPerson.count}</b>&nbsp;&nbsp; ราย</MyButton>
             <MyButton color="blue">ประวัติการรักษาทั้งหมด &nbsp;&nbsp;<b>{typeof totalIntervention.count !== "undefined" ? totalIntervention.count.toLocaleString() : totalIntervention.count}</b>&nbsp;&nbsp; รายการ</MyButton>
             <MyButton color="green">ดูประวัติการรักษา &nbsp;&nbsp;<b>{typeof totalLog.count !== "undefined" ? totalLog.count.toLocaleString() : totalLog.count}</b>&nbsp;&nbsp; ครั้ง</MyButton>
+            <MyButton color="orange">เข้าใช้งานวันนี้ &nbsp;&nbsp;<b></b>&nbsp;&nbsp; ครั้ง</MyButton>
           </React.Fragment>
         </Grid>
         <Grid item sm={12}>
