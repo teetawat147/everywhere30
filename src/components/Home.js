@@ -119,14 +119,16 @@ const Home = () => {
             <MyButton color="green">ดูประวัติการรักษา &nbsp;&nbsp;<b>{typeof totalLog.count !== "undefined" ? totalLog.count.toLocaleString() : totalLog.count}</b>&nbsp;&nbsp; ครั้ง</MyButton>
           </React.Fragment>
         </Grid>
-        <Grid item xs={6}>
-          <RegisterGuide/><br/>
+        <Grid item sm={12}>
+          <RegisterGuide/>
+        </Grid>
+        <Grid item xs={12} sm={6}>
           <DashboardRegister/>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={12} sm={3}>
           <img src={opchat} alt="" style={{ width: '100%' }} />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={12} sm={3}>
           <b>Scan</b><br/>
           เข้ากลุ่ม Line<br/>
           แจ้งปัญหาการใช้งาน<br/><br/>
