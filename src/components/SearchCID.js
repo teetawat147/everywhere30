@@ -242,6 +242,7 @@ export default function SearchCID(props) {
     setSelectedHCode('all');
 
     let c = null;
+    let moph_cid = '';
     if (cid === null) {
       // ไม่มี cid ส่งมาด้วย ให้ไปเอาจาก state
       // เช็คว่า search ด้วย passport หรือป่าว
@@ -271,6 +272,7 @@ export default function SearchCID(props) {
       else {
         if (typeof searchCID !== 'undefined') {
           if (searchCID !== null) {
+            moph_cid = searchCID;
             preGetPersonInfo(searchCID);
           }
         }
@@ -280,10 +282,14 @@ export default function SearchCID(props) {
       // มี cid ส่งมาด้วย (คือ cid ที่ส่งมาจากหน้า referin / referout)
       if (typeof cid !== 'undefined') {
         if (cid !== null) {
+          moph_cid = cid;
           preGetPersonInfo(c);
         }
       }
     }
+
+    // ดูข้อมูลข้ามเขต
+    getFromMOPH(moph_cid);
   }
 
   const preGetPersonInfo = async (cid) => {
@@ -339,6 +345,30 @@ export default function SearchCID(props) {
         }
       }
     }
+  }
+
+  const TK_MOPH = process.env.REACT_APP_TK_MOPH;
+
+  const getFromMOPH = async (cid) => {
+    var axios = require('axios');
+    var data = '';
+
+    var config = {
+      method: 'get',
+      url: 'https://dhes.gateway.moph.go.th/api/v2/search/' + cid,
+      headers: {
+        'Authorization': 'Bearer ' + TK_MOPH
+      },
+      data : data
+    };
+
+    axios(config)
+    .then(function (response) {
+      console.log(response.data);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   }
 
   const getPersonInfo = async (cid) => {
