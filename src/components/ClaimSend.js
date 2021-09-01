@@ -179,15 +179,15 @@ export default function SearchCID(props) {
     let walkinQuery=[];
     if (checkedWI) {
       walkinQuery.push({ walkin_pttype: "wi" });
-      walkinQuery.push({ walkin_pttype: "WI" });
+      // walkinQuery.push({ walkin_pttype: "WI" });
     }
     if (checkedWO) {
       walkinQuery.push({ walkin_pttype: "wo" });
-      walkinQuery.push({ walkin_pttype: "WO" });
+      // walkinQuery.push({ walkin_pttype: "WO" });
     }
     if (checkedWZ) {
       walkinQuery.push({ walkin_pttype: "wz" });
-      walkinQuery.push({ walkin_pttype: "WZ" });
+      // walkinQuery.push({ walkin_pttype: "WZ" });
     }
     if (walkinQuery.length>0) {
       andQuery.push({ or : walkinQuery });
