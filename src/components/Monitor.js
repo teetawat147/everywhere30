@@ -153,7 +153,7 @@ const Monitor = () => {
       switch (hostype) {
         case 'hospital': hostype_id = [{ hos_type_id: '2' }, { hos_type_id: '3' }, { hos_type_id: '4' }];
           break;
-        case 'subHospital': hostype_id = [{ hos_type_id: '6' }];
+        case 'subHospital': hostype_id = [{hos_type_id: '6'}, {hos_type_id: '08'}, {hos_type_id: '13'}];
           break;
         default: hostype_id = [{ hos_type_id: '2' }, { hos_type_id: '3' }, { hos_type_id: '4' }, { hos_type_id: '6' }];
           break;
@@ -304,7 +304,7 @@ const Monitor = () => {
                   }}
                 >
                   <MenuItem key="hospital" value="hospital">โรงพยาบาล</MenuItem>
-                  <MenuItem key="subHospital" value="subHospital">โรงพยาบาลส่งเสริมสุขภาพตำบล</MenuItem>
+                  <MenuItem key="subHospital" value="subHospital">รพ.สต. / อื่นๆ</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
