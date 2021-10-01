@@ -32,6 +32,7 @@ import Monitor from "../components/Monitor";
 import SystemSetting from "../components/SystemSetting";
 import ClaimSend from "../components/ClaimSend";
 import DialyVisit from "../components/DialyVisit";
+import DashboardWalkin from "../components/DashboardWalkin";
 
 const root = {
   id: "Root",
@@ -154,7 +155,13 @@ const dialyvisit = {
   roles: ["AdminR8", "AdminChangwat", "AdminHospital", "noRole"],
   component: DialyVisit
 };
-
+const dashboardwalkin = {
+  id: "Dashboardwalkin",
+  path: "/dashboardwalkin",
+  icon: null,
+  roles: ["AdminR8", "AdminChangwat", "AdminHospital", "Doctor", "noRole", "Consent", "Claim", "Refer"],
+  component: DashboardWalkin
+};
 
 export const appBarRoute = [
   root,
@@ -191,5 +198,6 @@ export const mainRoute = [
   monitor,
   systemsetting,
   claimsend,
-  dialyvisit
+  dialyvisit,
+  dashboardwalkin
 ];

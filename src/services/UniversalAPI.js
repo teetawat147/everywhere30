@@ -31,9 +31,11 @@ const get = (id, thisCollection) => {
 const create = (data, thisCollection) => {
   return axios.post(API_URL + thisCollection, data, { headers: authHeader.getToken() });
 };
+
 const uploadFile = (params, collection) => {
   return axios.post(API_URL + collection, params, { headers: authHeader.setHeader() });
 }
+
 const update = (id, data, thisCollection) => {
   return axios.put(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
 };
@@ -47,8 +49,13 @@ const patch = (id, data, thisCollection) => {
   return axios.patch(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
 
 };
+
 const remove = (id, thisCollection) => {
   return axios.delete(API_URL + thisCollection + "/" + id, { headers: authHeader.getToken() });
+};
+
+const removeFile = (fileName, thisCollection) => {
+  return axios.delete(API_URL + thisCollection + "/" + fileName, { headers: authHeader.getToken() });
 };
 
 const removeAll = (thisCollection) => {
@@ -67,6 +74,7 @@ export {
   create,
   update,
   remove,
+  removeFile,
   removeAll,
   findByTitle,
   uploadFile,

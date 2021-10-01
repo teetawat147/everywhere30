@@ -153,7 +153,7 @@ const Monitor = () => {
       switch (hostype) {
         case 'hospital': hostype_id = [{ hos_type_id: '2' }, { hos_type_id: '3' }, { hos_type_id: '4' }];
           break;
-        case 'subHospital': hostype_id = [{ hos_type_id: '6' }];
+        case 'subHospital': hostype_id = [{hos_type_id: '6'}, {hos_type_id: '08'}, {hos_type_id: '13'}];
           break;
         default: hostype_id = [{ hos_type_id: '2' }, { hos_type_id: '3' }, { hos_type_id: '4' }, { hos_type_id: '6' }];
           break;
@@ -212,7 +212,11 @@ const Monitor = () => {
         sub_total_patient = hos.total_patient;
       }
       total_patient += sub_total_patient;
-      total_sync += hos.count;
+      if (typeof hos.transfers !== "undefined") {
+        total_sync += hos.transfers;
+      } else if (typeof hos.count !== "undefined") {
+        total_sync += hos.count;
+      }
       row.push(<StyledTableRow key={key++}>
         <TableCell align="center">{hos.hcode}</TableCell>
         <TableCell component="th" scope="row">{hos.hosname}</TableCell>
@@ -220,7 +224,7 @@ const Monitor = () => {
         <TableCell align="center">{hos.transfermode}</TableCell>
         <TableCell align="right">{typeof hos.total_patient !== "undefined" ? hos.total_patient.toLocaleString() : hos.total_patient}</TableCell> 
         <TableCell align="right">
-          {typeof hos.transfers !== "undefined" ? hos.transfers.toLocaleString() : typeof hos.count !== undefined ? hos.count.toLocaleString() : "0"}
+          {typeof hos.transfers !== "undefined" ? hos.transfers.toLocaleString() : typeof hos.count !== "undefined" ? hos.count.toLocaleString() : "0"}
         </TableCell>
         <TableCell align="center">{typeof hos.transferpercent !== "undefined" ? hos.transferpercent.toFixed(2) : "-"}</TableCell>
         <TableCell align="center">{hos.version}</TableCell>
@@ -300,7 +304,7 @@ const Monitor = () => {
                   }}
                 >
                   <MenuItem key="hospital" value="hospital">โรงพยาบาล</MenuItem>
-                  <MenuItem key="subHospital" value="subHospital">โรงพยาบาลส่งเสริมสุขภาพตำบล</MenuItem>
+                  <MenuItem key="subHospital" value="subHospital">รพ.สต. / อื่นๆ</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

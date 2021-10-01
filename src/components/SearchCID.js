@@ -169,6 +169,8 @@ export default function SearchCID(props) {
   const [showClearSearchPassportButton, setShowClearSearchPassportButton] = useState('none');
   const [showClearSearchCIDButton, setShowClearSearchCIDButton] = useState('none');
   const [searchButtonDisabled, setSearchButtonDisabled] = useState(true);
+  // ข้ามเขต
+  const [dataFromMoph, setDataFromMoph] = useState('');
 
 
   const onchangeSearchText = (e) => {
@@ -296,9 +298,13 @@ export default function SearchCID(props) {
         if (response.data.length > 0) {
           if (response.data[0].value.toString()==="1") {
             checkConsent(c);
+            // TEST
+            getFromMOPH(c);
           }
           else {
             getPersonInfo(c);
+            // ดูข้อมูลข้ามเขต
+            getFromMOPH(c);
           }
         }
       }
@@ -330,6 +336,8 @@ export default function SearchCID(props) {
           }
           else {
             getPersonInfo(cid);
+            // ดูข้อมูลข้ามเขต
+            // getFromMOPH(cid);
           }
         }
         else {
@@ -339,6 +347,35 @@ export default function SearchCID(props) {
         }
       }
     }
+  }
+
+  const API_MOPH = process.env.REACT_APP_API_MOPH;
+  const TK_MOPH = process.env.REACT_APP_TK_MOPH;
+  const getFromMOPH = async (cid) => {
+    var axios = require('axios');
+    var data = '';
+
+    var config = {
+      method: 'get',
+      url: API_MOPH + 'search/' + cid,
+      headers: {
+        'Authorization': 'Bearer ' + TK_MOPH
+      },
+      data : data
+    };
+
+    axios(config)
+    .then(function (response) {
+      console.log(response.data);
+      if (response.data.results !== null) {
+        setDataFromMoph('ดูประวัติรับบริการ');
+      } else {
+        setDataFromMoph('--ไม่พบประวัติรับบริการ --');
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   }
 
   const getPersonInfo = async (cid) => {
@@ -926,6 +963,11 @@ export default function SearchCID(props) {
         <div style={{ display: 'flex', flexDirection: 'flex-start' }}>
           <div>
             <div className={classes.contentTitle}>ประวัติแพ้ยา</div><div className={classes.contentText}>{patientData['drugallergy']}</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'flex-start' }}>
+          <div>
+            <div className={classes.contentTitle}>ประวัติรับบริการนอกเขต 8</div><div className={classes.contentText}>{dataFromMoph}</div>
           </div>
         </div>
       </div>

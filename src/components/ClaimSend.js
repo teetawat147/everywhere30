@@ -58,6 +58,8 @@ import {
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import ReactExport from "react-export-excel";
 
 // const useStyles = makeStyles({
 const useStyles = makeStyles((theme) => ({
@@ -111,6 +113,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
 export default function SearchCID(props) {
   const classes = useStyles();
   const history = useHistory();
@@ -135,8 +141,14 @@ export default function SearchCID(props) {
   const [checkedWI, setCheckedWI] = useState(true);
   const [checkedWO, setCheckedWO] = useState(true);
   const [checkedWZ, setCheckedWZ] = useState(true);
-  
 
+  const [open, setOpen] = React.useState(false);
+  const alertOpen = () => { setOpen(true); };
+  const alertClose = () => { setOpen(false); };
+  const [alertText, setAlertText] = useState('');
+  const [alertClass, setAlertClass] = useState('error');
+  const [ExcelData, setDataExcel] = useState();
+  
   const getData = async (page) => {
     let xSkip = 0;
     let xLimit = rowsPerPage;
@@ -167,15 +179,15 @@ export default function SearchCID(props) {
     let walkinQuery=[];
     if (checkedWI) {
       walkinQuery.push({ walkin_pttype: "wi" });
-      walkinQuery.push({ walkin_pttype: "WI" });
+      // walkinQuery.push({ walkin_pttype: "WI" });
     }
     if (checkedWO) {
       walkinQuery.push({ walkin_pttype: "wo" });
-      walkinQuery.push({ walkin_pttype: "WO" });
+      // walkinQuery.push({ walkin_pttype: "WO" });
     }
     if (checkedWZ) {
       walkinQuery.push({ walkin_pttype: "wz" });
-      walkinQuery.push({ walkin_pttype: "WZ" });
+      // walkinQuery.push({ walkin_pttype: "WZ" });
     }
     if (walkinQuery.length>0) {
       andQuery.push({ or : walkinQuery });
@@ -203,7 +215,7 @@ export default function SearchCID(props) {
       }
     };
     // console.log(xParams);
-    console.log(JSON.stringify(xParams));
+    // console.log(JSON.stringify(xParams));
 
     calAllPages(rowsPerPage, { and: andQuery });
 
@@ -211,7 +223,9 @@ export default function SearchCID(props) {
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
+          // console.log(response.data);
           setData(response.data);
+          dataExcel(response.data);
           setOpenBackdrop(false);
         }
         else {
@@ -561,7 +575,6 @@ export default function SearchCID(props) {
     }
   }, [globalState]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   // useEffect(() => {
   //   if (globalState.userRole === "AdminR8" || globalState.userRole === "AdminChangwat") {
   //     setAcSentHcodeDisabled(false);
@@ -569,6 +582,16 @@ export default function SearchCID(props) {
   //   getData();
   //   getHospital();
   // }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const dataExcel = (d) => {
+    let dExcel = [];
+    d.forEach(i => {
+      dExcel.push({ vstdate: i.vstdate, hcode: i.hcode, hname: i.hname, hospmain: i.hospmain, hospmain_name: i.hospmain_name, hn: i.person.hn, fname: i.person.fname, lname: i.person.lname, cid: i.cid, walkin_pttype_name: i.walkin_pttype_name, diag: PDX(i.activities.diagnosis), price: calPrice(i.activities.treatment).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") });
+      return null;
+    });
+    setDataExcel(dExcel);
+    // console.log(dExcel);
+  }
 
   return (
     <div style={{ marginBottom: 100, width: '100%' }}>
@@ -696,6 +719,31 @@ export default function SearchCID(props) {
           >
             ค้นหา
           </Button>
+          {data !== null ?
+            <ExcelFile element={<Button
+              style={{ height: 55 }}
+              variant="contained"
+              color="secondary"
+              startIcon={<ExitToAppIcon size={20} />}
+            >
+              Excel
+            </Button>}>
+              <ExcelSheet data={ExcelData} name="Claim">
+                <ExcelColumn label="วันที่รับบริการ" value="vstdate"/>
+                <ExcelColumn label="รหัส รพ.ผู้ให้บริการ" value="hcode"/>
+                <ExcelColumn label="รพ.ผู้ให้บริการ" value="hname"/>
+                <ExcelColumn label="รหัส รพ.ตามสิทธิฯ" value="hospmain"/>
+                <ExcelColumn label="รพ.ตามสิทธิฯ" value="hospmain_name"/>
+                <ExcelColumn label="HN" value="hn"/>
+                <ExcelColumn label="ชื่อ" value="fname"/>
+                <ExcelColumn label="สกุล" value="lname"/>
+                <ExcelColumn label="CID" value="cid"/>
+                <ExcelColumn label="สิทธิ" value="walkin_pttype_name"/>
+                <ExcelColumn label="วินิจฉัยหลัก" value="diag"/>
+                <ExcelColumn label="ยอดค่าใช้จ่าย" value="price"/>
+              </ExcelSheet>
+            </ExcelFile>
+           : ""}
         </div>
       </div>
 
@@ -710,7 +758,6 @@ export default function SearchCID(props) {
       <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Pagination count={allPages} page={forcePage} onChange={onClickPage} color="primary" />
       </div>
-
     </div>
   )
 }
