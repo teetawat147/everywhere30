@@ -208,9 +208,9 @@ export default function SearchCID(props) {
     if (v.length < 5) {
       invalid.push('กรอกตัวเลขหรืออักษรภาษาอังกฤษอย่างน้อย 5 ตัว');
     }
-    if (!(/^[a-zA-Z0-9]+$/.test(v))) {
-      invalid.push('เฉพาะตัวเลขหรืออักษรภาษาอังกฤษเท่านั้น');
-    }
+    // if (!(/^[a-zA-Z0-9]+$/.test(v))) {
+    //   invalid.push('เฉพาะตัวเลขหรืออักษรภาษาอังกฤษเท่านั้น');
+    // }
 
     if (invalid.length === 0) {
       setSearchPassport(v);
