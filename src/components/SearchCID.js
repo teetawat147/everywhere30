@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 // import React, { useState, useEffect } from "react";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   makeStyles
 } from '@material-ui/core/styles';
@@ -176,6 +176,9 @@ export default function SearchCID(props) {
   const [openDialogEMR1hr, setOpenDialogEMR1hr] = useState(false);
   const [displayEMR1hrButton, setDisplayEMR1hrButton] = useState('none');
   const currentUser = AuthService.getCurrentUser();
+  const [displayEMR60mCountDown, setDisplayEMR60mCountDown] = useState('none');
+  const [EMR60mLeft, setEMR60mLeft] = useState(0);
+  
 
   const onchangeSearchText = (e) => {
     setSearchCIDValue(e.target.value);
@@ -246,7 +249,9 @@ export default function SearchCID(props) {
     setHcodeData({});
     setServiceInfoData({});
     setSelectedHCode('all');
-
+    setDisplayEMR60mCountDown('none');
+    setEMR60mLeft(0);
+    
     let c = null;
     if (cid === null) {
       // ไม่มี cid ส่งมาด้วย ให้ไปเอาจาก state
@@ -312,14 +317,18 @@ export default function SearchCID(props) {
             let responseU = await get(currentUser.userId, 'teamusers');
             if (responseU.status === 200) {
               if (responseU.data) {
-                console.log(responseU.data);
+                // console.log(responseU.data);
                 if (typeof responseU.data.temporaryAccessEMR !== 'undefined') {
-                  let minutesTimeout = responseU.data.temporaryAccessEMR.minutes;
-                  let startDateTime = responseU.data.temporaryAccessEMR.startDateTime;
-                  let minutesDiff = diff_minutes(new Date(),new Date(startDateTime));
-                  console.log(minutesDiff);
-                  if (parseInt(minutesDiff)<=parseInt(minutesTimeout)) {
-                    inRequestPeriod=true;
+                  if (responseU.data.temporaryAccessEMR.cid===c) {
+                    let minutesTimeout = responseU.data.temporaryAccessEMR.minutes;
+                    let startDateTime = responseU.data.temporaryAccessEMR.startDateTime;
+                    let minutesDiff = diff_minutes(new Date(),new Date(startDateTime));
+                    // console.log(minutesDiff);
+                    if (parseInt(minutesDiff)<=parseInt(minutesTimeout)) {
+                      inRequestPeriod=true;
+                      setEMR60mLeft(60-minutesDiff);
+                      setDisplayEMR60mCountDown('block');
+                    }
                   }
                 }
               }
@@ -335,6 +344,7 @@ export default function SearchCID(props) {
               // TEST
               getFromMOPH(c);
             }
+
           }
           else {
             getPersonInfo(c);
@@ -915,6 +925,9 @@ export default function SearchCID(props) {
         setOpenDialogEMR1hr(false);
         setOpenDialog(false);
         setOpenBackdrop(false);
+
+        setEMR60mLeft(60);
+        setDisplayEMR60mCountDown('block');
       }
     }
   }
@@ -923,6 +936,22 @@ export default function SearchCID(props) {
     // console.log('handleCloseDialogEMR1hr');
     setOpenDialogEMR1hr(false);
   }
+
+  const countDown = () => {
+    if (displayEMR60mCountDown==='block') { 
+      if (EMR60mLeft > 0) {
+        setTimeout(() => {
+          setEMR60mLeft(EMR60mLeft - 1);
+        }, 60000);
+      } else {
+        window.location.reload();
+      }
+    }
+  }
+
+  useEffect(() => {
+    countDown();
+  },[displayEMR60mCountDown, EMR60mLeft]);
 
   useEffect(() => {
     mkYearShow();
@@ -954,6 +983,13 @@ export default function SearchCID(props) {
       </Backdrop>
 
       <Grid container justify="flex-start">
+        <Grid item xs={12}>
+          <Grid container justify="flex-end">
+            <div style={{ display: displayEMR60mCountDown, color: 'red' }}>
+              ระยะเวลาดูประวัติชั่วคราว {EMR60mLeft} นาที
+            </div>
+          </Grid>
+        </Grid>
         <Grid item xs={5}>
           <div><h5>ค้นหาด้วยเลขบัตรประจำตัวประชาชน</h5></div>
           <TextField
