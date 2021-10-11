@@ -20,6 +20,7 @@ const addZero = (x, n) => {
 }
 
 const logSave = (event_datail) => {
+  // console.log(create);
   const currentUser = AuthService.getCurrentUser();
   let d = new Date();
   let data = {
@@ -31,7 +32,9 @@ const logSave = (event_datail) => {
     software: 'web:R8AnyWhere',
     event: event_datail,
   }
-  create(data, 'logs');
+  // console.log(JSON.stringify(data));
+  let response = create(data, 'logs');
+  // console.log(response.data);
   return data;
 }
 

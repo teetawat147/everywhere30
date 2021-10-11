@@ -12,8 +12,9 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import UCard from "./UniversalCard";
 // import UListTable from "./UniversalListTable";
 
-import { getAll } from "../services/UniversalAPI";
+import { get, getAll, patch } from "../services/UniversalAPI";
 import logSave from "../services/SaveLog";
+import * as AuthService from "../services/auth.service";
 
 import { calcAge, thaiXSDate } from "../services/serviceFunction";
 import BoxServiceInfo from "./BoxServiceInfo";
@@ -93,17 +94,17 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
   },
-  boxHead: { 
-    marginTop: 0, 
-    marginBottom: 0, 
-    paddingLeft: 10, 
-    paddingBottom: 2, 
-    paddingTop: 2, 
+  boxHead: {
+    marginTop: 0,
+    marginBottom: 0,
+    paddingLeft: 10,
+    paddingBottom: 2,
+    paddingTop: 2,
     backgroundColor: '#f7fafb',
     borderRadius: 8
   },
-  boxHeadContain: { 
-    border: 'solid 1px #A0A0A0', 
+  boxHeadContain: {
+    border: 'solid 1px #A0A0A0',
     borderRadius: 7,
     marginBottom: 10
   }
@@ -172,6 +173,9 @@ export default function SearchCID(props) {
   // ข้ามเขต
   const [dataFromMoph, setDataFromMoph] = useState('');
 
+  const [openDialogEMR1hr, setOpenDialogEMR1hr] = useState(false);
+  const [displayEMR1hrButton, setDisplayEMR1hrButton] = useState('none');
+  const currentUser = AuthService.getCurrentUser();
 
   const onchangeSearchText = (e) => {
     setSearchCIDValue(e.target.value);
@@ -195,7 +199,7 @@ export default function SearchCID(props) {
       setSearchButtonDisabled(true);
     }
 
-    if (v.length>0) {
+    if (v.length > 0) {
       setShowClearSearchCIDButton('inline-block');
     }
     else {
@@ -225,7 +229,7 @@ export default function SearchCID(props) {
       setSearchButtonDisabled(true);
     }
 
-    if (v.length>0) {
+    if (v.length > 0) {
       setShowClearSearchPassportButton('inline-block');
     }
     else {
@@ -262,7 +266,7 @@ export default function SearchCID(props) {
           if (response.data) {
             if (typeof response.data[0] !== 'undefined') {
               if (typeof response.data[0].cid !== 'undefined') {
-                if (response.data[0].cid.length===13) {
+                if (response.data[0].cid.length === 13) {
                   preGetPersonInfo(response.data[0].cid);
                 }
               }
@@ -288,18 +292,49 @@ export default function SearchCID(props) {
     }
   }
 
+  const diff_minutes = (dt2, dt1) => {
+    let diff = (dt2.getTime() - dt1.getTime()) / 1000;
+    diff /= 60;
+    return Math.abs(Math.round(diff));
+  }
+
   const preGetPersonInfo = async (cid) => {
     setOpenBackdrop(true);
     let c = cid;
-    let xParams = { filter: {where:{key: "emrRequiredConsent"}}};
+    let xParams = { filter: { where: { key: "emrRequiredConsent" } } };
     let response = await getAll(xParams, 'SystemSettings');
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
-          if (response.data[0].value.toString()==="1") {
-            checkConsent(c);
-            // TEST
-            getFromMOPH(c);
+          if (response.data[0].value.toString() === "1") {
+
+            let inRequestPeriod = false;
+            let responseU = await get(currentUser.userId, 'teamusers');
+            if (responseU.status === 200) {
+              if (responseU.data) {
+                console.log(responseU.data);
+                if (typeof responseU.data.temporaryAccessEMR !== 'undefined') {
+                  let minutesTimeout = responseU.data.temporaryAccessEMR.minutes;
+                  let startDateTime = responseU.data.temporaryAccessEMR.startDateTime;
+                  let minutesDiff = diff_minutes(new Date(),new Date(startDateTime));
+                  console.log(minutesDiff);
+                  if (parseInt(minutesDiff)<=parseInt(minutesTimeout)) {
+                    inRequestPeriod=true;
+                  }
+                }
+              }
+            }
+
+            if (inRequestPeriod) {
+              getPersonInfo(c);
+              // ดูข้อมูลข้ามเขต
+              getFromMOPH(c);
+            }
+            else {
+              checkConsent(c);
+              // TEST
+              getFromMOPH(c);
+            }
           }
           else {
             getPersonInfo(c);
@@ -327,8 +362,22 @@ export default function SearchCID(props) {
     if (response.status === 200) {
       if (response.data) {
         if (response.data.length > 0) {
-          // console.log(response.data);
-          // console.log(response.data[0].consent);
+
+          let xParams = { filter: { where: { key: "emrTemporaryBreakConsent" } } };
+          let responseS = await getAll(xParams, 'SystemSettings');
+          if (responseS.status === 200) {
+            if (responseS.data) {
+              if (responseS.data.length > 0) {
+                if (responseS.data[0].value.toString() === "1") {
+                  setDisplayEMR1hrButton('inline-block');
+                }
+                else {
+                  setDisplayEMR1hrButton('none');
+                }
+              }
+            }
+          }
+
           if (typeof response.data[0].consent === 'undefined') {
             setOpenBackdrop(false);
             setDialogText(<div><b>ผู้ป่วยยังไม่ยื่นเอกสาร Consent</b><br />กรุณาประสานงานให้ผู้ป่วยติดต่อยื่นเอกสาร Consent กับเจ้าหน้าที่ที่เกี่ยวข้อง เพื่อยืนยันการเปิดเผยข้อมูลประวัติการรักษาพยาบาลค่ะ</div>);
@@ -361,21 +410,21 @@ export default function SearchCID(props) {
       headers: {
         'Authorization': 'Bearer ' + TK_MOPH
       },
-      data : data
+      data: data
     };
 
     axios(config)
-    .then(function (response) {
-      console.log(response.data);
-      if (response.data.results !== null) {
-        setDataFromMoph('ดูประวัติรับบริการ');
-      } else {
-        setDataFromMoph('--ไม่พบประวัติรับบริการ --');
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+      .then(function (response) {
+        console.log(response.data);
+        if (response.data.results !== null) {
+          setDataFromMoph('ดูประวัติรับบริการ');
+        } else {
+          setDataFromMoph('--ไม่พบประวัติรับบริการ --');
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   }
 
   const getPersonInfo = async (cid) => {
@@ -669,45 +718,45 @@ export default function SearchCID(props) {
 
           <div className={classes.boxHeadContain}>
             <div className={classes.boxHead}><b>Assessment</b></div>
-            <div style={{padding: 10}}>
+            <div style={{ padding: 10 }}>
               {Object.keys(assessment).length > 0 && <BoxAssessment data={assessment} dataAll={assessmentListData} />}
             </div>
           </div>
 
           <div className={classes.boxHeadContain}>
             <div className={classes.boxHead}><b>Diagnosis</b></div>
-            <div style={{padding: 10}}>
+            <div style={{ padding: 10 }}>
               {diagnosis.length > 0 && <BoxDiagnosis data={diagnosis} currentView={currentView} />}
             </div>
           </div>
 
           <div className={classes.boxHeadContain}>
             <div className={classes.boxHead}><b>Laboratory</b></div>
-            <div style={{padding: 10}}>
+            <div style={{ padding: 10 }}>
               {laboratory.length > 0 && <BoxLaboratory data={laboratory} currentView={currentView} />}
             </div>
           </div>
 
           <div className={classes.boxHeadContain}>
             <div className={classes.boxHead}><b>Radiology</b></div>
-            <div style={{padding: 10}}>
+            <div style={{ padding: 10 }}>
               {radiology.length > 0 && <BoxRadiology data={radiology} currentView={currentView} />}
             </div>
           </div>
 
           <div className={classes.boxHeadContain}>
             <div className={classes.boxHead}><b>Treatment</b></div>
-            <div style={{padding: 10}}>
+            <div style={{ padding: 10 }}>
               {treatment.length > 0 && <BoxTreatment data={treatment} currentView={currentView} />}
             </div>
           </div>
 
           <div className={classes.boxHeadContain}>
-             <div className={classes.boxHead}><b>Refer Out</b></div>
-             <div style={{padding: 10}}>
-               {Object.keys(referout).length > 0 && <BoxReferout data={referout} />}
-             </div>
-           </div>
+            <div className={classes.boxHead}><b>Refer Out</b></div>
+            <div style={{ padding: 10 }}>
+              {Object.keys(referout).length > 0 && <BoxReferout data={referout} />}
+            </div>
+          </div>
 
         </div>
       );
@@ -843,10 +892,37 @@ export default function SearchCID(props) {
     setPassportHelperText('');
   }
 
+  const handleRequestEMR1HR = () => {
+    // console.log('handleRequestEMR1HR');
+    setOpenDialogEMR1hr(true);
+  }
 
-  // useEffect(() => {
-  //   getConsentSetting();
-  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const handleAcceptEMR1hr = async () => {
+    // console.log('handleAcceptEMR1hr');
+    setOpenBackdrop(true);
+    let data = {
+      temporaryAccessEMR: {
+        minutes: 60,
+        cid: searchCID,
+        startDateTime: new Date()
+      }
+    };
+    let response = await patch(currentUser.userId, data, 'teamusers');
+    if (response.status === 200) {
+      if (response.data) {
+        logSave('request Temporary Access Without Consent --- CID:' + searchCID);
+        getPersonInfo(searchCID);
+        setOpenDialogEMR1hr(false);
+        setOpenDialog(false);
+        setOpenBackdrop(false);
+      }
+    }
+  }
+
+  const handleCloseDialogEMR1hr = () => {
+    // console.log('handleCloseDialogEMR1hr');
+    setOpenDialogEMR1hr(false);
+  }
 
   useEffect(() => {
     mkYearShow();
@@ -891,7 +967,7 @@ export default function SearchCID(props) {
             onClick={clickSearchInput}
             InputProps={{
               endAdornment: (
-                <InputAdornment position="start" style={{ cursor: 'pointer',marginTop: -20 ,display: showClearSearchCIDButton }} onClick={clearSearchCID}>
+                <InputAdornment position="start" style={{ cursor: 'pointer', marginTop: -20, display: showClearSearchCIDButton }} onClick={clearSearchCID}>
                   <MdClear />
                 </InputAdornment>
               ),
@@ -911,7 +987,7 @@ export default function SearchCID(props) {
             onClick={clickSearchInput}
             InputProps={{
               endAdornment: (
-                <InputAdornment position="start" style={{ cursor: 'pointer',marginTop: -20 ,display: showClearSearchPassportButton }} onClick={clearSearchPassport}>
+                <InputAdornment position="start" style={{ cursor: 'pointer', marginTop: -20, display: showClearSearchPassportButton }} onClick={clearSearchPassport}>
                   <MdClear />
                 </InputAdornment>
               ),
@@ -923,7 +999,7 @@ export default function SearchCID(props) {
           <Button
             fullWidth
             onClick={(e) => handleClickSearch(e, null)}
-            style={{ height: 55  }}
+            style={{ height: 55 }}
             variant="contained"
             color="primary"
             startIcon={<MdSearch size={20} />}
@@ -991,14 +1067,14 @@ export default function SearchCID(props) {
                     startIcon={<MdSwapHoriz size={40} style={{ paddingLeft: 10 }} />}
                   />
                 ) : (
-                    <Button
-                      onClick={clickChangeView}
-                      // style={{ width:30 }}
-                      // variant="outlined"
-                      color="primary"
-                      startIcon={<MdSwapVert size={40} style={{ paddingLeft: 10 }} />}
-                    />
-                  )}
+                  <Button
+                    onClick={clickChangeView}
+                    // style={{ width:30 }}
+                    // variant="outlined"
+                    color="primary"
+                    startIcon={<MdSwapVert size={40} style={{ paddingLeft: 10 }} />}
+                  />
+                )}
               </div>
               <div style={{ marginTop: 5, marginBottom: 20 }}>
                 <Typography variant="h6" style={{ marginBottom: 5 }}>Service Information</Typography>
@@ -1022,12 +1098,37 @@ export default function SearchCID(props) {
       >
         {/* <DialogTitle id="alert-dialog-title">TEXT</DialogTitle> */}
         <DialogContent>
-          <DialogContentText id="alert-dialog-description" component={'div'} style={{marginTop: 20}}>
+          <DialogContentText id="alert-dialog-description" component={'div'} style={{ marginTop: 20 }}>
             {dialogText}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
+          <Button onClick={handleRequestEMR1HR} color="primary" variant={'contained'} style={{ display: displayEMR1hrButton }}>
+            ขอดูประวัติชั่วคราว
+          </Button>
           <Button onClick={handleCloseDialog} color="primary" variant={'contained'} autoFocus>
+            ปิด
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        TransitionComponent={Transition}
+        open={openDialogEMR1hr}
+        onClose={handleCloseDialogEMR1hr}
+        fullWidth
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" component={'div'} style={{ marginTop: 20 }}>
+            <b>ขอดูประวัติชั่วคราว</b><br />
+            คุณขอใช้สิทธิเข้าถึงประวัติการรับบริการของผู้ป่วยซึ่งไม่มีหลักฐานการยินยอม(Consent)เป็นการชั่วคราว ระบบจะบันทึกประวัติการขอใช้สิทธินี้ และคุณสามารถดูประวัติการรับบริการชั่วคราวได้ครั้งละ 1 ชั่วโมง
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAcceptEMR1hr} color="primary" variant={'contained'}>
+            ตกลง
+          </Button>
+          <Button onClick={handleCloseDialogEMR1hr} color="primary" variant={'contained'} autoFocus>
             ปิด
           </Button>
         </DialogActions>

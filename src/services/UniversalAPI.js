@@ -42,12 +42,10 @@ const update = (id, data, thisCollection) => {
 
 const update2 = (where, data, thisCollection) => {
   return axios.update(API_URL + thisCollection + "/" + where, data, { headers: authHeader.getToken() });
-
 };
 
 const patch = (id, data, thisCollection) => {
   return axios.patch(API_URL + thisCollection + "/" + id, data, { headers: authHeader.getToken() });
-
 };
 
 const remove = (id, thisCollection) => {

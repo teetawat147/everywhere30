@@ -203,6 +203,8 @@ export default function SearchCID(props) {
 
     calAllPages(rowsPerPage, { and: andQuery });
 
+    console.log(JSON.stringify(xParams));
+
     let response = await getAll(xParams, 'interventions');
     // console.log(response.data);
     if (response.status === 200) {
