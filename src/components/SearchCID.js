@@ -373,16 +373,18 @@ export default function SearchCID(props) {
       if (response.data) {
         if (response.data.length > 0) {
 
-          let xParams = { filter: { where: { key: "emrTemporaryBreakConsent" } } };
-          let responseS = await getAll(xParams, 'SystemSettings');
-          if (responseS.status === 200) {
-            if (responseS.data) {
-              if (responseS.data.length > 0) {
-                if (responseS.data[0].value.toString() === "1") {
-                  setDisplayEMR1hrButton('inline-block');
-                }
-                else {
-                  setDisplayEMR1hrButton('none');
+          if (currentUser.user.role.toLowerCase()==='doctor') {
+            let xParams = { filter: { where: { key: "emrTemporaryBreakConsent" } } };
+            let responseS = await getAll(xParams, 'SystemSettings');
+            if (responseS.status === 200) {
+              if (responseS.data) {
+                if (responseS.data.length > 0) {
+                  if (responseS.data[0].value.toString() === "1") {
+                    setDisplayEMR1hrButton('inline-block');
+                  }
+                  else {
+                    setDisplayEMR1hrButton('none');
+                  }
                 }
               }
             }
@@ -948,6 +950,10 @@ export default function SearchCID(props) {
       }
     }
   }
+
+  useEffect(() => {
+    console.log(currentUser.user.role);
+  },[]);
 
   useEffect(() => {
     countDown();
