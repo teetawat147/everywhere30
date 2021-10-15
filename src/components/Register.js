@@ -166,14 +166,21 @@ const Register = (props) => {
     if (formStatus) {
       setValidator({ ...validator, formValid: false });
       register(formData).then((response) => {
+        console.log(response.data);
         if (response.status === 200) {
+          let redirectPath = '/login';
+          if (typeof props.location.state !== 'undefined') {
+            if (typeof props.location.state.forwardPath !== 'undefined') {
+              redirectPath = props.location.state.forwardPath;
+            }
+          }
           setDialog({
             title: 'ผลการลงทะเบียน',
             content: 'ลงทะเบียนสำเร็จ รอผู้ดูแลระบบอนุมัติการใช้งาน',
             contentStyle: { width: '400px', textAlign: 'center', color: 'green' },
             button: {
               confirm: { enable: false, text: '' },
-              cancel: { enable: true, text: 'ปิด', redirect: '/login' },
+              cancel: { enable: true, text: 'ปิด', redirect: redirectPath },
             }
           });
         } else if (response.status === 422) {

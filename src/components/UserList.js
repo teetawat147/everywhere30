@@ -636,7 +636,10 @@ export default function UserList(props) {
             <th className="text-center">
               {" "}
               <button
-                onClick={() => clickUserEditlink("newadd")}
+                onClick={() => 
+                  // clickUserEditlink("newadd")
+                  history.push({ pathname: "register/", state: { forwardPath: '/userlist' } })
+                }
                 className="btn btn-md btn-success mb-2"
               >
                 เพิ่มผู้ใช้งาน
