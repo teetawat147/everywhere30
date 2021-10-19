@@ -629,6 +629,7 @@ export default function SearchCID(props) {
         x = i;
       }
     });
+    // console.log(x);
     logSave('display service info --- DATE:' + date + ' HCODE:' + hcode + ' VN:' + vn + ' AN:' + an + ' CID:' + searchCID);
     setServiceData(x);
   }
@@ -676,6 +677,7 @@ export default function SearchCID(props) {
       // console.log(assessment);
     }
 
+    // console.log(laboratory);
     if (currentView === 'tab') {
       return (
         <div style={{ width: 900 }}>

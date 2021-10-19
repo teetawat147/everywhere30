@@ -57,36 +57,69 @@ export default function BoxLaboratory(props) {
 
   const mkLaboratoryList = () => {
     let laboratoryElement=[];
-    let labHead=[];
-    let labItemGroup=[];
+    let labHead={};
+    let labItemGroup={};
     if (laboratory.length>0) {
       laboratory.forEach(i => {
-        if (typeof i.form_name !== 'undefined') {
-          if (typeof labHead[i.lab_order_number] === 'undefined') {
-            labHead[i.lab_order_number]={lab_order_number:i.lab_order_number, form_name:i.form_name};
+        if (typeof i.lab_order_number !== 'undefined') { // รพ.สกลนคร ไม่มีฟิลด์ lab_order_number ให้ form_name ให้การแบ่ง labHead แทนนะ
+          if (typeof i.form_name !== 'undefined') {
+            if (typeof labHead[i.lab_order_number] === 'undefined') {
+              labHead[i.lab_order_number]={lab_order_number:i.lab_order_number, form_name:i.form_name};
+            }
+          }
+          if (typeof labItemGroup[i.lab_order_number] === 'undefined') {
+            labItemGroup[i.lab_order_number]=[];
+            labItemGroup[i.lab_order_number].push(i);
+          }
+          else {
+            labItemGroup[i.lab_order_number].push(i);
           }
         }
-        if (typeof labItemGroup[i.lab_order_number] === 'undefined') {
-          labItemGroup[i.lab_order_number]=[];
-          labItemGroup[i.lab_order_number].push(i);
-        }
         else {
-          labItemGroup[i.lab_order_number].push(i);
+          if (typeof i.form_name !== 'undefined') {
+            if (typeof labHead[i.form_name] === 'undefined') {
+              labHead[i.form_name]={lab_order_number:i.form_name, form_name:i.form_name};
+            }
+          }
+          if (typeof labItemGroup[i.form_name] === 'undefined') {
+            labItemGroup[i.form_name]=[];
+            labItemGroup[i.form_name].push(i);
+          }
+          else {
+            labItemGroup[i.form_name].push(i);
+          }
         }
       });
 
-// console.log(labHead);
-// console.log(labItemGroup);
-      labHead.forEach(i => {
+      // console.log(props.data);
+      // console.log(labHead);
+      // console.log(labItemGroup);
+      
+      // labHead.forEach(i => {
+      //   console.log('ssssssssssss');
+      //   console.log(i);
+      //   laboratoryElement.push(
+      //     <div key={'LOB_'+i.lab_order_number} style={{marginBottom: 20}}>
+      //       <div style={{backgroundColor: '#e2e2e2', borderRadius: 10, paddingLeft: 30}}><b>{i.form_name}</b></div>
+      //       <div>
+      //         {mkLabDetail(labItemGroup[i.lab_order_number])}
+      //       </div>
+      //     </div>
+      //   );
+      // });
+
+      for (const [k, v] of Object.entries(labHead)) {
+        // console.log(k, v);
         laboratoryElement.push(
-          <div key={'LOB_'+i.lab_order_number} style={{marginBottom: 20}}>
-            <div style={{backgroundColor: '#e2e2e2', borderRadius: 10, paddingLeft: 30}}><b>{i.form_name}</b></div>
+          <div key={'LOB_'+k} style={{marginBottom: 20}}>
+            <div style={{backgroundColor: '#e2e2e2', borderRadius: 10, paddingLeft: 30}}><b>{v.form_name}</b></div>
             <div>
-              {mkLabDetail(labItemGroup[i.lab_order_number])}
+              {mkLabDetail(labItemGroup[k])}
             </div>
           </div>
         );
-      });
+      }
+
     }
     return laboratoryElement;
   }
@@ -95,7 +128,7 @@ export default function BoxLaboratory(props) {
     if (typeof x !== 'undefined') {
       let elem=[];
       let n=0;
-    // console.log(x);
+      // console.log(x);
       x.forEach(i => {
         n++;
         // console.log(i);
