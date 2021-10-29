@@ -162,7 +162,7 @@ export default function UserList(props) {
           // },
           where: {
             and: [
-              { changwat: currentUser.user.changwat || currentUser.user.changwat.changwatname },
+              { "changwat.changwatname": currentUser.user.changwat.changwatname },
               { application: "R8Anywhere" }
             ],
             or: [
@@ -186,7 +186,7 @@ export default function UserList(props) {
           // },
           where: {
             and: [
-              { changwat: currentUser.user.changwat || currentUser.user.changwat.changwatname },
+              { "changwat.changwatname": currentUser.user.changwat.changwatname },
               { application: "R8Anywhere" }
             ],
             or: [
