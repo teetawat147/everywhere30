@@ -153,7 +153,7 @@ const Home = () => {
         <Grid item xs={12} sm={3}>
           <b>Scan</b><br/>
           เข้ากลุ่ม Line<br/>
-          แจ้งปัญหาการใช้งาน<br/><br/>
+          เพื่อแจ้งปัญหาการใช้งาน<br/><br/>
           <Button
             variant="contained"
             color="secondary"
