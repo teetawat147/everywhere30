@@ -164,6 +164,7 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
+    // Test
     // ถ้า login ให้เริ่มการทำงานเฝ้าดูการทำงานของ user idle timeout
     if (globalState.loginStatus) {
       resume();

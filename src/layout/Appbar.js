@@ -169,7 +169,7 @@ const Appbar = () => {
             (!globalState.loginStatus) ? (
               <div className="navMenu">
                 <Link to={"/login"}>
-                  <Button color="inherit"><LockOpenIcon style={{marginRight:'5px'}}/> Login</Button>
+                  <Button color="inherit"><LockOpenIcon style={{marginRight:'5px'}}/> Login </Button>
                 </Link>
                 <Link to={"/register"}>
                   <Button color="inherit"><PersonAddIcon style={{marginRight:'5px'}}/> Register</Button>
