@@ -139,7 +139,8 @@ export default function BoxTreatment(props) {
         <tr key={'treatment_'+n}>
           <td style={{width:30}} className={className}>{n}</td>
           <td style={{width:'auto'}} className={className}>
-            {typeof i.drug_name !== 'undefined'?i.drug_name:''}
+            {typeof i.drug_name !== 'undefined'?i.drug_name:''} 
+            {typeof i.strength !== 'undefined'?(i.strength !==''&&i.strength !==null?'('+i.strength+')':''):''}
             {drugusage && drugusage !== '- -'?(<div style={{color: '#16209d'}}>{drugusage}</div>):''}
             {/* {typeof i.sub_type !== 'undefined'?(parseInt(i.sub_type)===1?(<><br />{drugusage}</>):''):''} */}
           </td>
