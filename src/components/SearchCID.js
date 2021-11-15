@@ -178,7 +178,7 @@ export default function SearchCID(props) {
   const currentUser = AuthService.getCurrentUser();
   const [displayEMR60mCountDown, setDisplayEMR60mCountDown] = useState('none');
   const [EMR60mLeft, setEMR60mLeft] = useState(0);
-  
+
 
   const onchangeSearchText = (e) => {
     setSearchCIDValue(e.target.value);
@@ -251,7 +251,7 @@ export default function SearchCID(props) {
     setSelectedHCode('all');
     setDisplayEMR60mCountDown('none');
     setEMR60mLeft(0);
-    
+
     let c = null;
     if (cid === null) {
       // ไม่มี cid ส่งมาด้วย ให้ไปเอาจาก state
@@ -319,14 +319,14 @@ export default function SearchCID(props) {
               if (responseU.data) {
                 // console.log(responseU.data);
                 if (typeof responseU.data.temporaryAccessEMR !== 'undefined') {
-                  if (responseU.data.temporaryAccessEMR.cid===c) {
+                  if (responseU.data.temporaryAccessEMR.cid === c) {
                     let minutesTimeout = responseU.data.temporaryAccessEMR.minutes;
                     let startDateTime = responseU.data.temporaryAccessEMR.startDateTime;
-                    let minutesDiff = diff_minutes(new Date(),new Date(startDateTime));
+                    let minutesDiff = diff_minutes(new Date(), new Date(startDateTime));
                     // console.log(minutesDiff);
-                    if (parseInt(minutesDiff)<=parseInt(minutesTimeout)) {
-                      inRequestPeriod=true;
-                      setEMR60mLeft(60-minutesDiff);
+                    if (parseInt(minutesDiff) <= parseInt(minutesTimeout)) {
+                      inRequestPeriod = true;
+                      setEMR60mLeft(60 - minutesDiff);
                       setDisplayEMR60mCountDown('block');
                     }
                   }
@@ -373,7 +373,23 @@ export default function SearchCID(props) {
       if (response.data) {
         if (response.data.length > 0) {
 
-          if (currentUser.user.role.toLowerCase()==='doctor') {
+          let pd = response.data;
+          let allowedDoctor = [];
+          pd.forEach(i => {
+            if (typeof i.consent !== 'undefined') {
+              if (i.consent && Object.keys(i.consent).length > 0) {
+                if (typeof i.consent.allowedDoctor !== 'undefined') {
+                  if (i.consent.allowedDoctor && i.consent.allowedDoctor.length > 0) {
+                    i.consent.allowedDoctor.forEach(z => {
+                      allowedDoctor.push(z);
+                    });
+                  }
+                }
+              }
+            }
+          });
+
+          if (currentUser.user.role.toLowerCase() === 'doctor') {
             let xParams = { filter: { where: { key: "emrTemporaryBreakConsent" } } };
             let responseS = await getAll(xParams, 'SystemSettings');
             if (responseS.status === 200) {
@@ -390,9 +406,18 @@ export default function SearchCID(props) {
             }
           }
 
-          if (typeof response.data[0].consent === 'undefined') {
+          let thisUserAllowed = false;
+          allowedDoctor.forEach(i => {
+            if (currentUser.user.id === i.id) {
+              thisUserAllowed = true;
+            }
+          });
+
+          // if (typeof response.data[0].consent === 'undefined') {
+          if (thisUserAllowed === false) {
             setOpenBackdrop(false);
-            setDialogText(<div><b>ผู้ป่วยยังไม่ยื่นเอกสาร Consent</b><br />กรุณาประสานงานให้ผู้ป่วยติดต่อยื่นเอกสาร Consent กับเจ้าหน้าที่ที่เกี่ยวข้อง เพื่อยืนยันการเปิดเผยข้อมูลประวัติการรักษาพยาบาลค่ะ</div>);
+            // setDialogText(<div><b>ผู้ป่วยยังไม่ยื่นเอกสาร Consent</b><br />กรุณาประสานงานให้ผู้ป่วยติดต่อยื่นเอกสาร Consent กับเจ้าหน้าที่ที่เกี่ยวข้อง เพื่อยืนยันการเปิดเผยข้อมูลประวัติการรักษาพยาบาลค่ะ</div>);
+            setDialogText(<div><b>ต้องการเอกสาร Consent ที่อนุญาติให้ท่าน<span style={{ color: 'blue'}} >({currentUser.user.fullname})</span>เข้าถึงข้อมูล</b><br />กรุณาประสานงานให้ผู้ป่วยติดต่อยื่นเอกสาร Consent กับเจ้าหน้าที่ที่เกี่ยวข้อง เพื่อยืนยันการเปิดเผยข้อมูลประวัติการรักษาพยาบาล โดยระบุให้ท่าน<span style={{ color: 'blue'}} >({currentUser.user.fullname})</span>สามารถเข้าถึงข้อมูลดังกล่าวได้ค่ะ</div>);
             setOpenDialog(true);
           }
           else {
@@ -942,7 +967,7 @@ export default function SearchCID(props) {
   }
 
   const countDown = () => {
-    if (displayEMR60mCountDown==='block') { 
+    if (displayEMR60mCountDown === 'block') {
       if (EMR60mLeft > 0) {
         setTimeout(() => {
           setEMR60mLeft(EMR60mLeft - 1);
@@ -953,13 +978,13 @@ export default function SearchCID(props) {
     }
   }
 
-  useEffect(() => {
-    console.log(currentUser.user.role);
-  },[]);
+  // useEffect(() => {
+  //   console.log(currentUser.user);
+  // }, []);
 
   useEffect(() => {
     countDown();
-  },[displayEMR60mCountDown, EMR60mLeft]);
+  }, [displayEMR60mCountDown, EMR60mLeft]);
 
   useEffect(() => {
     mkYearShow();

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import {
   CardActions,
@@ -32,6 +32,9 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import { useConfirm } from "material-ui-confirm";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import CancelIcon from '@material-ui/icons/Cancel';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { getCurrentUser } from "../.../../services/auth.service";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -85,6 +88,9 @@ function ConsentArea() {
   const [alertClass, setAlertClass] = useState('error');
   const [confirmConsent, setConfirmConsent] = useState('Y');
   const confirm = useConfirm();
+  const [doctorData, setDoctorData] = useState([]);
+  const [doctorSelected, setDoctorSelected] = useState([]);
+  
 
   const handleInputChange = (e, validate) => {
     let name = e.target.name;
@@ -108,6 +114,7 @@ function ConsentArea() {
           let consentPath = process.env.REACT_APP_API_URL + 'containers/consentForm/download/' + searchPerson.data[0].consent.fileConsent + '?access_token=token' + token;
           searchPerson.data[0].consent.consentPath = consentPath;
         }
+        // console.log(searchPerson.data[0]);
         setPerson(searchPerson.data[0]);
       } else {
         setPerson('ไม่พบข้อมูลผู้ป่วย');
@@ -127,6 +134,12 @@ function ConsentArea() {
           cancellationText: 'ยกเลิก',
           onClose: () => { console.log("close") }
         }).then(async () => {
+          let doctorConsentData = [];
+          if (doctorSelected && doctorSelected.length>0) {
+            doctorSelected.forEach(i => {
+              doctorConsentData.push({id:i.id, fullname: i.fullname, position:i.position, hcode:i.department.hcode, hos_name:i.department.hos_name });
+            });
+          }
           let extension = consentFile.type.replace('///g', '');
           switch (extension) {
             case 'image/jpeg': extension = 'jpg'; break;
@@ -147,11 +160,13 @@ function ConsentArea() {
                 "fileConsent": newFile.name,
                 "statusConsent": confirmConsent,
                 "consentDate": moment().format("YYYY-MM-DD HH:mm:ss"),
-                "recorderId": userinfo.user.id
+                "recorderId": userinfo.user.id,
+                "allowedDoctor": doctorConsentData
               };
               let consentResult = await create(consentData, 'consents'); // บันทึกข้อมูล consent
               if (consentResult.status === 200) {
                 // บันทึกข้อมูล consent สำเร็จ แล้วเครียร์ข้อมูลใน state
+                setDoctorSelected([]);
                 setCid('');
                 setPerson('');
                 setConsentFile('');
@@ -208,6 +223,113 @@ function ConsentArea() {
     })
   }
 
+  const filterOptions = createFilterOptions({
+    limit: 200,
+  });
+
+  const getDoctorData = async () => {
+    function compare( a, b ) {
+      if ( a.doctorInfo < b.doctorInfo ){
+        return -1;
+      }
+      if ( a.doctorInfo > b.doctorInfo ){
+        return 1;
+      }
+      return 0;
+    }
+
+    let tempData = [];
+    let tempDoctorData = [];
+    let filterR = {
+      filter: {
+        where: { roleId: "602cc093c67bfb177c43bb4f" },
+        include: [{relation: 'role'}, {relation: 'teamuser'}]
+      }
+    };
+    let responseD = await getAll(filterR, 'RoleMappings');
+    if (responseD.status===200) {
+      if (responseD.data) {
+        if (responseD.data.length>0) {
+          tempData = responseD.data;
+        }
+      }
+    }
+
+    let filterU = {
+      filter: {
+        where: { 
+          and : [
+            { position: { like: 'แพทย์' }},
+            { application : { in: ['R8Anywhere']}},
+            { 
+              or : [
+                { changwat : getCurrentUser().user.changwat.changwatname },
+                { "changwat.changwatname" : getCurrentUser().user.changwat.changwatname }
+              ]
+            }
+          ]
+        }
+      }
+    };
+    let responseU = await getAll(filterU, 'teamusers');
+    if (responseU.status===200) {
+      if (responseU.data) {
+        if (responseU.data.length>0) {
+          let d = responseU.data;
+          d.forEach(di => {
+            tempData.forEach(ti => {
+              if (di.id===ti.principalId) {
+                let newDi = di;
+                newDi.RoleMapping=ti;
+                newDi.doctorInfo= '('+di.department.hcode+') '+di.department.hos_name+' : '+di.fullname+' ('+di.position+')';
+                tempDoctorData.push(newDi);
+              }
+            });
+          });
+          tempDoctorData.sort( compare );
+          setDoctorData(tempDoctorData);
+        }
+      }
+    }
+  }
+
+  const displayAllowesDoctor = () => {
+    let r = [];
+    if (typeof person.consent !== 'undefined') {
+      if (typeof person.consent.allowedDoctor !== 'undefined') {
+        let x = person.consent.allowedDoctor;
+        // console.log(x);
+        if (x) {
+          if (x.length>0) {
+            let n = 0;
+            x.forEach(i => {
+              ++n;
+              r.push(
+                <div key={i.id} style={{ paddingLeft: 20 }}>{n}. {i.fullname} {i.position} ({i.hcode} : {i.hos_name})</div>
+              );
+            });
+            
+          }
+        }
+      }
+    }
+    if (r.length>0) {
+      return (
+        <div>
+          <div>รายชื่อแพทย์ที่อนุญาติให้เข้าถึงข้อมูล : </div>
+          {r}
+        </div>
+      );
+    }
+    else {
+      return <div></div>;
+    }
+  }
+
+  useEffect(() => {
+    getDoctorData();
+  }, []);
+
   return (
     <Card mb={6} className={classes.card}>
       <CardContent style={{ padding: '30px 30px 0 30px' }}>
@@ -254,6 +376,7 @@ function ConsentArea() {
                 <div>
                   รหัสสถานบริการ : {person.hcode} &nbsp;{person.hname}
                 </div>
+                {displayAllowesDoctor()}
                 <div className={(typeof person.consent !== 'undefined') ? classes.display : classes.hide}>
                   แบบฟอร์มยืนยัน : {
                     (typeof person.consent !== 'undefined')
@@ -320,6 +443,29 @@ function ConsentArea() {
                   }}
                 />}
             />
+          </Grid>
+          <Grid item xs={12} md={12} className={(typeof person.consent !== 'undefined') ? classes.hide : classes.display}>
+            {doctorData.length>0&&(
+              <Autocomplete
+                multiple
+                filterOptions={filterOptions}
+                style={{ marginBottom: 20 }}
+                options={doctorData}
+                onChange={(event, newInputValue) => {
+                  // console.log(newInputValue);
+                  setDoctorSelected(newInputValue);
+                }}
+                value={doctorSelected}
+                // onInputChange={(event, newInputValue) => {
+                //   if (newInputValue === null || newInputValue === '') {
+                //     // ..
+                //   }
+                // }}
+                getOptionLabel={(option) => option.doctorInfo}
+                getOptionSelected={(option, value) => option.doctorInfo === value.doctorInfo}
+                renderInput={(params) => <TextField {...params} label={'รายชื่อแพทย์ที่อนุญาติให้เข้าถึงข้อมูล'} variant="outlined" />}
+              />
+            )}
           </Grid>
         </Grid>
       </CardContent>
